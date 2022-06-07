@@ -16,7 +16,8 @@
     "url": "https://github.com/sartography/bpmn-js-spiffworkflow"
   },
   "keywords": [
-    "bpmn", "spiffworkflow"
+    "bpmn",
+    "spiffworkflow"
   ],
   "author": {
     "name": "Dan Funk (Sartography)",
@@ -41,6 +42,7 @@
   },
   "dependencies": {
     "bpmn-js": "^9.2.0",
+    "diagram-js": "^8.5.0",
     "min-dash": "^3.8.1"
   }
 }
