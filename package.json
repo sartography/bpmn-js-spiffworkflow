@@ -1,0 +1,46 @@
+{
+  "name": "bpmn-js-spiffworkflow",
+  "version": "0.0.0",
+  "description": "Extensions and modifications of BPMN.js to improve BPMN development for SpiffWorkflow",
+  "scripts": {
+    "all": "run-s lint build",
+    "build": "webpack --mode production",
+    "build:watch": "webpack --watch",
+    "dev": "run-p build:watch serve",
+    "serve": "sirv public --dev",
+    "lint": "eslint .",
+    "start": "run-s build serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sartography/bpmn-js-spiffworkflow"
+  },
+  "keywords": [
+    "bpmn", "spiffworkflow"
+  ],
+  "author": {
+    "name": "Dan Funk (Sartography)",
+    "url": "https://github.com/danfunk"
+  },
+  "contributors": [
+    {
+      "name": "bpmn.io contributors",
+      "url": "https://github.com/bpmn-io"
+    }
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-bpmn-io": "^0.13.0",
+    "npm-run-all": "^4.1.5",
+    "raw-loader": "^4.0.2",
+    "sirv-cli": "^2.0.2",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "bpmn-js": "^9.2.0",
+    "min-dash": "^3.8.1"
+  }
+}
