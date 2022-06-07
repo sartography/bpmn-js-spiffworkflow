@@ -12,6 +12,11 @@ var HIGH_PRIORITY = 1500;
  * the diagram, it assures that a place exists for the new Data object to go, and it places it there.
  * There were a number of paces where I had to patch things in to get it to work correctly:
  *   * Create a InputOutputSpecification on the BPMN Moddle if it doesn't exist.
+ *   * Correctly connect a new DI (display element in BPMN xml) for the input/output element.
+ *   * Create a new DataInput/DataOutput Object (maybe incorrectly)
+ * Also handles delete, where it removes the objects from the BPMN Moddle (both the actual input/output and the DI)
+ * fixme:  Assure that we need to create a new DataInput object here, already in IoPalette's call to ElementFactory
+ * fixme:  If all inputs and outputs are deleted, remove the InputOutputSpecification completely.
  */
 export default class IoInterceptor extends CommandInterceptor {
   constructor(eventBus, bpmnFactory, bpmnUpdater) {
@@ -31,7 +36,6 @@ export default class IoInterceptor extends CommandInterceptor {
         dataIO.$parent = ioSpec;
         di.businessObject = dataIO;
         di.bpmnElement = dataIO;
-        context.shape.width = 36; // Default width is wrong.
         di.id = dataIO.id + 'DI';
         bpmnUpdater.updateBounds(context.shape);
         if (type == 'bpmn:DataInput') {
@@ -95,15 +99,6 @@ function assureIOSpecificationExists(process, bpmnFactory) {
     });
     ioSpecification.$parent = process;
     process.ioSpecification = ioSpecification;
-
-    /*
-         let inputSet = bpmnFactory.create('bpmn:InputSet', {
-                    dataInputRefs: [],
-                    name: 'Inputs'
-                });
-         inputSet.$parent = ioSpecification;
-         */
-    // collectionAdd(ioSpecification.get('inputSets'), inputSet);
   }
   return ioSpecification;
 }

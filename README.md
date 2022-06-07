@@ -36,7 +36,7 @@ import IoModule from 'bpmn-js-spiffworkflow/lib/io';
 
 var bpmnJS = new BpmnModeler({
   additionalModules: [
-    IoModule
+    spiffworkflow
   ]
 });
 ```
