@@ -19,11 +19,13 @@ This extension will allow you to drag BPMN Data Input and Data Output elements o
 ```xml
   <bpmn:process id="my_delightful_process" isExecutable="true">
     <bpmn:ioSpecification>
-      <bpmn:dataInput id="DataInput-745019423-1" name="required_input_variable" />
-      <bpmn:dataOutput id="DataOutput-711207596-1" name="promised_output_thing" />
+      <bpmn:dataInput id="DataInput-745019423-1" name="num_dogs" />
+      <bpmn:dataOutput id="DataOutput-711207596-1" name="happy_index" />
     </bpmn:ioSpecification>
     ...
 ```
+![Screenshot](docs/io.png)
+
 Using these data input and outputs will allow you to create processes designed to be used as Call Activities.  SpiffWorkflow (in a soon-to-be released version) will pick up this information, and enforce it.  So that you must provide these input variables to execute, and only the variables mentioned in the output will be passed back to the calling process.
 
 ## Usage
