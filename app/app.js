@@ -12,6 +12,5 @@ const bpmnModeler = new BpmnModeler({
   moddleExtensions: {}
 });
 
-
 // import XML
-bpmnModeler.importXML(diagramXML).then(() => {})
+bpmnModeler.importXML(diagramXML).then(() => {});
