@@ -1,4 +1,7 @@
 
+https://github.com/sartography/bpmn-js-spiffworkflow/actions/runs/2469432473
+![Tests](https://github.com/sartography/bpmn-js-spiffworkflow/actions/workflows/tests.yml/badge.svg?branch=main)
+
 # SpiffWorkflow Extensions for BPMN.js
 This package provides extensions that can be applied to BPMN.js that will enable some important features of [SpiffWorkflow](https://github.com/sartography/SpiffWorkflow) - the Python BPMN Library for executing business processes.  See below for more information.
 

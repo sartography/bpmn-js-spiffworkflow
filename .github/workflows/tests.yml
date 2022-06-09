@@ -1,4 +1,4 @@
-name: Karma Tests
+name: Tests
 
 # Run on Pull Requests and pushes to main
 on:
