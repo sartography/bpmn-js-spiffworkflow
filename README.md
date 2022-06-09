@@ -66,6 +66,7 @@ To build the example into the `public` folder execute
 npm run all
 ```
 
-
 ## License
 MIT
+
+
