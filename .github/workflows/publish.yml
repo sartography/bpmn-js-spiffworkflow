@@ -1,4 +1,4 @@
-name: Tests
+name: Publish NPM
 
 # On release, run tests and deploy to NPM
 on:
