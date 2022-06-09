@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2 #Checkout Repo
       - uses: actions/setup-node@v1 #Setup Node
+      - uses: nanasess/setup-chromedriver@v1
         with:
           node-version: '18'
       - name: Run Karma Tests
