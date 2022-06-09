@@ -1,5 +1,4 @@
 
-https://github.com/sartography/bpmn-js-spiffworkflow/actions/runs/2469432473
 ![Tests](https://github.com/sartography/bpmn-js-spiffworkflow/actions/workflows/tests.yml/badge.svg?branch=main)
 
 # SpiffWorkflow Extensions for BPMN.js
