@@ -2,6 +2,7 @@ name: Publish NPM
 
 # On release, run tests and deploy to NPM
 on:
+  workflow_dispatch:
   release:
 
 # Job Setup
