@@ -1,14 +1,22 @@
-import { TextAreaEntry, TextFieldEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
+import { HeaderButton, TextAreaEntry, TextFieldEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
 export default function(element) {
 
-  return [{
-    id: 'pythonScript',
-    element,
-    component: PythonScript,
-    isEdited: isTextFieldEntryEdited
-  }]
+  return [
+    {
+      id: 'pythonScript',
+      element,
+      component: PythonScript,
+      isEdited: isTextFieldEntryEdited
+    },
+    {
+      id: 'launchEditorButton',
+      element,
+      component: LaunchEditorButton,
+      isEdited: isTextFieldEntryEdited
+    },
+  ]
 }
 
 function PythonScript(props) {
@@ -38,4 +46,15 @@ function PythonScript(props) {
     setValue={ setValue }
     debounce={ debounce }
   />
+}
+
+function LaunchEditorButton(props) {
+  const { element, id } = props;
+  const eventBus = useService('eventBus');
+  const modeling = useService('modeling');
+  return <HeaderButton
+  onClick={() => {
+    eventBus.fire('launch.script.editor', { element: element })
+  }}
+  >Launch Editor</HeaderButton>
 }

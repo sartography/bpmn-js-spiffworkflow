@@ -4,7 +4,6 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 const LOW_PRIORITY = 500;
 
 export default function SpiffWorkflowPropertiesProvider(propertiesPanel, translate) {
-
   this.getGroups = function(element) {
     return function(groups) {
       if (is(element, 'bpmn:ScriptTask')) {
