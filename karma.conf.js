@@ -19,7 +19,7 @@ module.exports = function(karma) {
       'test/spec/**/*Spec.js': [ 'browserify' ]
     },
 
-    browsers: [ 'ChromeHeadless'],
+    browsers: [ 'ChromeHeadless' ],
 
     browserNoActivityTimeout: 30000,
 
