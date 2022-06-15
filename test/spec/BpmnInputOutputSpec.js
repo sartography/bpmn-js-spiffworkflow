@@ -1,6 +1,6 @@
 import TestContainer from 'mocha-test-container-support';
 import Modeler from 'bpmn-js/lib/Modeler';
-import spiffworkflow from '../../app/spiffworkflow';
+import spiffworkflow from '../../app/spiffworkflow/InputOutput';
 import coreModule from 'bpmn-js/lib/core';
 import createModule from 'diagram-js/lib/features/create';
 import modelingModule from 'bpmn-js/lib/features/modeling';

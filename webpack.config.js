@@ -11,6 +11,21 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            plugins: [
+              [ '@babel/plugin-transform-react-jsx', {
+                'importSource': '@bpmn-io/properties-panel/preact',
+                'runtime': 'automatic'
+              } ]
+            ]
+          }
+        }
+      },
+      {
         test: /\.bpmn$/,
         use: 'raw-loader'
       }
@@ -20,7 +35,12 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: 'assets/**', to: 'vendor/bpmn-js', context: 'node_modules/bpmn-js/dist/' },
-        { from: '**/*.{html,css}', context: 'app/' }
+        {
+          from: 'assets/**',
+          to: 'vendor/bpmn-js-properties-panel',
+          context: 'node_modules/bpmn-js-properties-panel/dist/'
+        },
+        {from: '**/*.{html,css}', context: 'app/'}
       ]
     })
   ],

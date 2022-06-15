@@ -5,7 +5,7 @@
   padding: 0;
 }
 
-html, body, #container {
+html, body, #container, #modeler {
   height: 100%;
 }
 
@@ -13,7 +13,16 @@ html, body, #container {
   display: none;
 }
 
-.panel {
+#container {
+  display: flex;
+  width: 100%;
+}
+
+#modeler {
+  flex-grow: 4;
+}
+
+#panel {
   background-color: #fafafa;
   border: solid 1px #ccc;
   border-radius: 2px;
