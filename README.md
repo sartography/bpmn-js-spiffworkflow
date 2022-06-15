@@ -4,7 +4,7 @@
 # SpiffWorkflow Extensions for BPMN.js
 This package provides extensions that can be applied to BPMN.js that will enable some important features of [SpiffWorkflow](https://github.com/sartography/SpiffWorkflow) - the Python BPMN Library for executing business processes.  See below for more information.
 
-**IMPROTANT**:  This is a work in progress, and is not yet released.
+**IMPORTANT**:  This is a work in progress, and is not yet released.
 
 # About
 
@@ -33,7 +33,7 @@ Using these data input and outputs will allow you to create processes designed t
 ## Usage
 ```javascript
 import BpmnModeler from 'bpmn-js/lib/Modeler';
-import IoModule from 'bpmn-js-spiffworkflow/lib/io';
+import spiffworkflow from 'bpmn-js-spiffworkflow/app/spiffworkflow';
 
 
 var bpmnJS = new BpmnModeler({
@@ -67,5 +67,3 @@ npm run all
 
 ## License
 MIT
-
-
