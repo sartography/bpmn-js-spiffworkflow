@@ -33,7 +33,7 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
      * @return {Object[]} modified groups
      */
     return function(groups) {
-
+      console.log("Does this crap ever get called?");
       // Add the "spiff" group
       if (is(element, 'bpmn:StartEvent')) {
         groups.push(createSpiffGroup(element, translate));
