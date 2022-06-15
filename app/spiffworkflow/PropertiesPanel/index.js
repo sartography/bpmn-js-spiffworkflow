@@ -1,4 +1,4 @@
-import SpiffWorkflowPropertiesProvider from './provider';
+import SpiffWorkflowPropertiesProvider from './SpiffWorkflowPropertiesProvider';
 
 export default {
   __init__: [ 'SpiffWorkflowPropertiesProvider' ],

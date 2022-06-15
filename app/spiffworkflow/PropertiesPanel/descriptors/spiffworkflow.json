@@ -1,0 +1,10 @@
+{
+  "name": "SpiffWorkflow",
+  "prefix": "spiff",
+  "uri": "http://sartography/spiff",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": []
+}
