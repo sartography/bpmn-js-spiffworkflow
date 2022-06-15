@@ -60,6 +60,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
+    "babel-preset-env": "^1.7.0",
     "bpmn-js": "^9.2.2",
     "bpmn-js-properties-panel": "^1.1.1",
     "diagram-js": "^8.5.0",
