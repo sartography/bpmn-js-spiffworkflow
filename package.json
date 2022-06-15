@@ -35,8 +35,8 @@
     "@babel/core": "^7.18.2",
     "@babel/plugin-transform-react-jsx": "^7.17.12",
     "@babel/preset-env": "^7.18.2",
-    "babel-loader": "^8.2.3",
     "@types/mocha": "^9.1.1",
+    "babel-loader": "^8.2.3",
     "babelify": "^8.0.0",
     "browserify": "^17.0.0",
     "chai": "^4.3.6",
@@ -60,8 +60,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "@bpmn-io/properties-panel": "^0.13.2",
-    "bpmn-js": "^9.2.0",
+    "bpmn-js": "^9.2.2",
     "bpmn-js-properties-panel": "^1.1.1",
     "diagram-js": "^8.5.0",
     "inherits": "^2.0.4",
