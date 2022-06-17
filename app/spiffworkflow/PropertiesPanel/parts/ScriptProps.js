@@ -53,6 +53,7 @@ function LaunchEditorButton(props) {
   const eventBus = useService('eventBus');
   const modeling = useService('modeling');
   return <HeaderButton
+  className="spiffworkflow-properties-panel-button"
   onClick={() => {
     eventBus.fire('launch.script.editor', { element: element })
   }}
