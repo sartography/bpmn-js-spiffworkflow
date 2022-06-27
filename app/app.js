@@ -7,9 +7,10 @@ import FileSaver from 'file-saver'; // For file downloads.
 
 // Examples for extending the xml language can be found at
 //  https://github.com/camunda/camunda-bpmn-moddle/blob/master/resources/camunda.json
-import SpiffModdleProvider from './spiffworkflow/PropertiesPanel/descriptors/spiffworkflow';
 const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
+
+const spiffModdleExtension = require('./spiffworkflow/moddle/spiffworkflow.json');
 
 // create modeler
 const bpmnModeler = new BpmnModeler({
@@ -24,7 +25,7 @@ const bpmnModeler = new BpmnModeler({
     BpmnPropertiesProviderModule,
   ],
   moddleExtensions: {
-    spiffworkflow: SpiffModdleProvider
+    spiffworkflow: spiffModdleExtension
   }
 });
 

@@ -1,0 +1,35 @@
+{
+  "name": "SpiffWorkflow",
+  "uri": "http://sartography/spiffworkflow",
+  "prefix": "spiffworkflow",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "preScript",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "text",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "postScript",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "text",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}
+
+
