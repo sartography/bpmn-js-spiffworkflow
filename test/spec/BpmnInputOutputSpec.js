@@ -53,7 +53,7 @@ describe('BPMN Input / Output', function() {
   }
 
   it('should open diagram', function() {
-    let xml = require('./diagram.bpmn');
+    let xml = require('./diagram.bpmn').default;
     return createModeler(xml).then(function(result) {
       expect(result.error).not.to.exist;
     });
@@ -61,7 +61,7 @@ describe('BPMN Input / Output', function() {
 
 
   it('should have a data input and data output in the properties panel', function() {
-    let xml = require('./diagram.bpmn');
+    let xml = require('./diagram.bpmn').default;
     return createModeler(xml).then(function(result) {
       expect(result.error).not.to.exist;
       var paletteElement = domQuery('.djs-palette', container);
