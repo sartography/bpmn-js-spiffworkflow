@@ -2,11 +2,9 @@ import {
   query as domQuery,
   queryAll as domQueryAll
 } from 'min-dom';
-import {bootstrapPropertiesPanel, CONTAINER} from './helpers';
+import { bootstrapPropertiesPanel, CONTAINER } from './helpers';
 import inputOutput from '../../app/spiffworkflow/InputOutput';
-import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
-import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 
 describe('BPMN Input / Output', function() {
 
@@ -16,13 +14,9 @@ describe('BPMN Input / Output', function() {
     debounceInput: false,
     additionalModules: [
       inputOutput,
-      SpiffWorkflowPropertiesProvider,
       BpmnPropertiesPanelModule,
       BpmnPropertiesProviderModule,
-    ],
-    moddleExtensions: {
-      spiffworkflow: spiffModdleExtension
-    },
+    ]
   }));
 
   it('should have a data input and data output in the properties panel', function() {

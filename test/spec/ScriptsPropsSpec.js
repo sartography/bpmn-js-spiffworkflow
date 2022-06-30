@@ -15,7 +15,6 @@ describe('Properties Panel Script Tasks', function() {
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,
     additionalModules: [
-      inputOutput,
       SpiffWorkflowPropertiesProvider,
       BpmnPropertiesPanelModule,
       BpmnPropertiesProviderModule,
