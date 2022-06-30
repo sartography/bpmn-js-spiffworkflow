@@ -1,0 +1,107 @@
+import {
+  query as domQuery,
+} from 'min-dom';
+import { act } from '@testing-library/preact';
+
+import {
+  getBpmnJS,
+} from 'bpmn-js/test/helper';
+import Modeler from 'bpmn-js/lib/Modeler';
+import TestContainer from 'mocha-test-container-support';
+import { bootstrapBpmnJS, inject, insertCSS } from 'bpmn-js/test/helper';
+
+export let PROPERTIES_PANEL_CONTAINER;
+export let CONTAINER;
+
+export function bootstrapPropertiesPanel(diagram, options, locals) {
+  return async function() {
+    CONTAINER = TestContainer.get(this);
+
+    insertBpmnStyles();
+    insertCoreStyles();
+
+    options.container = CONTAINER;
+    const createModeler = bootstrapBpmnJS(Modeler, diagram, options, locals);
+    await act(() => createModeler.call(this));
+
+    // (2) clean-up properties panel
+    clearPropertiesPanelContainer();
+
+    // (3) attach properties panel
+    const attachPropertiesPanel = inject(function(propertiesPanel) {
+      PROPERTIES_PANEL_CONTAINER = document.createElement('div');
+      PROPERTIES_PANEL_CONTAINER.classList.add('properties-container');
+
+      CONTAINER.appendChild(PROPERTIES_PANEL_CONTAINER);
+
+      return act(() => propertiesPanel.attachTo(PROPERTIES_PANEL_CONTAINER));
+    });
+    await attachPropertiesPanel();
+  };
+}
+
+export function clearPropertiesPanelContainer() {
+  if (PROPERTIES_PANEL_CONTAINER) {
+    PROPERTIES_PANEL_CONTAINER.remove();
+  }
+}
+
+export function insertCoreStyles() {
+  insertCSS(
+    'properties-panel.css',
+    require('bpmn-js-properties-panel/dist/assets/properties-panel.css').default
+  );
+  insertCSS(
+    'test.css',
+    require('./test.css').default
+  );
+}
+
+export function insertBpmnStyles() {
+  insertCSS(
+    'diagram.css',
+    require('bpmn-js/dist/assets/diagram-js.css').default
+  );
+
+  // @barmac: this fails before bpmn-js@9
+  insertCSS(
+    'bpmn-js.css',
+    require('bpmn-js/dist/assets/bpmn-js.css').default
+  );
+
+  insertCSS(
+    'bpmn-font.css',
+    require('bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css').default
+  );
+}
+
+
+
+export function expectSelected(id) {
+  return getBpmnJS().invoke(async function(elementRegistry, selection) {
+    const element = elementRegistry.get(id);
+
+    await act(() => {
+      selection.select(element);
+    });
+
+    return element;
+  });
+}
+
+export function findEntry(id, container) {
+  return domQuery(`[data-entry-id='${ id }']`, container);
+}
+
+export function findInput(type, container) {
+  return domQuery(`input[type='${ type }']`, container);
+}
+
+export function findSelect(container) {
+  return domQuery('select', container);
+}
+
+export function findTextarea(container) {
+  return domQuery('textarea', container);
+}
+

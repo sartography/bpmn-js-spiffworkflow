@@ -18,7 +18,7 @@ export default function(element, moddle, scriptType, label, description) {
 
   return [
     {
-      id: 'pythonScript' + scriptType,
+      id: 'pythonScript_' + scriptType,
       element,
       targetTag: scriptType,
       component: PythonScript,

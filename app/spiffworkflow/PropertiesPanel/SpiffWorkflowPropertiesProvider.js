@@ -1,5 +1,6 @@
 import scriptProps, { SCRIPT_TYPE } from './parts/ScriptProps';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
+import dataObjectProps from './parts/DataObjectProps';
 
 const LOW_PRIORITY = 500;
 
@@ -11,6 +12,10 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
       } else if (isAny(element, [ 'bpmn:Task', 'bpmn:CallActivity', 'bpmn:SubProcess' ])) {
         groups.push(preScriptPostScriptGroup(element, translate, moddle));
       }
+      if (is(element, 'bpmn:DataObjectReference')) {
+        groups.push(createDataObjectGroup(element, translate, moddle));
+      }
+
       return groups;
     };
   };
@@ -58,5 +63,13 @@ function preScriptPostScriptGroup(element, translate, moddle) {
         'Post-Script',
         'code to execute after this task.')
     ]
+  };
+}
+
+function createDataObjectGroup(element, translate, moddle) {
+  return {
+    id: 'data_object_properties',
+    label: translate('Data Object Properties'),
+    entries: dataObjectProps(element, moddle)
   };
 }

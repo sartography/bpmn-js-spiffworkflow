@@ -9,7 +9,6 @@ import FileSaver from 'file-saver'; // For file downloads.
 //  https://github.com/camunda/camunda-bpmn-moddle/blob/master/resources/camunda.json
 const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
-
 const spiffModdleExtension = require('./spiffworkflow/moddle/spiffworkflow.json');
 
 // create modeler
