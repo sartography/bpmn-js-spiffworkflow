@@ -1,4 +1,4 @@
-import {HeaderButton, TextAreaEntry, TextFieldEntry, isTextFieldEntryEdited} from '@bpmn-io/properties-panel';
+import {  SelectEntry, isTextFieldEntryEdited} from '@bpmn-io/properties-panel';
 import {useService} from 'bpmn-js-properties-panel';
 
 /**
@@ -43,33 +43,39 @@ function DataObjectSelector(props) {
   const element = props.element;
   const debounce = useService('debounceInput');
 
-  /**
-   * Returns a list of all the data business objects.
-   * @returns {string|null|*}
-   */
-  const findDataObjects = () => {
-    // Find the parent process of this business object.
-    const businessObject = element.businessObject;
-    const parent = businessObject.parent
-
-  };
-
   const getValue = () => {
-    return ""
+    return element.businessObject.dataObjectRef.id
   }
 
   const setValue = value => {
-    return ""
+    const businessObject = element.businessObject;
+    for (const element of businessObject.$parent.flowElements) {
+      if (element.$type === 'bpmn:DataObject' && element.id === value) {
+        businessObject.dataObjectRef = element;
+      }
+    }
   }
 
+  const getOptions = value => {
+    const businessObject = element.businessObject;
+    const parent = businessObject.$parent;
+    let options = []
+    for (const element of parent.flowElements) {
+      if (element.$type === 'bpmn:DataObject') {
+        options.push({label: element.id, value: element.id})
+      }
+    }
+    return options
+  }
 
-  return <TextAreaEntry
-    id={id}
+  return <SelectEntry
+    id={'selectDataObject'}
     element={element}
-    description={"My Text Area"}
-    label={"Help me!"}
+    description={"Select the Data Object this represents."}
+    label={"Which Data Object does this reference?"}
     getValue={ getValue }
     setValue={ setValue }
+    getOptions={ getOptions }
     debounce={debounce}
   />;
 }

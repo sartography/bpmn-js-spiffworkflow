@@ -1,7 +1,7 @@
 import {
   query as domQuery,
 } from 'min-dom';
-import { act } from '@testing-library/preact';
+import { act, fireEvent } from '@testing-library/preact';
 
 import {
   getBpmnJS,
@@ -9,18 +9,17 @@ import {
 import Modeler from 'bpmn-js/lib/Modeler';
 import TestContainer from 'mocha-test-container-support';
 import { bootstrapBpmnJS, inject, insertCSS } from 'bpmn-js/test/helper';
+import {getBusinessObject} from 'bpmn-js/lib/util/ModelUtil';
 
-export let PROPERTIES_PANEL_CONTAINER;
-export let CONTAINER;
+let PROPERTIES_PANEL_CONTAINER;
 
 export function bootstrapPropertiesPanel(diagram, options, locals) {
   return async function() {
-    CONTAINER = TestContainer.get(this);
+    const container = TestContainer.get(this);
 
     insertBpmnStyles();
     insertCoreStyles();
 
-    options.container = CONTAINER;
     const createModeler = bootstrapBpmnJS(Modeler, diagram, options, locals);
     await act(() => createModeler.call(this));
 
@@ -32,7 +31,7 @@ export function bootstrapPropertiesPanel(diagram, options, locals) {
       PROPERTIES_PANEL_CONTAINER = document.createElement('div');
       PROPERTIES_PANEL_CONTAINER.classList.add('properties-container');
 
-      CONTAINER.appendChild(PROPERTIES_PANEL_CONTAINER);
+      container.appendChild(PROPERTIES_PANEL_CONTAINER);
 
       return act(() => propertiesPanel.attachTo(PROPERTIES_PANEL_CONTAINER));
     });
@@ -89,6 +88,11 @@ export function expectSelected(id) {
   });
 }
 
+export function getPropertiesPanel() {
+  return PROPERTIES_PANEL_CONTAINER;
+}
+
+
 export function findEntry(id, container) {
   return domQuery(`[data-entry-id='${ id }']`, container);
 }
@@ -101,7 +105,16 @@ export function findSelect(container) {
   return domQuery('select', container);
 }
 
-export function findTextarea(container) {
-  return domQuery('textarea', container);
+export function changeInput(input, value) {
+  fireEvent.input(input, { target: { value } });
+}
+
+export function findDataObject(element, id) {
+  const root = getBusinessObject(element).$parent;
+
+  return rootElements.find((rootElement) => {
+    return is(rootElement, 'bpmn:Error')
+      && rootElement.get('id').startsWith(`Error_${ errorRef }`);
+  });
 }
 

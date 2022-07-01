@@ -9,7 +9,7 @@
       <bpmn:outgoing>Flow_1mezzcx</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:endEvent id="Event_14wzv4j">
-      <bpmn:incoming>Flow_0q4oys2</bpmn:incoming>
+      <bpmn:incoming>Flow_0q4oys2</bpmn:incoming>   
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_01jg677" sourceRef="Activity_15zz6ya" targetRef="my_script_task" />
     <bpmn:sequenceFlow id="Flow_1mezzcx" sourceRef="StartEvent_1" targetRef="Activity_15zz6ya" />
@@ -31,10 +31,11 @@
         <bpmn:targetRef>Property_1w1963p</bpmn:targetRef>
       </bpmn:dataInputAssociation>
     </bpmn:scriptTask>
-    <bpmn:dataObjectReference id="my_data_ref_1" name="Data 1" dataObjectRef="DataObject_13tnlgu" />
-    <bpmn:dataObject id="DataObject_13tnlgu" />
-    <bpmn:dataObjectReference id="my_data_ref_2" name="Data 2" dataObjectRef="DataObject_0n982mk" />
-    <bpmn:dataObject id="DataObject_0n982mk" />
+    <bpmn:dataObject id="my_data_object" />
+    <bpmn:dataObject id="my_other_data_object" />
+    <bpmn:dataObject id="my_third_data_object" />
+    <bpmn:dataObjectReference id="my_data_ref_1" name="my_data_object" dataObjectRef="my_data_object" />
+    <bpmn:dataObjectReference id="my_data_ref_2" name="my_data_object" dataObjectRef="my_data_object" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1mzevep">

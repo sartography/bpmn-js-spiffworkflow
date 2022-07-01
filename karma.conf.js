@@ -8,8 +8,6 @@ const {
 } = require('webpack');
 const basePath = '.';
 const absoluteBasePath = path.resolve(path.join(__dirname, basePath));
-const singleStart = process.env.SINGLE_START;
-
 
 module.exports = function(karma) {
   karma.set({
@@ -30,7 +28,7 @@ module.exports = function(karma) {
       'test/spec/**/*Spec.js': [ 'webpack', 'env' ]
     },
 
-    browsers: [ 'Chrome' ],
+    browsers: [ 'ChromeHeadless' ],
 
     browserNoActivityTimeout: 30000,
 

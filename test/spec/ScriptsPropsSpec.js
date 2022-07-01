@@ -1,13 +1,17 @@
 import {
-  bootstrapPropertiesPanel,
+  bootstrapPropertiesPanel, changeInput,
   expectSelected,
   findEntry,
   PROPERTIES_PANEL_CONTAINER
 } from './helpers';
+import {
+  query as domQuery,
+} from 'min-dom';
+
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
-import inputOutput from '../../app/spiffworkflow/InputOutput';
 import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
+import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 
 describe('Properties Panel Script Tasks', function() {
   let xml = require('./diagram.bpmn').default;
@@ -24,15 +28,29 @@ describe('Properties Panel Script Tasks', function() {
     },
   }));
 
-  it('should allow you to add a script to a script task', async function() {
-    // 1. Select the script task 'my_script_task'
+  it('should display a script editing panel when a script task is selected', async function() {
+
+    // IF - you select a script task
     expectSelected('my_script_task');
 
-    // 2. Assure properties panel has a pythonScript
+    // THEN - a properties panel exists with a section for editing that script
     let entry = findEntry('pythonScript_bpmn:script', PROPERTIES_PANEL_CONTAINER);
     expect(entry).to.exist;
-
-    // 3. Assere there is a text input called 'script'
-    // 4. Adding text to that script input updates the script in the bpmn.
+    const scriptInput = domQuery('textarea', entry);
+    expect(scriptInput).to.exist;
   });
+
+  it('should update the bpmn:script tag when you modify the script field', async function() {
+
+    // IF - a script tag is selected, and you change the script in the properties panel
+    const scriptTask = await expectSelected('my_script_task');
+    let entry = findEntry('pythonScript_bpmn:script', PROPERTIES_PANEL_CONTAINER);
+    const scriptInput = domQuery('textarea', entry);
+    changeInput(scriptInput, 'x = 1');
+
+    // THEN - the script tag in the BPMN Business object / XML is updated as well.
+    let businessObject = getBusinessObject(scriptTask);
+    expect(businessObject.get('script')).to.equal('x = 1');
+  });
+
 });
