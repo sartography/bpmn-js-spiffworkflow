@@ -54,12 +54,12 @@ function preScriptPostScriptGroup(element, translate, moddle) {
     entries: [
       ...scriptProps(element,
         moddle,
-        SCRIPT_TYPE.post,
+        SCRIPT_TYPE.pre,
         'Pre-Script',
         'Code to execute prior to this task.'),
       ...scriptProps(element,
         moddle,
-        SCRIPT_TYPE.pre,
+        SCRIPT_TYPE.post,
         'Post-Script',
         'code to execute after this task.')
     ]
