@@ -1,6 +1,6 @@
 import scriptProps, { SCRIPT_TYPE } from './parts/ScriptProps';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import dataObjectProps from './parts/DataObjectProps';
+import dataObjectProps from './parts/DataReferenceProps';
 
 const LOW_PRIORITY = 500;
 

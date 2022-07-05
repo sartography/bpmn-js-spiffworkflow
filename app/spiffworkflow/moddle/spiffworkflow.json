@@ -12,7 +12,7 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "text",
+          "name": "script",
           "isBody": true,
           "type": "String"
         }
@@ -23,7 +23,7 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "text",
+          "name": "script",
           "isBody": true,
           "type": "String"
         }

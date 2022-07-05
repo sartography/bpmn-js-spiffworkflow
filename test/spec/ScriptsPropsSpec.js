@@ -46,11 +46,12 @@ describe('Properties Panel Script Tasks', function() {
     const scriptTask = await expectSelected('my_script_task');
     let entry = findEntry('pythonScript_bpmn:script', PROPERTIES_PANEL_CONTAINER);
     const scriptInput = domQuery('textarea', entry);
-    changeInput(scriptInput, 'x = 1');
+    changeInput(scriptInput, 'x = 100');
 
     // THEN - the script tag in the BPMN Business object / XML is updated as well.
     let businessObject = getBusinessObject(scriptTask);
-    expect(businessObject.get('script')).to.equal('x = 1');
+    expect(businessObject.get('script')).to.equal('x = 100');
+    expect(scriptInput.value).to.equal('x = 100');
   });
 
 });

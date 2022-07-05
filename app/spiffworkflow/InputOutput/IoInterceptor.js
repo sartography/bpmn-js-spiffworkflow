@@ -43,7 +43,6 @@ export default class IoInterceptor extends CommandInterceptor {
         } else {
           collectionAdd(ioSpecification.get('dataOutputs'), dataIO);
         }
-
       }
     });
 

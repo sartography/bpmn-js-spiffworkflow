@@ -69,46 +69,40 @@ function PythonScript(props) {
   const getScriptObject = () => {
     const bizObj = element.businessObject;
     if (type === SCRIPT_TYPE.bpmn) {
-      return bizObj.script || '';
+      return bizObj;
+    }
+    if (!bizObj.extensionElements) {
+      return null;
     } else {
-      if (!bizObj.extensionElements) {
-        return null;
-      } else {
-        return bizObj.extensionElements.values.filter(function(e) {
-          return e.$instanceOf(type);
-        })[0];
-      }
+      return bizObj.extensionElements.values.filter(function(e) {
+        return e.$instanceOf(type);
+      })[0];
     }
   };
 
   const getValue = () => {
-    const script = getScriptObject();
-    if (script) {
-      return (script.text);
+    const scriptObj = getScriptObject()
+    if (scriptObj) {
+      return scriptObj.script;
     } else {
-      return ('');
+      return ""
     }
   };
 
   const setValue = value => {
     const businessObject = element.businessObject;
-    if (type === SCRIPT_TYPE.bpmn) {
-      return modeling.updateProperties(element, {
-        scriptFormat: 'python',
-        script: value
-      });
-    } else {
-      let script = getScriptObject();
-      if (!script) {
-        script = moddle.create(type);
+    let scriptObj = getScriptObject()
+    // Create the script object if needed.
+    if (!scriptObj) {
+      scriptObj = moddle.create(type);
+      if (type !== SCRIPT_TYPE.bpmn) {
         if (!businessObject.extensionElements) {
           businessObject.extensionElements = moddle.create('bpmn:ExtensionElements');
         }
-        businessObject.extensionElements.get('values').push(script);
+        businessObject.extensionElements.get('values').push(scriptObj);
       }
-      script.text = value;
-      return script;
     }
+    scriptObj.script = value;
   };
 
   return <TextAreaEntry
