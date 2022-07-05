@@ -1,6 +1,6 @@
-import scriptProps, { SCRIPT_TYPE } from './parts/ScriptProps';
+import scriptGroup, { SCRIPT_TYPE } from './parts/ScriptGroup';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import dataObjectProps from './parts/DataReferenceProps';
+import dataReferenceGroup from './parts/DataReferenceGroup';
 
 const LOW_PRIORITY = 500;
 
@@ -35,7 +35,7 @@ function createScriptGroup(element, translate, moddle) {
   return {
     id: 'spiff_script',
     label: translate('SpiffWorkflow Properties'),
-    entries: scriptProps(element, moddle, SCRIPT_TYPE.bpmn, 'Script', 'Code to execute.')
+    entries: scriptGroup(element, moddle, SCRIPT_TYPE.bpmn, 'Script', 'Code to execute.')
   };
 }
 
@@ -52,12 +52,12 @@ function preScriptPostScriptGroup(element, translate, moddle) {
     id: 'spiff_pre_post_scripts',
     label: translate('Pre-Script and Post-Script'),
     entries: [
-      ...scriptProps(element,
+      ...scriptGroup(element,
         moddle,
         SCRIPT_TYPE.pre,
         'Pre-Script',
         'Code to execute prior to this task.'),
-      ...scriptProps(element,
+      ...scriptGroup(element,
         moddle,
         SCRIPT_TYPE.post,
         'Post-Script',
@@ -66,10 +66,18 @@ function preScriptPostScriptGroup(element, translate, moddle) {
   };
 }
 
+/**
+ * Create a group on the main panel with a select box (for choosing the Data Object to connect) AND a
+ * full Data Object Array for modifying all the data objects.
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
 function createDataObjectGroup(element, translate, moddle) {
   return {
     id: 'data_object_properties',
     label: translate('Data Object Properties'),
-    entries: dataObjectProps(element, moddle)
+    entries: dataReferenceGroup(element, moddle)
   };
 }

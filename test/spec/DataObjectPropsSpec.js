@@ -1,7 +1,7 @@
 import {
   bootstrapPropertiesPanel, changeInput,
   expectSelected,
-  findEntry, findSelect,
+  findEntry, findGroupEntry, findSelect,
 } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
@@ -45,6 +45,22 @@ describe('Properties Panel Script Tasks', function() {
     expect(selector).to.exist;
     expect(selector.length).to.equal(3);
   });
+
+  it('should allow you to edit the data objects', async function() {
+
+    // IF - a data object reference is selected
+    let my_data_ref_1 = await expectSelected('my_data_ref_1');
+
+    // THEN - an edit Data Objects group section should appear in the properties panel
+    let entry = findGroupEntry('editDataObjects', container);
+    expect(entry).to.exist;
+
+    // And it should contain three items in the group.
+
+
+
+  });
+
 
   it('selecting a data object should change the data model.', async function() {
 

@@ -97,6 +97,10 @@ export function findEntry(id, container) {
   return domQuery(`[data-entry-id='${ id }']`, container);
 }
 
+export function findGroupEntry(id, container) {
+  return domQuery(`[data-group-id='group-${ id }']`, container);
+}
+
 export function findInput(type, container) {
   return domQuery(`input[type='${ type }']`, container);
 }
