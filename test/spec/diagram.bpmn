@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_19o7vxg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
-  <bpmn:process id="Process_1mzevep" isExecutable="true">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_19o7vxg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="ProcessTest" name="Process Test" isExecutable="true">
     <bpmn:ioSpecification>
       <bpmn:dataInput id="num_dogs" name="Number of Dogs" />
       <bpmn:dataOutput id="happy_index" name="Happiness Index" />
@@ -23,6 +23,12 @@
     </bpmn:manualTask>
     <bpmn:sequenceFlow id="Flow_0q4oys2" sourceRef="my_script_task" targetRef="Event_14wzv4j" />
     <bpmn:scriptTask id="my_script_task" name="calculate contentment">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Input_2mpb4l8" />
+          <camunda:inputParameter name="Input_34evvjn" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_01jg677</bpmn:incoming>
       <bpmn:outgoing>Flow_0q4oys2</bpmn:outgoing>
       <bpmn:property id="Property_1w1963p" name="__targetRef_placeholder" />
@@ -39,7 +45,7 @@
     <bpmn:dataObjectReference id="my_data_ref_2" name="my_data_object" dataObjectRef="my_data_object" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1mzevep">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ProcessTest">
       <bpmndi:BPMNEdge id="Flow_0q4oys2_di" bpmnElement="Flow_0q4oys2">
         <di:waypoint x="540" y="197" />
         <di:waypoint x="602" y="197" />

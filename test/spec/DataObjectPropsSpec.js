@@ -9,7 +9,7 @@ import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesP
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import TestContainer from 'mocha-test-container-support';
 
-describe('Properties Panel Script Tasks', function() {
+describe('Properties Panel for Data Objects', function() {
   let xml = require('./diagram.bpmn').default;
   let container;
 
@@ -45,22 +45,6 @@ describe('Properties Panel Script Tasks', function() {
     expect(selector).to.exist;
     expect(selector.length).to.equal(3);
   });
-
-  it('should allow you to edit the data objects', async function() {
-
-    // IF - a data object reference is selected
-    let my_data_ref_1 = await expectSelected('my_data_ref_1');
-
-    // THEN - an edit Data Objects group section should appear in the properties panel
-    let entry = findGroupEntry('editDataObjects', container);
-    expect(entry).to.exist;
-
-    // And it should contain three items in the group.
-
-
-
-  });
-
 
   it('selecting a data object should change the data model.', async function() {
 

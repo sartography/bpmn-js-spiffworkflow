@@ -105,6 +105,10 @@ export function findInput(type, container) {
   return domQuery(`input[type='${ type }']`, container);
 }
 
+export function findButton(id, container) {
+  return domQuery(`button[id='${ id }']`, container);
+}
+
 export function findSelect(container) {
   return domQuery('select', container);
 }
@@ -113,12 +117,26 @@ export function changeInput(input, value) {
   fireEvent.input(input, { target: { value } });
 }
 
-export function findDataObject(element, id) {
-  const root = getBusinessObject(element).$parent;
+export function pressButton(button) {
+  fireEvent.click(button);
+}
 
-  return rootElements.find((rootElement) => {
-    return is(rootElement, 'bpmn:Error')
-      && rootElement.get('id').startsWith(`Error_${ errorRef }`);
-  });
+export function findDataObjects(process) {
+
+  let dataObjects = [];
+  for (const element of process.flowElements) {
+    if (element.$type === 'bpmn:DataObject') {
+      dataObjects.push(element);
+    }
+  }
+  return dataObjects;
+}
+
+export function findDataObject(process, id) {
+  for (const dataObj of findDataObjects(process)) {
+    if (dataObj.id === id) {
+      return dataObj;
+    }
+  }
 }
 
