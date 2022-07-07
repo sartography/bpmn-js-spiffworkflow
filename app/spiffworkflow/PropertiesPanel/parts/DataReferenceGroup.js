@@ -20,8 +20,6 @@ export default function(element, moddle) {
     ...DataObjectArray({ element, moddle })
   };
 
-  console.log('The Data Objects Array is ', dataObjectArray);
-
   if (dataObjectArray.items) {
     groupSections.push(dataObjectArray);
   }

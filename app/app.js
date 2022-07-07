@@ -3,7 +3,8 @@ import diagramXML from '../resources/diagram.bpmn';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import inputOutput from './spiffworkflow/InputOutput';
 import SpiffWorkflowPropertiesProvider from './spiffworkflow/PropertiesPanel';
-import FileSaver from 'file-saver'; // For file downloads.
+import FileSaver from 'file-saver';
+import dataObjectInterceptor from './spiffworkflow/DataObject'; // For file downloads.
 
 // Examples for extending the xml language can be found at
 //  https://github.com/camunda/camunda-bpmn-moddle/blob/master/resources/camunda.json
@@ -19,6 +20,7 @@ const bpmnModeler = new BpmnModeler({
   },
   additionalModules: [
     inputOutput,
+    dataObjectInterceptor,
     SpiffWorkflowPropertiesProvider,
     BpmnPropertiesPanelModule,
     BpmnPropertiesProviderModule,

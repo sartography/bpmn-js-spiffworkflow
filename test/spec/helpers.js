@@ -10,6 +10,7 @@ import Modeler from 'bpmn-js/lib/Modeler';
 import TestContainer from 'mocha-test-container-support';
 import { bootstrapBpmnJS, inject, insertCSS } from 'bpmn-js/test/helper';
 import {getBusinessObject} from 'bpmn-js/lib/util/ModelUtil';
+import {createMoveEvent} from 'diagram-js/lib/features/mouse/Mouse';
 
 let PROPERTIES_PANEL_CONTAINER;
 
@@ -138,5 +139,20 @@ export function findDataObject(process, id) {
       return dataObj;
     }
   }
+}
+
+
+/**
+ * Drags an element from the palette onto the canvas.
+ * @param id
+ */
+export function triggerPaletteEntry(id) {
+  getBpmnJS().invoke(function(palette) {
+    var entry = palette.getEntries()[ id ];
+
+    if (entry && entry.action && entry.action.click) {
+      entry.action.click(createMoveEvent(0, 0));
+    }
+  });
 }
 

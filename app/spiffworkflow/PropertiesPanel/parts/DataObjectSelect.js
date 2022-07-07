@@ -39,7 +39,6 @@ export function DataObjectSelect(props) {
   }
 
   const getOptions = value => {
-    console.log("Hey there (options)!")
     const businessObject = element.businessObject;
     const parent = businessObject.$parent;
     let options = []
@@ -51,7 +50,7 @@ export function DataObjectSelect(props) {
     return options
   }
 
-  const select = <SelectEntry
+  return <SelectEntry
     id={'selectDataObject'}
     element={element}
     description={"Select the Data Object this represents."}
@@ -61,7 +60,5 @@ export function DataObjectSelect(props) {
     getOptions={ getOptions }
     debounce={debounce}
   />;
-  console.log("Returning this:", select)
-  return select
 
 }
