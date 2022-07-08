@@ -19,9 +19,8 @@ import { SelectEntry } from '@bpmn-io/properties-panel';
  * @returns {string|null|*}
  */
 export function DataObjectSelect(props) {
-  const moddle = props.moddle;
-  const id = props.id;
   const element = props.element;
+  const commandStack = props.commandStack;
   const debounce = useService('debounceInput');
 
 
@@ -31,9 +30,22 @@ export function DataObjectSelect(props) {
 
   const setValue = value => {
     const businessObject = element.businessObject;
-    for (const element of businessObject.$parent.flowElements) {
-      if (element.$type === 'bpmn:DataObject' && element.id === value) {
-        businessObject.dataObjectRef = element;
+    for (const flowElem of businessObject.$parent.flowElements) {
+      if (flowElem.$type === 'bpmn:DataObject' && flowElem.id === value) {
+        commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: businessObject,
+          properties: {
+            dataObjectRef: flowElem
+          }
+        });
+        commandStack.execute('element.updateProperties', {
+          element,
+          moddleElement: businessObject,
+          properties: {
+            'name': flowElem.id
+          }
+        });
       }
     }
   }

@@ -1,6 +1,5 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { isTextFieldEntryEdited, TextFieldEntry } from '@bpmn-io/properties-panel';
-import { remove as collectionRemove } from 'diagram-js/lib/util/Collections';
 import { without } from 'min-dash';
 
 /**
@@ -58,7 +57,6 @@ function removeFactory(props) {
     dataObject,
     process,
     commandStack,
-    elementRegistry
   } = props;
 
 
@@ -85,18 +83,9 @@ function findDataObjects(process) {
   return dataObjects;
 }
 
-export function findDataObject(process, id) {
-  for (const dataObj of findDataObjects(process)) {
-    if (dataObj.id == id) {
-      return dataObj;
-    }
-  }
-}
-
 function DataObjectGroup(props) {
   const {
     idPrefix,
-    element,
     dataObject
   } = props;
 
@@ -122,7 +111,6 @@ function DataObjectTextField(props) {
   } = props;
 
   const commandStack = useService('commandStack');
-  const translate = useService('translate');
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
@@ -137,8 +125,6 @@ function DataObjectTextField(props) {
       }
     );
   };
-
-
 
   const getValue = (parameter) => {
     return dataObject.id;

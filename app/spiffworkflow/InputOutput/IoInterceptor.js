@@ -5,7 +5,7 @@ import IdGenerator from 'diagram-js/lib/util/IdGenerator';
 var HIGH_PRIORITY = 1500;
 
 /**
- * This Command Intercetor functions like the BpmnUpdator in BPMN.js - It hooks into events
+ * This Command Interceptor functions like the BpmnUpdator in BPMN.js - It hooks into events
  * from Diagram.js and updates the underlying BPMN model accordingly.
  *
  * This handles the case where a new DataInput or DataOutput is added to

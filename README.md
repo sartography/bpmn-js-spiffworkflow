@@ -39,7 +39,10 @@ import spiffworkflow from 'bpmn-js-spiffworkflow/app/spiffworkflow';
 var bpmnJS = new BpmnModeler({
   additionalModules: [
     spiffworkflow
-  ]
+  ],
+  moddleExtensions: {
+    spiffworkflowModdle: spiffModdleExtension
+  }
 });
 ```
 

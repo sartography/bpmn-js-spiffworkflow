@@ -68,6 +68,7 @@
     "bpmn-js-properties-panel": "^1.1.1",
     "diagram-js": "^8.5.0",
     "inherits": "^2.0.4",
+    "inherits-browser": "^0.0.1",
     "min-dash": "^3.8.1",
     "min-dom": "^3.2.1",
     "moddle": "^5.0.3"

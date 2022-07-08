@@ -49,4 +49,21 @@ describe('DataObject Interceptor', function() {
 
   }));
 
+  it('Creating a new Reference will update the name to match the DataObject', inject(function(canvas, modeling) {
+
+    // IF - a Data Reference Exists
+    let rootShape = canvas.getRootElement();
+    const dataObjectRefShape1 = modeling.createShape({ type: 'bpmn:DataObjectReference' },
+      { x: 220, y: 220 }, rootShape);
+
+    const dataObjects = findDataObjects(rootShape.businessObject);
+    expect(dataObjectRefShape1.businessObject.name).to.equal(dataObjects[0].id);
+  }));
+
+  it('will prevent dragging an existing data reference to a different process', inject(function(canvas, modeling) {
+
+
+  }));
+
+
 });

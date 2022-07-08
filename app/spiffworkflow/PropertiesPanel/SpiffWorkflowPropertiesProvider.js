@@ -1,9 +1,8 @@
 import scriptGroup, { SCRIPT_TYPE } from './parts/ScriptGroup';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import dataReferenceGroup from './parts/DataReferenceGroup';
 import { DataObjectSelect } from './parts/DataObjectSelect';
 import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
-import {DataObjectArray} from './parts/DataObjectArray';
+import { DataObjectArray } from './parts/DataObjectArray';
 const LOW_PRIORITY = 500;
 
 export default function SpiffWorkflowPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
@@ -15,7 +14,7 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
         groups.push(preScriptPostScriptGroup(element, translate, moddle));
       }
       if (is(element, 'bpmn:DataObjectReference')) {
-        groups.push(createDataObjectSelector(element, translate, moddle));
+        groups.push(createDataObjectSelector(element, translate, moddle, commandStack));
       }
       if (is(element, 'bpmn:Process')) {
         groups.push(createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry));
@@ -79,7 +78,7 @@ function preScriptPostScriptGroup(element, translate, moddle) {
  * @param moddle
  * @returns entries
  */
-function createDataObjectSelector(element, translate, moddle) {
+function createDataObjectSelector(element, translate, moddle, commandStack) {
   return {
     id: 'data_object_properties',
     label: translate('Data Object Properties'),
@@ -89,7 +88,8 @@ function createDataObjectSelector(element, translate, moddle) {
         element,
         component: DataObjectSelect,
         isEdited: isTextFieldEntryEdited,
-        moddle: moddle
+        moddle: moddle,
+        commandStack: commandStack,
       }
     ]
   };
