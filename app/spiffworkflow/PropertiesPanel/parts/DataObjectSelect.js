@@ -3,7 +3,7 @@ import { SelectEntry } from '@bpmn-io/properties-panel';
 
 /**
  * Finds the value of the given type within the extensionElements
- * given a type of "spiff:preScript", would find it in this, and retnr
+ * given a type of "spiff:preScript", would find it in this, and return
  * the object.
  *
  *  <bpmn:
