@@ -60,10 +60,6 @@ describe('DataObject Interceptor', function() {
     expect(dataObjectRefShape1.businessObject.name).to.equal(dataObjects[0].id);
   }));
 
-  it('will prevent dragging an existing data reference to a different process', inject(function(canvas, modeling) {
-
-
-  }));
 
 
 });

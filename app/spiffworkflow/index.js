@@ -9,14 +9,14 @@ import RulesModule from 'diagram-js/lib/features/rules';
 export default {
   __depends__: [ RulesModule ],
   __init__: [
-    'SpiffWorkflowPropertiesProvider',
-    'DataObjectInterceptor', 'DataObjectRules',
-    'IoPalette', 'IoRules', 'IoInterceptor' ],
-  SpiffWorkflowPropertiesProvider: [ 'type', SpiffWorkflowPropertiesProvider ],
-  DataObjectInterceptor: [ 'type', DataObjectInterceptor ],
-  DataObjectRules:[ 'type', DataObjectRules ],
-  IoPalette: [ 'type', IoPalette ],
-  IoRules: [ 'type', IoRules ],
-  IoInterceptor: [ 'type', IoInterceptor ],
+    'spiffWorkflowPropertiesProvider',
+    'dataObjectInterceptor', 'dataObjectRules',
+    'ioPalette', 'ioRules', 'ioInterceptor' ],
+  spiffWorkflowPropertiesProvider: [ 'type', SpiffWorkflowPropertiesProvider ],
+  dataObjectInterceptor: [ 'type', DataObjectInterceptor ],
+  dataObjectRules:[ 'type', DataObjectRules ],
+  ioPalette: [ 'type', IoPalette ],
+  ioRules: [ 'type', IoRules ],
+  ioInterceptor: [ 'type', IoInterceptor ],
 };
 

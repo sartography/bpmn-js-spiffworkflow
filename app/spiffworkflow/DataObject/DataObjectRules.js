@@ -37,4 +37,4 @@ function canDrop(elements, target) {
   }
 }
 
-IoRules.prototype.canDrop = canDrop;
+DataObjectRules.prototype.canDrop = canDrop;
