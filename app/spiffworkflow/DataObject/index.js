@@ -7,8 +7,8 @@ export default {
   __depends__: [
     RulesModule
   ],
-  __init__: [ 'DataInterceptor' ],
-  DataInterceptor: [ 'type', DataObjectInterceptor ],
-  DataObjectRules:[ 'type', DataObjectRules ]
+  __init__: [ 'dataInterceptor', 'dataObjectRules' ],
+  dataInterceptor: [ 'type', DataObjectInterceptor ],
+  dataObjectRules: [ 'type', DataObjectRules ]
 };
 

@@ -3,8 +3,7 @@ import {
 } from 'min-dom';
 import {
   bootstrapPropertiesPanel, changeInput,
-  expectSelected, findDataObject, findDataObjects,
-  findEntry, findGroupEntry, findInput
+  expectSelected, findEntry, findGroupEntry, findInput
 } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
@@ -12,6 +11,7 @@ import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesP
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import TestContainer from 'mocha-test-container-support';
 import { fireEvent } from '@testing-library/preact';
+import { findDataObject, findDataObjects } from '../../app/spiffworkflow/DataObject/DataObjectHelpers';
 
 describe('Properties Panel for a Process', function() {
   let xml = require('./bpmn/diagram.bpmn').default;
@@ -67,8 +67,8 @@ describe('Properties Panel for a Process', function() {
     const process_svg = await expectSelected('ProcessTest');
     const data_id = 'my_data_object';
     let dataObject = findDataObject(process_svg.businessObject, data_id);
-    expect(dataObject.id).to.exist;
-    let myDataObjEntry = findEntry('ProcessTest-dataObj-my_data_object');
+    expect(dataObject).to.exist;
+    let myDataObjEntry = findEntry('ProcessTest-dataObj-2');
     let deleteButton = domQuery('.bio-properties-panel-remove-entry', myDataObjEntry);
     fireEvent.click(deleteButton);
 

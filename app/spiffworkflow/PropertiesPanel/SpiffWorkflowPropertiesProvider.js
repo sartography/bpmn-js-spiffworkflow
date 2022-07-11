@@ -1,4 +1,4 @@
-import scriptGroup, { SCRIPT_TYPE } from './parts/ScriptGroup';
+import scriptGroup, { SCRIPT_TYPE } from './parts/SpiffScriptGroup';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { DataObjectSelect } from './parts/DataObjectSelect';
 import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
@@ -42,7 +42,7 @@ SpiffWorkflowPropertiesProvider.$inject = [ 'propertiesPanel', 'translate', 'mod
 function createScriptGroup(element, translate, moddle, commandStack) {
   return {
     id: 'spiff_script',
-    label: translate('SpiffWorkflow Properties'),
+    label: translate('Script'),
     entries: scriptGroup(element, moddle, SCRIPT_TYPE.bpmn, 'Script', 'Code to execute.')
   };
 }
@@ -58,13 +58,13 @@ function createScriptGroup(element, translate, moddle, commandStack) {
 function preScriptPostScriptGroup(element, translate, moddle) {
   return {
     id: 'spiff_pre_post_scripts',
-    label: translate('Pre-Script and Post-Script'),
+    label: translate('SpiffWorkflow Scripts'),
     entries: [
       ...scriptGroup(element,
         moddle,
         SCRIPT_TYPE.pre,
         'Pre-Script',
-        'Code to execute prior to this task.'),
+        'code to execute prior to this task.'),
       ...scriptGroup(element,
         moddle,
         SCRIPT_TYPE.post,

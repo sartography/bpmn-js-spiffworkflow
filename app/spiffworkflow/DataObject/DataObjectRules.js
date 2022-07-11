@@ -32,7 +32,9 @@ function canDrop(elements, target) {
     if (is(element, 'bpmn:DataObjectReference') && element.parent && target) {
       return target === element.parent;
     }
+
+    // Intentionally returning null here to allow other rules to fire.
   }
 }
 
-IoRules.prototype.canDrop = canDrop;
+DataObjectRules.prototype.canDrop = canDrop;

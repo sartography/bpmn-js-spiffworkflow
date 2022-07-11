@@ -1,5 +1,5 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
-import diagramXML from '../resources/diagram.bpmn';
+import diagramXML from '../test/spec/diagram.bpmn';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import FileSaver from 'file-saver';
 import spiffworkflow from './spiffworkflow';
