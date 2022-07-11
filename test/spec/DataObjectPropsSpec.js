@@ -1,13 +1,15 @@
 import {
   bootstrapPropertiesPanel, changeInput,
   expectSelected,
-  findEntry, findGroupEntry, findSelect,
+  findEntry, findGroupEntry, findInput, findSelect,
 } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
+import { inject } from 'bpmn-js/test/helper';
 
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import TestContainer from 'mocha-test-container-support';
+import { findDataObjects } from '../../app/spiffworkflow/DataObject/DataObjectHelpers';
 
 describe('Properties Panel for Data Objects', function() {
   let xml = require('./bpmn/diagram.bpmn').default;
@@ -46,7 +48,8 @@ describe('Properties Panel for Data Objects', function() {
     expect(selector.length).to.equal(3);
   });
 
-  it('selecting a data object should change the data model.', async function() {
+
+  it('selecting a different data object should change the data model.', async function() {
 
     // IF - a data object reference is selected
     let my_data_ref_1 = await expectSelected('my_data_ref_1');
@@ -62,5 +65,17 @@ describe('Properties Panel for Data Objects', function() {
     expect(businessObject.get('dataObjectRef').id).to.equal('my_third_data_object');
   });
 
+  it('renaming a data object, changes to the label of references', async function() {
+
+    // IF - a process is selected, and the name of a data object is changed.
+    let entry = findEntry('ProcessTest-dataObj-2-id', container);
+    let textInput = findInput('text', entry);
+    changeInput(textInput, 'my_nifty_new_name');
+    let my_data_ref_1 = await expectSelected('my_data_ref_1');
+
+    // THEN - both the data object itself, and the label of any references are updated.
+    expect(my_data_ref_1.businessObject.dataObjectRef.id).to.equal('my_nifty_new_name');
+    expect(my_data_ref_1.businessObject.name).to.equal('my_nifty_new_name');
+  });
 
 });

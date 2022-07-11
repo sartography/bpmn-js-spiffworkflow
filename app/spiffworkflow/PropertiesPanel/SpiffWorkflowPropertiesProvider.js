@@ -3,7 +3,7 @@ import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { DataObjectSelect } from './parts/DataObjectSelect';
 import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { DataObjectArray } from './parts/DataObjectArray';
-import {SpiffExtensionTextInput} from './parts/SpiffExtensionTextInput';
+import { SpiffExtensionTextInput } from './parts/SpiffExtensionTextInput';
 const LOW_PRIORITY = 500;
 
 export default function SpiffWorkflowPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
@@ -17,7 +17,7 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
       if (is(element, 'bpmn:DataObjectReference')) {
         groups.push(createDataObjectSelector(element, translate, moddle, commandStack));
       }
-      if (is(element, 'bpmn:Process')) {
+      if (isAny(element, [ 'bpmn:Process', 'bpmn:SubProcess' ])) {
         groups.push(createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry));
       }
       if (is(element, 'bpmn:UserTask')) {
