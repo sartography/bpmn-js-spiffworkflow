@@ -1,15 +1,12 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
-import diagramXML from '../resources/diagram.bpmn';
+import diagramXML from '../test/spec/diagram.bpmn';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
-import inputOutput from './spiffworkflow/InputOutput';
-import SpiffWorkflowPropertiesProvider from './spiffworkflow/PropertiesPanel';
-import FileSaver from 'file-saver'; // For file downloads.
+import FileSaver from 'file-saver';
+import spiffworkflow from './spiffworkflow';
 
-// Examples for extending the xml language can be found at
-//  https://github.com/camunda/camunda-bpmn-moddle/blob/master/resources/camunda.json
-import SpiffModdleProvider from './spiffworkflow/PropertiesPanel/descriptors/spiffworkflow';
 const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
+const spiffModdleExtension = require('./spiffworkflow/moddle/spiffworkflow.json');
 
 // create modeler
 const bpmnModeler = new BpmnModeler({
@@ -18,13 +15,12 @@ const bpmnModeler = new BpmnModeler({
     parent: panelEl
   },
   additionalModules: [
-    inputOutput,
-    SpiffWorkflowPropertiesProvider,
+    spiffworkflow,
     BpmnPropertiesPanelModule,
     BpmnPropertiesProviderModule,
   ],
   moddleExtensions: {
-    spiffworkflow: SpiffModdleProvider
+    spiffworkflowModdle: spiffModdleExtension
   }
 });
 
