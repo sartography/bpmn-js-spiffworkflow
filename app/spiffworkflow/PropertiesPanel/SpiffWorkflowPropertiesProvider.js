@@ -130,7 +130,7 @@ function createDataObjectEditor(element, translate, moddle, commandStack, elemen
 function createUserGroup(element, translate, moddle, commandStack) {
   return {
     id: 'user_task_properties',
-    label: translate('Web Form'),
+    label: translate('SpiffWorkflow Web Form'),
     entries: [
       {
         element: element,
