@@ -14,7 +14,7 @@ import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 
 describe('Properties Panel Script Tasks', function() {
-  let xml = require('./diagram.bpmn').default;
+  let xml = require('./bpmn/diagram.bpmn').default;
 
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,

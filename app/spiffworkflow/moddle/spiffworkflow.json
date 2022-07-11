@@ -1,6 +1,6 @@
 {
   "name": "SpiffWorkflow",
-  "uri": "http://sartography/spiffworkflow",
+  "uri": "http://spiffworkflow.org/bpmn/schema/1.0/core",
   "prefix": "spiffworkflow",
   "xml": {
     "tagAlias": "lowerCase"
@@ -28,7 +28,24 @@
           "type": "String"
         }
       ]
+    },
+    {
+      "name": "property",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "value",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
     }
+
   ]
 }
 

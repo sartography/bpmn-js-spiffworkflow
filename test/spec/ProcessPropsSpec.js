@@ -14,7 +14,7 @@ import TestContainer from 'mocha-test-container-support';
 import { fireEvent } from '@testing-library/preact';
 
 describe('Properties Panel for a Process', function() {
-  let xml = require('./diagram.bpmn').default;
+  let xml = require('./bpmn/diagram.bpmn').default;
   let container;
 
   beforeEach(function() {

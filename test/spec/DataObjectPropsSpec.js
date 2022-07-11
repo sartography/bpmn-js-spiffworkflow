@@ -10,7 +10,7 @@ import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.j
 import TestContainer from 'mocha-test-container-support';
 
 describe('Properties Panel for Data Objects', function() {
-  let xml = require('./diagram.bpmn').default;
+  let xml = require('./bpmn/diagram.bpmn').default;
   let container;
 
   beforeEach(function() {

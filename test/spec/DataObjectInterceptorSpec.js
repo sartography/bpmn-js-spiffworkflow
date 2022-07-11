@@ -7,7 +7,7 @@ import {
 
 describe('DataObject Interceptor', function() {
 
-  let xml = require('./empty_diagram.bpmn').default;
+  let xml = require('./bpmn/empty_diagram.bpmn').default;
 
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,
