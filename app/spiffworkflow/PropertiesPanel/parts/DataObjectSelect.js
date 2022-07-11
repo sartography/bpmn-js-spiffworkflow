@@ -9,9 +9,9 @@ import { SelectEntry } from '@bpmn-io/properties-panel';
  *  <bpmn:
  <bpmn:userTask id="123" name="My User Task!">
  <bpmn:extensionElements>
- <spiff:preScript>
+ <spiffworkflow:preScript>
  me = "100% awesome"
- </spiff:preScript>
+ </spiffworkflow:preScript>
  </bpmn:extensionElements>
  ...
  </bpmn:userTask>

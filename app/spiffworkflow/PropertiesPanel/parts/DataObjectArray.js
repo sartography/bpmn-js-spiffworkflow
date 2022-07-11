@@ -10,7 +10,7 @@ import { without } from 'min-dash';
 export function DataObjectArray(props) {
   const moddle = props.moddle;
   const element = props.element;
-  const process = props.element.businessObject;
+  const process = props.element.businessObject; // The BusinessObject in this case must be a BPMN:Process
   const commandStack = props.commandStack;
   const elementRegistry = props.elementRegistry;
 
@@ -35,10 +35,10 @@ export function DataObjectArray(props) {
 
   function add(event) {
     event.stopPropagation();
-    let newDo = moddle.create('bpmn:DataObject');
+    let newDataObject = moddle.create('bpmn:DataObject');
     let newElements = process.get('flowElements');
-    newDo.id = moddle.ids.nextPrefixed('DataObject_');
-    newElements.push(newDo);
+    newDataObject.id = moddle.ids.nextPrefixed('DataObject_');
+    newElements.push(newDataObject);
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: process,
