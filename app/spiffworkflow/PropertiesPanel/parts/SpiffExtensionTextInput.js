@@ -1,6 +1,5 @@
 import {useService } from 'bpmn-js-properties-panel';
-import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
-import {SCRIPT_TYPE} from './ScriptGroup';
+import { TextFieldEntry } from '@bpmn-io/properties-panel';
 
 const SPIFF_PROP = "spiffworkflow:property"
 

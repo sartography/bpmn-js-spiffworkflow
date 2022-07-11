@@ -5,7 +5,7 @@ import { inject } from 'bpmn-js/test/helper';
 
 describe('BPMN Input / Output', function() {
 
-  let xml = require('./subprocess.bpmn').default;
+  let xml = require('./bpmn/subprocess.bpmn').default;
 
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,
