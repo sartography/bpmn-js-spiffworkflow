@@ -47,10 +47,10 @@ describe('Properties Panel for User Tasks', function() {
 
   it('should allow you to edit a web form property.', async function() {
 
-    // IF - you select a user task and change the JSONSchema text field
+    // IF - you select a user task and change the formJsonSchemaFilename text field
     const userTask = await expectSelected('my_user_task');
     let group = findGroupEntry('user_task_properties', container);
-    let entry = findEntry('extension_JSONSchema', group);
+    let entry = findEntry('extension_formJsonSchemaFilename', group);
     let input = findInput('text', entry);
     expect(input).to.exist;
     changeInput(input, 'my_filename.json');
@@ -60,7 +60,7 @@ describe('Properties Panel for User Tasks', function() {
     expect(businessObject.extensionElements).to.exist;
     let property = businessObject.extensionElements.values[1];
     expect(property.value).to.equal('my_filename.json');
-    expect(property.name).to.equal('JSONSchema');
+    expect(property.name).to.equal('formJsonSchemaFilename');
   });
 
 
