@@ -27,6 +27,17 @@
       ]
     },
     {
+      "name": "calledDecision",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "decisionId",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
       "name": "property",
       "superClass": [ "Element" ],
       "properties": [
