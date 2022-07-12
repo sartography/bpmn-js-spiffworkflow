@@ -1,7 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { isTextFieldEntryEdited, TextFieldEntry } from '@bpmn-io/properties-panel';
 import { without } from 'min-dash';
-import { findDataObjects } from '../../DataObject/DataObjectHelpers';
+import {findDataObjects, findDataReferences} from '../../DataObject/DataObjectHelpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -104,7 +104,7 @@ function DataObjectTextField(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    return commandStack.execute(
+    commandStack.execute(
       'element.updateModdleProperties',
       {
         element,
@@ -114,6 +114,19 @@ function DataObjectTextField(props) {
         }
       }
     );
+
+    // Also update the label of all the references
+    let references = findDataReferences(element, dataObject.id);
+    for (const ref of references) {
+      commandStack.execute('element.updateProperties', {
+        element: ref,
+        moddleElement: ref.businessObject,
+        properties: {
+          'name': value
+        },
+        changed:[ ref ] // everything is already marked as changed, don't recalculate.
+      });
+    }
   };
 
   const getValue = (parameter) => {

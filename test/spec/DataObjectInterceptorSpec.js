@@ -61,6 +61,20 @@ describe('DataObject Interceptor', function() {
     expect(dataObjectRefShape1.businessObject.name).to.equal(dataObjects[0].id);
   }));
 
+  it('should allow you to add a data object to a subprocess', inject(function(canvas, modeling, elementRegistry) {
 
+    // IF - A data object reference is added to a sup-process
+    let subProcessShape = elementRegistry.get('my_subprocess');
+    let subProcess = subProcessShape.businessObject;
+    let dataObjects = findDataObjects(subProcess);
+    expect(dataObjects.length).to.equal(0);
+
+    const dataObjectRefShape = modeling.createShape({ type: 'bpmn:DataObjectReference' },
+      { x: 220, y: 220 }, subProcessShape);
+
+    // THEN - a new data object is visible in that SubProcess
+    dataObjects = findDataObjects(subProcess);
+    expect(dataObjects.length).to.equal(1);
+  }));
 
 });
