@@ -1,6 +1,6 @@
 {
   "name": "bpmn-js-spiffworkflow",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Extensions and modifications of BPMN.js to improve BPMN development for SpiffWorkflow",
   "scripts": {
     "all": "run-s lint test build",
