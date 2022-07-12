@@ -1,6 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { isTextFieldEntryEdited, TextFieldEntry } from '@bpmn-io/properties-panel';
 import { without } from 'min-dash';
+import { findDataObjects } from '../../DataObject/DataObjectHelpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -70,17 +71,6 @@ function removeFactory(props) {
       }
     });
   };
-}
-
-
-function findDataObjects(process) {
-  let dataObjects = [];
-  for (const element of process.flowElements) {
-    if (element.$type === 'bpmn:DataObject') {
-      dataObjects.push(element);
-    }
-  }
-  return dataObjects;
 }
 
 function DataObjectGroup(props) {

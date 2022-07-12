@@ -8,7 +8,7 @@ import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js
 
 describe('BPMN Input / Output', function() {
 
-  let xml = require('./diagram.bpmn').default;
+  let xml = require('./bpmn/diagram.bpmn').default;
 
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,

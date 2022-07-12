@@ -28,7 +28,24 @@
           "type": "String"
         }
       ]
+    },
+    {
+      "name": "property",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "value",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
     }
+
   ]
 }
 

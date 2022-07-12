@@ -9,7 +9,7 @@
       <bpmn:outgoing>Flow_1mezzcx</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:endEvent id="Event_14wzv4j">
-      <bpmn:incoming>Flow_0q4oys2</bpmn:incoming>
+      <bpmn:incoming>Flow_132laxn</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_01jg677" sourceRef="Activity_15zz6ya" targetRef="my_script_task" />
     <bpmn:sequenceFlow id="Flow_1mezzcx" sourceRef="StartEvent_1" targetRef="Activity_15zz6ya" />
@@ -21,7 +21,7 @@
       </bpmn:dataOutputAssociation>
       <bpmn:standardLoopCharacteristics />
     </bpmn:manualTask>
-    <bpmn:sequenceFlow id="Flow_0q4oys2" sourceRef="my_script_task" targetRef="Event_14wzv4j" />
+    <bpmn:sequenceFlow id="Flow_0q4oys2" sourceRef="my_script_task" targetRef="Activity_1ph5x7y" />
     <bpmn:scriptTask id="my_script_task" name="calculate contentment">
       <bpmn:extensionElements>
         <camunda:inputOutput>
@@ -49,18 +49,23 @@
       </bpmn:extensionElements>
     </bpmn:dataObjectReference>
     <bpmn:dataObject id="my_data_object" />
+    <bpmn:sequenceFlow id="Flow_132laxn" sourceRef="Activity_1ph5x7y" targetRef="Event_14wzv4j" />
+    <bpmn:userTask id="Activity_1ph5x7y" name="confirm contentment">
+      <bpmn:incoming>Flow_0q4oys2</bpmn:incoming>
+      <bpmn:outgoing>Flow_132laxn</bpmn:outgoing>
+    </bpmn:userTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ProcessTest">
       <bpmndi:BPMNShape id="dataInput_2" bpmnElement="happy_index">
-        <dc:Bounds x="632" y="85" width="36" height="50" />
+        <dc:Bounds x="762" y="85" width="36" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="608" y="142" width="83" height="14" />
+          <dc:Bounds x="738" y="142" width="83" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0q4oys2_di" bpmnElement="Flow_0q4oys2">
         <di:waypoint x="540" y="197" />
-        <di:waypoint x="632" y="197" />
+        <di:waypoint x="590" y="197" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1mezzcx_di" bpmnElement="Flow_1mezzcx">
         <di:waypoint x="215" y="197" />
@@ -69,6 +74,10 @@
       <bpmndi:BPMNEdge id="Flow_01jg677_di" bpmnElement="Flow_01jg677">
         <di:waypoint x="380" y="197" />
         <di:waypoint x="440" y="197" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_132laxn_di" bpmnElement="Flow_132laxn">
+        <di:waypoint x="690" y="197" />
+        <di:waypoint x="732" y="197" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="179" width="36" height="36" />
@@ -92,14 +101,18 @@
           <dc:Bounds x="158" y="135" width="81" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_14wzv4j_di" bpmnElement="Event_14wzv4j">
-        <dc:Bounds x="632" y="179" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataObjectReference_08bm72g_di" bpmnElement="my_data_ref_2">
         <dc:Bounds x="472" y="275" width="36" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="451" y="332" width="78" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14wzv4j_di" bpmnElement="Event_14wzv4j">
+        <dc:Bounds x="732" y="179" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gk19al_di" bpmnElement="Activity_1ph5x7y">
+        <dc:Bounds x="590" y="157" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataOutputAssociation_1uj5jzs_di" bpmnElement="DataOutputAssociation_1uj5jzs">
         <di:waypoint x="329" y="237" />

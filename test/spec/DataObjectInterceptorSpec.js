@@ -1,13 +1,14 @@
-import { bootstrapPropertiesPanel, findDataObjects } from './helpers';
+import { bootstrapPropertiesPanel } from './helpers';
 import dataObjectInterceptor from '../../app/spiffworkflow/DataObject';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import {
   inject,
 } from 'bpmn-js/test/helper';
+import { findDataObjects } from '../../app/spiffworkflow/DataObject/DataObjectHelpers';
 
 describe('DataObject Interceptor', function() {
 
-  let xml = require('./empty_diagram.bpmn').default;
+  let xml = require('./bpmn/empty_diagram.bpmn').default;
 
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,

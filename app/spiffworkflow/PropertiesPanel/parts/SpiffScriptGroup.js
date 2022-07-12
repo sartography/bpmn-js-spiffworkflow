@@ -45,7 +45,6 @@ function PythonScript(props) {
   const label = props.label;
   const description = props.description;
 
-  const modeling = useService('modeling');
   const translate = useService('translate');
   const debounce = useService('debounceInput');
 

@@ -1,5 +1,6 @@
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
+import { findDataObjects } from './DataObjectHelpers';
 var HIGH_PRIORITY = 1500;
 
 /**
@@ -56,13 +57,3 @@ export default class DataObjectInterceptor extends CommandInterceptor {
 }
 
 DataObjectInterceptor.$inject = [ 'eventBus', 'bpmnFactory', 'bpmnUpdater' ];
-
-function findDataObjects(process) {
-  let dataObjects = [];
-  for (const element of process.flowElements) {
-    if (element.$type === 'bpmn:DataObject') {
-      dataObjects.push(element);
-    }
-  }
-  return dataObjects;
-}

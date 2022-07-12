@@ -3,6 +3,7 @@ import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { DataObjectSelect } from './parts/DataObjectSelect';
 import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { DataObjectArray } from './parts/DataObjectArray';
+import {SpiffExtensionTextInput} from './parts/SpiffExtensionTextInput';
 const LOW_PRIORITY = 500;
 
 export default function SpiffWorkflowPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
@@ -19,7 +20,9 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
       if (is(element, 'bpmn:Process')) {
         groups.push(createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry));
       }
-
+      if (is(element, 'bpmn:UserTask')) {
+        groups.push(createUserGroup(element, translate, moddle, commandStack));
+      }
 
       return groups;
     };
@@ -115,4 +118,36 @@ function createDataObjectEditor(element, translate, moddle, commandStack, elemen
   if (dataObjectArray.items) {
     return dataObjectArray;
   }
+}
+
+/**
+ * Create a group on the main panel with a select box (for choosing the Data Object to connect)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
+function createUserGroup(element, translate, moddle, commandStack) {
+  return {
+    id: 'user_task_properties',
+    label: translate('SpiffWorkflow Web Form'),
+    entries: [
+      {
+        element: element,
+        moddle: moddle,
+        commandStack: commandStack,
+        component: SpiffExtensionTextInput,
+        label: translate('JSON Schema Filename'),
+        description: translate('RJSF Json Data Structure Filename'),
+        name: 'formJsonSchemaFilename' },
+      {
+        element: element,
+        moddle: moddle,
+        commandStack: commandStack,
+        component: SpiffExtensionTextInput,
+        label: translate('UI Schema Filename'),
+        description: translate('RJSF User Interface Filename'),
+        name: 'formUiSchemaFilename' }
+    ]
+  };
 }
