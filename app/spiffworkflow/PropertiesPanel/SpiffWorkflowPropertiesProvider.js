@@ -137,17 +137,17 @@ function createUserGroup(element, translate, moddle, commandStack) {
         moddle: moddle,
         commandStack: commandStack,
         component: SpiffExtensionTextInput,
-        label: translate('JSON Schema File'),
-        description: translate('RSJF Json Data Structure File Name'),
-        name: 'JSONSchema' },
+        label: translate('JSON Schema Filename'),
+        description: translate('RJSF Json Data Structure Filename'),
+        name: 'formJsonSchemaFilename' },
       {
         element: element,
         moddle: moddle,
         commandStack: commandStack,
         component: SpiffExtensionTextInput,
-        label: translate('UI Schema File'),
-        description: translate('RSJF User Interface File Name'),
-        name: 'UISchema' }
+        label: translate('UI Schema Filename'),
+        description: translate('RJSF User Interface Filename'),
+        name: 'formUiSchemaFilename' }
     ]
   };
 }

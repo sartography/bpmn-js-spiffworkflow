@@ -11,8 +11,8 @@ const SPIFF_PROP = "spiffworkflow:property"
  *
        <bpmn:extensionElements>
            <spiffworkflow:properties>
-               <spiffworkflow:property name="JSONSchema" value="data.json" />
-               <spiffworkflow:property name="UISchema" value="ui.json" />
+               <spiffworkflow:property name="formJsonSchemaFilename" value="json_schema.json" />
+               <spiffworkflow:property name="formUiSchemaFilename" value="ui_schema.json" />
            </spiffworkflow:properties>
        </bpmn:extensionElements>
  *
