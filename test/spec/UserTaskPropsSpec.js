@@ -48,7 +48,7 @@ describe.only('Properties Panel for User Tasks', function() {
   }
 
   it('should display a panel for setting the web form properties', async function() {
-    preparePropertiesPanelWithXml(user_form_xml);
+    // preparePropertiesPanelWithXml(user_form_xml);
 
     // IF - you select a user task
     const userTask = await expectSelected('my_user_task');
