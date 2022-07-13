@@ -73,7 +73,7 @@ function PythonScript(props) {
     if (!bizObj.extensionElements) {
       return null;
     } else {
-      return bizObj.extensionElements.values.filter(function(e) {
+      return bizObj.extensionElements.get("values").filter(function(e) {
         return e.$instanceOf(type);
       })[0];
     }

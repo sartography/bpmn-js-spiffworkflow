@@ -4,6 +4,7 @@ import { DataObjectSelect } from './parts/DataObjectSelect';
 import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { DataObjectArray } from './parts/DataObjectArray';
 import { SpiffExtensionTextInput } from './parts/SpiffExtensionTextInput';
+import { SpiffExtensionCalledDecision } from './parts/SpiffExtensionCalledDecision';
 const LOW_PRIORITY = 500;
 
 export default function SpiffWorkflowPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
@@ -22,6 +23,9 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
       }
       if (is(element, 'bpmn:UserTask')) {
         groups.push(createUserGroup(element, translate, moddle, commandStack));
+      }
+      if (is(element, 'bpmn:BusinessRuleTask')) {
+        groups.push(createBusinessRuleGroup(element, translate, moddle, commandStack));
       }
 
       return groups;
@@ -148,6 +152,30 @@ function createUserGroup(element, translate, moddle, commandStack) {
         label: translate('UI Schema Filename'),
         description: translate('RJSF User Interface Filename'),
         name: 'formUiSchemaFilename' }
+    ]
+  };
+}
+
+/**
+ * Create a group on the main panel with a text box (for choosing the dmn to connect)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
+function createBusinessRuleGroup(element, translate, moddle, commandStack) {
+  return {
+    id: 'business_rule_properties',
+    label: translate('Business Rule Properties'),
+    entries: [
+      {
+        element: element,
+        moddle: moddle,
+        commandStack: commandStack,
+        component: SpiffExtensionCalledDecision,
+        label: translate('Decision Id'),
+        description: translate('Id of the decision'),
+      }
     ]
   };
 }
