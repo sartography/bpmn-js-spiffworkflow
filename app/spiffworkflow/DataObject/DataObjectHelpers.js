@@ -1,5 +1,3 @@
-import { is } from 'bpmn-js/lib/util/ModelUtil';
-
 /**
  * Returns the moddelElement if it is a process, otherwise, returns the
  *

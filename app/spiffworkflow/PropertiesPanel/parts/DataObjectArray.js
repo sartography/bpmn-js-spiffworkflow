@@ -77,6 +77,18 @@ function removeFactory(props) {
         flowElements: without(process.get('flowElements'), dataObject)
       }
     });
+    // Also update the label of all the references
+    let references = findDataReferenceShapes(element, dataObject.id);
+    for (const ref of references) {
+      commandStack.execute('element.updateProperties', {
+        element: ref,
+        moddleElement: ref.businessObject,
+        properties: {
+          'name': '???'
+        },
+        changed:[ ref ] // everything is already marked as changed, don't recalculate.
+      });
+    }
   };
 }
 
