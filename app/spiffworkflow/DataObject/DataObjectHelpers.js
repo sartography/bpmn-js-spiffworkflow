@@ -2,6 +2,9 @@
 export function findDataObjects(process) {
 
   let dataObjects = [];
+  if (! process.flowElements) {
+    return dataObjects;
+  }
   for (const element of process.flowElements) {
     if (element.$type === 'bpmn:DataObject') {
       dataObjects.push(element);
