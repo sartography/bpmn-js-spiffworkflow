@@ -18,7 +18,7 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
       if (is(element, 'bpmn:DataObjectReference')) {
         groups.push(createDataObjectSelector(element, translate, moddle, commandStack));
       }
-      if (isAny(element, [ 'bpmn:Process', 'bpmn:SubProcess' ])) {
+      if (isAny(element, [ 'bpmn:Process', 'bpmn:SubProcess', 'bpmn:Participant' ])) {
         groups.push(createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry));
       }
       if (is(element, 'bpmn:UserTask')) {
