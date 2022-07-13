@@ -16,7 +16,10 @@ let PROPERTIES_PANEL_CONTAINER;
 
 export function bootstrapPropertiesPanel(diagram, options, locals) {
   return async function() {
-    const container = TestContainer.get(this);
+    let container = options.container;
+    if (!container) {
+      container = TestContainer.get(this);
+    }
 
     insertBpmnStyles();
     insertCoreStyles();
