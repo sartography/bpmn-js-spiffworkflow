@@ -1,7 +1,8 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { isTextFieldEntryEdited, TextFieldEntry } from '@bpmn-io/properties-panel';
 import { without } from 'min-dash';
-import {findDataObjects, findDataReferences} from '../../DataObject/DataObjectHelpers';
+import { findDataObjects, findDataReferenceShapes } from '../../DataObject/DataObjectHelpers';
+import { is } from 'bpmn-js/lib/util/ModelUtil';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -11,10 +12,16 @@ import {findDataObjects, findDataReferences} from '../../DataObject/DataObjectHe
 export function DataObjectArray(props) {
   const moddle = props.moddle;
   const element = props.element;
-  const process = props.element.businessObject; // The BusinessObject in this case must be a BPMN:Process
   const commandStack = props.commandStack;
   const elementRegistry = props.elementRegistry;
+  let process;
 
+  // This element might be a process, or something that will reference a process.
+  if (is(element.businessObject, 'bpmn:Process')) {
+    process = element.businessObject;
+  } else if (element.businessObject.processRef) {
+    process = element.businessObject.processRef;
+  }
 
   let dataObjects = findDataObjects(process);
   const items = dataObjects.map((dataObject, index) => {
@@ -70,6 +77,18 @@ function removeFactory(props) {
         flowElements: without(process.get('flowElements'), dataObject)
       }
     });
+    // Also update the label of all the references
+    let references = findDataReferenceShapes(element, dataObject.id);
+    for (const ref of references) {
+      commandStack.execute('element.updateProperties', {
+        element: ref,
+        moddleElement: ref.businessObject,
+        properties: {
+          'name': '???'
+        },
+        changed:[ ref ] // everything is already marked as changed, don't recalculate.
+      });
+    }
   };
 }
 
@@ -116,7 +135,7 @@ function DataObjectTextField(props) {
     );
 
     // Also update the label of all the references
-    let references = findDataReferences(element, dataObject.id);
+    let references = findDataReferenceShapes(element, dataObject.id);
     for (const ref of references) {
       commandStack.execute('element.updateProperties', {
         element: ref,

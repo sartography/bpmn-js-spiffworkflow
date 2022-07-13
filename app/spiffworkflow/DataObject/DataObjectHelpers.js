@@ -1,8 +1,13 @@
+/**
+ * Returns the moddelElement if it is a process, otherwise, returns the
+ *
+ * @param container
+ */
+
 
 export function findDataObjects(process) {
-
   let dataObjects = [];
-  if (! process.flowElements) {
+  if (!process || !process.flowElements) {
     return dataObjects;
   }
   for (const element of process.flowElements) {
@@ -21,11 +26,13 @@ export function findDataObject(process, id) {
   }
 }
 
-export function findDataReferences(process, id) {
+export function findDataReferenceShapes(processShape, id) {
   let refs = [];
-  for (const element of process.children) {
-    if (element.type === 'bpmn:DataObjectReference') {
-      refs.push(element);
+  for (const shape of processShape.children) {
+    if (shape.type === 'bpmn:DataObjectReference') {
+      if (shape.businessObject.dataObjectRef && shape.businessObject.dataObjectRef.id === id) {
+        refs.push(shape);
+      }
     }
   }
   return refs;
