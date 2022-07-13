@@ -57,7 +57,6 @@ describe('Properties Panel Script Tasks', function() {
   it('should parse the bpmn:script tag when you open an existing file', async function() {
 
     // IF - a script tag is selected, and you change the script in the properties panel
-    const scriptTask = await expectSelected('task_confirm');
     let entry = findEntry('pythonScript_spiffworkflow:preScript', PROPERTIES_PANEL_CONTAINER);
     const scriptInput = domQuery('textarea', entry);
     expect(scriptInput.value).to.equal('x=1');

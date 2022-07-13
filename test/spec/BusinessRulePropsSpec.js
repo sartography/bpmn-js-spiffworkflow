@@ -13,7 +13,7 @@ import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesP
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 
-describe.only('Business Rule Properties Panel', function() {
+describe('Business Rule Properties Panel', function() {
   let xml = require('./bpmn/diagram.bpmn').default;
 
   beforeEach(bootstrapPropertiesPanel(xml, {

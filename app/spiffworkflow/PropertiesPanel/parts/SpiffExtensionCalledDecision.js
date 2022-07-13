@@ -29,7 +29,7 @@ export function SpiffExtensionCalledDecision(props) {
     if (!bizObj.extensionElements) {
       return null;
     } else {
-      return bizObj.extensionElements.values.filter(function (e) {
+      return bizObj.extensionElements.get("values").filter(function (e) {
         return e.$instanceOf(SPIFF_PROP)
       })[0];
     }

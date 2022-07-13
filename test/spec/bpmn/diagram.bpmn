@@ -45,6 +45,10 @@
       <bpmn:extensionElements>
         <spiffworkflow:preScript>x=1</spiffworkflow:preScript>
         <spiffworkflow:postScript>y=2</spiffworkflow:postScript>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="give_me_a_number_form.json" />
+          <spiffworkflow:property name="formUiSchemaFilename" value="number_form_schema.json" />
+        </spiffworkflow:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0q4oys2</bpmn:incoming>
       <bpmn:outgoing>Flow_132laxn</bpmn:outgoing>
