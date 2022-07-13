@@ -38,3 +38,4 @@ function canDrop(elements, target) {
 }
 
 DataObjectRules.prototype.canDrop = canDrop;
+DataObjectRules.$inject = [ 'eventBus' ];
