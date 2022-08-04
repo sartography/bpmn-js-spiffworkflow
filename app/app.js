@@ -8,9 +8,11 @@ const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
 const spiffModdleExtension = require('./spiffworkflow/moddle/spiffworkflow.json');
 
+let bpmnModeler;
+
 // create modeler
 try {
-  const bpmnModeler = new BpmnModeler({
+  bpmnModeler = new BpmnModeler({
     container: modelerEl,
     propertiesPanel: {
       parent: panelEl
@@ -24,17 +26,18 @@ try {
       spiffworkflowModdle: spiffModdleExtension
     }
   });
-
-  // import XML
-  bpmnModeler.importXML(diagramXML).then(() => {});
-
 } catch (error) {
   if (error.constructor.name === 'AggregateError') {
     console.log(error.message);
     console.log(error.name);
     console.log(error.errors);
   }
+  throw error;
 }
+
+// import XML
+bpmnModeler.importXML(diagramXML).then(() => {});
+
 
 
 /** ****************************************
