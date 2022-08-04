@@ -29,7 +29,7 @@ describe('Messages should work', function() {
   it('should allow you to see the collaborations section', async function() {
 
     // THEN - a select Data Object section should appear in the properties panel
-    let entry = findEntry('edit_message_correlations', container);
+    let entry = findEntry('message_collaborations', container);
     expect(entry).to.exist;
   });
 

@@ -8,7 +8,8 @@
     "build:watch": "webpack --watch",
     "dev": "run-p build:watch serve",
     "serve": "sirv public --dev",
-    "lint": "eslint .",
+    "lint": "./node_modules/.bin/eslint src *.js",
+    "lint:fix": "./node_modules/.bin/eslint --fix src *.js",
     "start": "run-s build serve",
     "test": "karma start karma.conf.js"
   },
@@ -67,6 +68,7 @@
     "bpmn-js": "^9.2.2",
     "bpmn-js-properties-panel": "^1.1.1",
     "diagram-js": "^8.5.0",
+    "eslint_d": "^12.2.0",
     "inherits": "^2.0.4",
     "inherits-browser": "^0.0.1",
     "min-dash": "^3.8.1",
