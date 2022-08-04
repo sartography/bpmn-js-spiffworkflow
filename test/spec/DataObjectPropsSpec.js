@@ -1,15 +1,15 @@
 import {
   bootstrapPropertiesPanel, changeInput,
   expectSelected,
-  findEntry, findGroupEntry, findInput, findSelect,
+  findEntry, findInput, findSelect,
 } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
-import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
-import { inject } from 'bpmn-js/test/helper';
-
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import TestContainer from 'mocha-test-container-support';
-import { findDataObjects } from '../../app/spiffworkflow/DataObject/DataObjectHelpers';
+import DataObjectPropertiesProvider
+  from '../../app/spiffworkflow/DataObject/propertiesPanel/DataObjectPropertiesProvider';
+import spiffworkflow from '../../app/spiffworkflow';
+import DataObject from '../../app/spiffworkflow/DataObject';
 
 describe('Properties Panel for Data Objects', function() {
   let xml = require('./bpmn/diagram.bpmn').default;
@@ -23,7 +23,7 @@ describe('Properties Panel for Data Objects', function() {
     container,
     debounceInput: false,
     additionalModules: [
-      SpiffWorkflowPropertiesProvider,
+      DataObject,
       BpmnPropertiesPanelModule,
       BpmnPropertiesProviderModule,
     ],

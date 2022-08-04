@@ -1,7 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { isTextFieldEntryEdited, TextFieldEntry } from '@bpmn-io/properties-panel';
 import { without } from 'min-dash';
-import { findDataObjects, findDataReferenceShapes } from '../../DataObject/DataObjectHelpers';
+import { findDataObjects, findDataReferenceShapes } from '../DataObjectHelpers';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
 /**

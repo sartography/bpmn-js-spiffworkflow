@@ -9,23 +9,32 @@ const panelEl = document.getElementById('panel');
 const spiffModdleExtension = require('./spiffworkflow/moddle/spiffworkflow.json');
 
 // create modeler
-const bpmnModeler = new BpmnModeler({
-  container: modelerEl,
-  propertiesPanel: {
-    parent: panelEl
-  },
-  additionalModules: [
-    spiffworkflow,
-    BpmnPropertiesPanelModule,
-    BpmnPropertiesProviderModule,
-  ],
-  moddleExtensions: {
-    spiffworkflowModdle: spiffModdleExtension
-  }
-});
+try {
+  const bpmnModeler = new BpmnModeler({
+    container: modelerEl,
+    propertiesPanel: {
+      parent: panelEl
+    },
+    additionalModules: [
+      spiffworkflow,
+      BpmnPropertiesPanelModule,
+      BpmnPropertiesProviderModule,
+    ],
+    moddleExtensions: {
+      spiffworkflowModdle: spiffModdleExtension
+    }
+  });
 
-// import XML
-bpmnModeler.importXML(diagramXML).then(() => {});
+  // import XML
+  bpmnModeler.importXML(diagramXML).then(() => {});
+
+} catch (error) {
+  if (error.constructor.name === 'AggregateError') {
+    console.log(error.message);
+    console.log(error.name);
+    console.log(error.errors);
+  }
+}
 
 
 /** ****************************************

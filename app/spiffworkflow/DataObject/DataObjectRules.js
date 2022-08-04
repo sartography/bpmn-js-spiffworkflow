@@ -11,7 +11,6 @@
 import RuleProvider from 'diagram-js/lib/features/rules/RuleProvider';
 import inherits from 'inherits-browser';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import IoRules from '../InputOutput/IoRules';
 
 export default function DataObjectRules(eventBus) {
   RuleProvider.call(this, eventBus);
@@ -32,7 +31,6 @@ function canDrop(elements, target) {
     if (is(element, 'bpmn:DataObjectReference') && element.parent && target) {
       return target === element.parent;
     }
-
     // Intentionally returning null here to allow other rules to fire.
   }
 }

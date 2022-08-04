@@ -1,25 +1,16 @@
-import scriptGroup, { SCRIPT_TYPE } from './parts/SpiffScriptGroup';
+import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { DataObjectSelect } from './parts/DataObjectSelect';
-import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
-import { DataObjectArray } from './parts/DataObjectArray';
-import { SpiffExtensionTextInput } from './parts/SpiffExtensionTextInput';
-import { SpiffExtensionCalledDecision } from './parts/SpiffExtensionCalledDecision';
+import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
+import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 const LOW_PRIORITY = 500;
 
-export default function SpiffWorkflowPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
+export default function ExtensionsPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
   this.getGroups = function(element) {
     return function(groups) {
       if (is(element, 'bpmn:ScriptTask')) {
         groups.push(createScriptGroup(element, translate, moddle));
       } else if (isAny(element, [ 'bpmn:Task', 'bpmn:CallActivity', 'bpmn:SubProcess' ])) {
         groups.push(preScriptPostScriptGroup(element, translate, moddle));
-      }
-      if (is(element, 'bpmn:DataObjectReference')) {
-        groups.push(createDataObjectSelector(element, translate, moddle, commandStack));
-      }
-      if (isAny(element, [ 'bpmn:Process', 'bpmn:SubProcess', 'bpmn:Participant' ])) {
-        groups.push(createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry));
       }
       if (is(element, 'bpmn:UserTask')) {
         groups.push(createUserGroup(element, translate, moddle, commandStack));
@@ -34,7 +25,7 @@ export default function SpiffWorkflowPropertiesProvider(propertiesPanel, transla
   propertiesPanel.registerProvider(LOW_PRIORITY, this);
 }
 
-SpiffWorkflowPropertiesProvider.$inject = [ 'propertiesPanel', 'translate', 'moddle', 'commandStack', 'elementRegistry' ];
+ExtensionsPropertiesProvider.$inject = [ 'propertiesPanel', 'translate', 'moddle', 'commandStack', 'elementRegistry' ];
 
 
 /**
@@ -78,51 +69,6 @@ function preScriptPostScriptGroup(element, translate, moddle) {
   };
 }
 
-/**
- * Create a group on the main panel with a select box (for choosing the Data Object to connect)
- * @param element
- * @param translate
- * @param moddle
- * @returns entries
- */
-function createDataObjectSelector(element, translate, moddle, commandStack) {
-  return {
-    id: 'data_object_properties',
-    label: translate('Data Object Properties'),
-    entries: [
-      {
-        id: 'selectDataObject',
-        element,
-        component: DataObjectSelect,
-        isEdited: isTextFieldEntryEdited,
-        moddle: moddle,
-        commandStack: commandStack,
-      }
-    ]
-  };
-}
-
-/**
- * Create a group on the main panel with a select box (for choosing the Data Object to connect) AND a
- * full Data Object Array for modifying all the data objects.
- * @param element
- * @param translate
- * @param moddle
- * @returns entries
- */
-function createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry) {
-  const dataObjectArray = {
-    id: 'editDataObjects',
-    element,
-    label: 'Data Objects',
-    component: ListGroup,
-    ...DataObjectArray({ element, moddle, commandStack, elementRegistry })
-  };
-
-  if (dataObjectArray.items) {
-    return dataObjectArray;
-  }
-}
 
 /**
  * Create a group on the main panel with a select box (for choosing the Data Object to connect)

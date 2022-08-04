@@ -9,9 +9,9 @@ import {
 } from 'min-dom';
 
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
-import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
+import extensions from '../../app/spiffworkflow/extensions';
 
 describe('Business Rule Properties Panel', function() {
   let xml = require('./bpmn/diagram.bpmn').default;
@@ -19,7 +19,7 @@ describe('Business Rule Properties Panel', function() {
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,
     additionalModules: [
-      SpiffWorkflowPropertiesProvider,
+      extensions,
       BpmnPropertiesPanelModule,
       BpmnPropertiesProviderModule,
     ],

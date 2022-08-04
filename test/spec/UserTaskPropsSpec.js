@@ -5,10 +5,10 @@ import {
 } from './helpers';
 
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
-import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 import TestContainer from 'mocha-test-container-support';
+import extensions from '../../app/spiffworkflow/extensions';
 
 describe('Properties Panel for User Tasks', function() {
   const user_form_xml = require('./bpmn/user_form.bpmn').default;
@@ -24,7 +24,7 @@ describe('Properties Panel for User Tasks', function() {
       container,
       debounceInput: false,
       additionalModules: [
-        SpiffWorkflowPropertiesProvider,
+        extensions,
         BpmnPropertiesPanelModule,
         BpmnPropertiesProviderModule,
       ],

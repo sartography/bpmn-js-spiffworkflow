@@ -20,7 +20,7 @@ html, body {
 }
 
 #modeler {
-  flex-grow: 4;
+  flex-grow: 1;
 }
 
 #panel {
@@ -29,6 +29,7 @@ html, body {
   border-radius: 2px;
   font-family: 'Arial', sans-serif;
   padding: 10px;
+  min-width: 400px;
 }
 
 .djs-label {

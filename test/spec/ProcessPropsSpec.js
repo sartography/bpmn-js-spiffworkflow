@@ -6,12 +6,11 @@ import {
   expectSelected, findEntry, findGroupEntry, findInput
 } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
-import SpiffWorkflowPropertiesProvider from '../../app/spiffworkflow/PropertiesPanel';
-
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import TestContainer from 'mocha-test-container-support';
 import { fireEvent } from '@testing-library/preact';
 import { findDataObject, findDataObjects } from '../../app/spiffworkflow/DataObject/DataObjectHelpers';
+import dataObject from '../../app/spiffworkflow/DataObject';
 
 describe('Properties Panel for a Process', function() {
   let xml = require('./bpmn/diagram.bpmn').default;
@@ -25,7 +24,7 @@ describe('Properties Panel for a Process', function() {
     container,
     debounceInput: false,
     additionalModules: [
-      SpiffWorkflowPropertiesProvider,
+      dataObject,
       BpmnPropertiesPanelModule,
       BpmnPropertiesProviderModule,
     ],
