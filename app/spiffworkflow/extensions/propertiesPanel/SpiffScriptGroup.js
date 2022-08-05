@@ -11,39 +11,9 @@ export const SCRIPT_TYPE = {
   post: 'spiffworkflow:postScript',
 };
 
-/**
- * Generates a python script.
- * @param element The elemment that should get the script task.
- * @param scriptType The type of script -- can be a preScript, postScript or a BPMN:Script for script tags
- * @param moddle For updating the underlying xml document when needed.
- * @returns {[{component: (function(*)), isEdited: *, id: string, element},{component: (function(*)), isEdited: *, id: string, element}]}
- */
-export default function (element, moddle, scriptType, label, description) {
-  return [
-    {
-      id: `pythonScript_${scriptType}`,
-      element,
-      targetTag: scriptType,
-      component: PythonScript,
-      isEdited: isTextFieldEntryEdited,
-      moddle,
-      label,
-      description,
-    },
-    {
-      id: `launchEditorButton${scriptType}`,
-      target_tag: scriptType,
-      element,
-      component: LaunchEditorButton,
-      isEdited: isTextFieldEntryEdited,
-      moddle,
-    },
-  ];
-}
-
 function PythonScript(props) {
   const { element, id } = props;
-  const type = props.targetTag;
+  const { type } = props;
   const { moddle } = props;
   const { label } = props;
   const { description } = props;
@@ -76,9 +46,11 @@ function PythonScript(props) {
     if (!bizObj.extensionElements) {
       return null;
     }
-    return bizObj.extensionElements.get('values').filter(function (e) {
-      return e.$instanceOf(type);
-    })[0];
+    return bizObj.extensionElements
+      .get('values')
+      .filter(function getInstanceOfType(e) {
+        return e.$instanceOf(type);
+      })[0];
   };
 
   const getValue = () => {
@@ -121,9 +93,8 @@ function PythonScript(props) {
 }
 
 function LaunchEditorButton(props) {
-  const { element, id, type } = props;
+  const { element, type } = props;
   const eventBus = useService('eventBus');
-  const modeling = useService('modeling');
   // fixme: add a call up date as a property
   return (
     <HeaderButton
@@ -135,4 +106,40 @@ function LaunchEditorButton(props) {
       Launch Editor
     </HeaderButton>
   );
+}
+
+/**
+ * Generates a python script.
+ * @param element The elemment that should get the script task.
+ * @param scriptType The type of script -- can be a preScript, postScript or a BPMN:Script for script tags
+ * @param moddle For updating the underlying xml document when needed.
+ * @returns {[{component: (function(*)), isEdited: *, id: string, element},{component: (function(*)), isEdited: *, id: string, element}]}
+ */
+export default function getEntries(
+  element,
+  moddle,
+  scriptType,
+  label,
+  description
+) {
+  return [
+    {
+      id: `pythonScript_${scriptType}`,
+      element,
+      type: scriptType,
+      component: PythonScript,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+      label,
+      description,
+    },
+    {
+      id: `launchEditorButton${scriptType}`,
+      type: scriptType,
+      element,
+      component: LaunchEditorButton,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+    },
+  ];
 }

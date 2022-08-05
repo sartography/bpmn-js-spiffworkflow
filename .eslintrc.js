@@ -5,7 +5,6 @@ module.exports = {
   },
   extends: [
     'airbnb',
-    'plugin:bpmn-io/es6',
     'plugin:prettier/recommended',
     'plugin:sonarjs/recommended',
     'plugin:import/errors',
@@ -40,5 +39,10 @@ module.exports = {
         tsx: 'never',
       },
     ],
+
+    // We could try turning these on at some point but do not want to force it now
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
   },
 };
