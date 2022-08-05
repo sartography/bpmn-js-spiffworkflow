@@ -1,15 +1,20 @@
 import { useService } from 'bpmn-js-properties-panel';
-import { isTextFieldEntryEdited, TextFieldEntry } from '@bpmn-io/properties-panel';
+import {
+  isTextFieldEntryEdited,
+  TextFieldEntry,
+} from '@bpmn-io/properties-panel';
 import { without } from 'min-dash';
-import { findDataObjects, findDataReferenceShapes } from '../../DataObject/DataObjectHelpers';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-
+import {
+  findDataObjects,
+  findDataReferenceShapes,
+} from '../../DataObject/DataObjectHelpers';
 
 export function findCorrelationKeys(element) {
   const correlationProperties = [];
   for (const rootElement of element.businessObject.$parent.rootElements) {
-    if (rootElement.$type === "bpmn:CorrelationProperty") {
-      correlationProperties.push(rootElement)
+    if (rootElement.$type === 'bpmn:CorrelationProperty') {
+      correlationProperties.push(rootElement);
     }
   }
   return correlationProperties;
@@ -21,24 +26,22 @@ export function findCorrelationKeys(element) {
  * @constructor
  */
 export function CorrelationKeysArray(props) {
-  const moddle = props.moddle;
-  const element = props.element;
-  const commandStack = props.commandStack;
-  const elementRegistry = props.elementRegistry;
+  const { moddle } = props;
+  const { element } = props;
+  const { commandStack } = props;
+  const { elementRegistry } = props;
 
-  let correlationProperties = findCorrelationKeys(element);
+  const correlationProperties = findCorrelationKeys(element);
   const items = correlationProperties.map((correlationProperty, index) => {
     const id = `correlation-${correlationProperty.id}`;
     return {
-      id: id,
+      id,
       label: correlationProperty.id,
-      entries:
-        CorrelationKeyGroup({
-          id: id,
-          element,
-          correlationProperty
-        })
-      ,
+      entries: CorrelationKeyGroup({
+        id,
+        element,
+        correlationProperty,
+      }),
       autoFocusEntry: id,
       // remove: removeFactory({ element, correlationProperty, commandStack, elementRegistry })
     };
@@ -46,123 +49,105 @@ export function CorrelationKeysArray(props) {
 
   function add(event) {
     event.stopPropagation();
-    let newDataObject = moddle.create('bpmn:DataObject');
-    let newElements = process.get('flowElements');
-    newDataObject.id = moddle.ids.nextPrefixed('DataObject_');
-    newElements.push(newDataObject);
+    const newCorrelationProperty = moddle.create('bpmn:CorrelationProperty');
+    const newElements = correlationProperties;
+    newCorrelationProperty.id = moddle.ids.nextPrefixed('CorrelationProperty_');
+    newElements.push(newCorrelationProperty);
+    console.log('element', element);
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: process,
+      moddleElement: element.businessObject,
       properties: {
-        flowElements: newElements
-      }
+        flowElements: newElements,
+      },
     });
+    // moddle.updateModdleProperties(element, updatedBusinessObject, update);
   }
 
   return { items, add };
 }
 
 function removeFactory(props) {
-  const {
-    element,
-    dataObject,
-    process,
-    commandStack,
-  } = props;
+  const { element, dataObject, process, commandStack } = props;
 
-
-  return function(event) {
+  return function (event) {
     event.stopPropagation();
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: process,
       properties: {
-        flowElements: without(process.get('flowElements'), dataObject)
-      }
+        flowElements: without(process.get('flowElements'), dataObject),
+      },
     });
     // Also update the label of all the references
-    let references = findDataReferenceShapes(element, dataObject.id);
+    const references = findDataReferenceShapes(element, dataObject.id);
     for (const ref of references) {
       commandStack.execute('element.updateProperties', {
         element: ref,
         moddleElement: ref.businessObject,
         properties: {
-          'name': '???'
+          name: '???',
         },
-        changed:[ ref ] // everything is already marked as changed, don't recalculate.
+        changed: [ref], // everything is already marked as changed, don't recalculate.
       });
     }
   };
 }
 
 function CorrelationKeyGroup(props) {
-  const {
-    idPrefix,
-    correlationProperty
-  } = props;
+  const { idPrefix, correlationProperty } = props;
 
-  let entries = [
+  return [
     {
       id: `${idPrefix}-group`,
-      component: CorrelationKeyGroup,
+      component: CorrelationKeyTextField,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
-      correlationProperty
-    }
+      correlationProperty,
+    },
   ];
-  return entries;
 }
 
-
 function CorrelationKeyTextField(props) {
-  const {
-    idPrefix,
-    element,
-    parameter,
-    correlationProperty
-  } = props;
+  const { idPrefix, element, parameter, correlationProperty } = props;
 
   const commandStack = useService('commandStack');
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    // commandStack.execute(
-    //   'element.updateModdleProperties',
-    //   {
-    //     element,
-    //     moddleElement: correlationProperty,
-    //     properties: {
-    //       'id': value
-    //     }
-    //   }
-    // );
-    //
-    // // Also update the label of all the references
-    // let references = findDataReferenceShapes(element, correlationProperty.id);
-    // for (const ref of references) {
-    //   commandStack.execute('element.updateProperties', {
-    //     element: ref,
-    //     moddleElement: ref.businessObject,
-    //     properties: {
-    //       'name': value
-    //     },
-    //     changed:[ ref ] // everything is already marked as changed, don't recalculate.
-    //   });
-    // }
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: correlationProperty,
+      properties: {
+        id: value,
+      },
+    });
+
+    // Also update the label of all the references
+    // const references = findDataReferenceShapes(element, correlationProperty.id);
+    const references = ['hello1', 'hello2'];
+    for (const ref of references) {
+      commandStack.execute('element.updateProperties', {
+        element: ref,
+        moddleElement: ref.businessObject,
+        properties: {
+          name: value,
+        },
+        changed: [ref], // everything is already marked as changed, don't recalculate.
+      });
+    }
   };
 
   const getValue = (parameter) => {
-    return "";
-    // return correlationProperty.id;
+    return correlationProperty.id;
   };
 
   return TextFieldEntry({
     element: parameter,
-    id: idPrefix + '-textField',
+    id: `${idPrefix}-textField`,
     label: 'Correlation Key',
     getValue,
     setValue,
-    debounce
+    debounce,
   });
 }
-
