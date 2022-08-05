@@ -1,5 +1,5 @@
 import TestContainer from 'mocha-test-container-support';
-import { bootstrapPropertiesPanel, findEntry } from './helpers';
+import { bootstrapPropertiesPanel, findGroupEntry } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
@@ -29,7 +29,7 @@ describe('Messages should work', function() {
   it('should allow you to see the collaborations section', async function() {
 
     // THEN - a select Data Object section should appear in the properties panel
-    let entry = findEntry('message_collaborations', container);
+    let entry = findGroupEntry('correlation_keys', container);
     expect(entry).to.exist;
   });
 

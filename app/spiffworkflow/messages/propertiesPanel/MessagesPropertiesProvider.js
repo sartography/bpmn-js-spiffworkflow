@@ -1,10 +1,12 @@
 import {
+  ListGroup,
   TextAreaEntry,
   TextFieldEntry,
   isTextFieldEntryEdited,
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
+import { CorrelationKeysArray } from './CorrelationKeysArray';
 
 // import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 // import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
@@ -17,10 +19,10 @@ export default function MessagesPropertiesProvider(
   commandStack,
   elementRegistry
 ) {
-  this.getGroups = function (element) {
-    return function (groups) {
+  this.getGroups = function getGroupsCallback(element) {
+    return function pushGroup(groups) {
       if (is(element, 'bpmn:Collaboration')) {
-        groups.push(createCollaborationGroup(element, translate, moddle));
+        groups.push(createCollaborationGroup(element, translate, moddle, commandStack, elementRegistry));
       }
 
       return groups;
@@ -37,36 +39,77 @@ MessagesPropertiesProvider.$inject = [
   'elementRegistry',
 ];
 
-function MessageCollaboration(props) {
-  const { element } = props;
-  const debounce = useService('debounceInput');
-  const getValue = () => {
-    return '';
-  };
-
-  const setValue = (value) => {};
-
-  return (
-    <TextAreaEntry
-      id="message_collaborations"
-      element={element}
-      description="description"
-      label="label"
-      getValue={getValue}
-      setValue={setValue}
-      debounce={debounce}
-    />
-  );
-}
-
-function messageCollaborationGroup(element, _moddle, _label, _description) {
-  return [
-    {
-      component: MessageCollaboration,
-      element,
-    },
-  ];
-}
+// function CorrelationKeysComponent(props) {
+//   const { element } = props;
+//   const debounce = useService('debounceInput');
+//   const getValue = () => {
+//     return '';
+//   };
+//
+//   const setValue = (value) => {};
+//
+//   return (
+//     <TextAreaEntry
+//       id="message_collaborations"
+//       element={element}
+//       description="description"
+//       label="label"
+//       getValue={getValue}
+//       setValue={setValue}
+//       debounce={debounce}
+//     />
+//   );
+// }
+//
+// function CorrelationKeyNew() {
+//
+// }
+//
+// function CorrelationKeyAddButton(props) {
+//   const { element } = props;
+//   const debounce = useService('debounceInput');
+//   const getValue = () => {
+//     return '';
+//   };
+//
+//   const setValue = (value) => {};
+//
+//   // return (
+//   //   <TextAreaEntry
+//   //     id="message_collaborations"
+//   //     element={element}
+//   //     description="description"
+//   //     label="label"
+//   //     getValue={getValue}
+//   //     setValue={setValue}
+//   //     debounce={debounce}
+//   //   />
+//   // );
+//   return (
+//     <HeaderButton
+//       className="spiffworkflow-properties-panel-button"
+//       onClick={CorrelationKeyNew}
+//     >
+//       Add Correlation Key
+//     </HeaderButton>
+//   )
+// }
+//
+// function correlationKeysEntries(element, moddle, _label, _description, commandStack, elementRegistry) {
+//   return [
+//     {
+//       component: ListGroup,
+//       element,
+//       id: 'editStuffs',
+//       label: 'The Stuffs',
+//       commandStack,
+//       elementRegistry,
+//       element,
+//       moddle,
+//       ...CorrelationKeysArray({ element, moddle, commandStack, elementRegistry }),
+//     },
+//   ];
+// }
 
 /**
  * Adds a group to the properties panel for the script task that allows you
@@ -74,15 +117,11 @@ function messageCollaborationGroup(element, _moddle, _label, _description) {
  * @param element
  * @param translate
  * @returns The components to add to the properties panel. */
-function createCollaborationGroup(element, translate, moddle, commandStack) {
+function createCollaborationGroup(element, translate, moddle, commandStack, elementRegistry) {
   return {
-    id: 'collaboration_id',
-    label: translate('Message Collaboration'),
-    entries: messageCollaborationGroup(
-      element,
-      moddle,
-      'Collab',
-      'More Collabor'
-    ),
+    id: 'correlation_keys',
+    label: translate('Correlation Keys'),
+    component: ListGroup,
+    ...CorrelationKeysArray({ element, moddle, commandStack, elementRegistry }),
   };
 }
