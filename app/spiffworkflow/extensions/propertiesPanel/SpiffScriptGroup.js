@@ -1,49 +1,22 @@
-import { HeaderButton, TextAreaEntry, TextFieldEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
+import {
+  HeaderButton,
+  TextAreaEntry,
+  isTextFieldEntryEdited,
+} from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
 export const SCRIPT_TYPE = {
   bpmn: 'bpmn:script',
   pre: 'spiffworkflow:preScript',
-  post: 'spiffworkflow:postScript'
+  post: 'spiffworkflow:postScript',
 };
-
-/**
- * Generates a python script.
- * @param element The elemment that should get the script task.
- * @param scriptType The type of script -- can be a preScript, postScript or a BPMN:Script for script tags
- * @param moddle For updating the underlying xml document when needed.
- * @returns {[{component: (function(*)), isEdited: *, id: string, element},{component: (function(*)), isEdited: *, id: string, element}]}
- */
-export default function(element, moddle, scriptType, label, description) {
-
-  return [
-    {
-      id: 'pythonScript_' + scriptType,
-      element,
-      targetTag: scriptType,
-      component: PythonScript,
-      isEdited: isTextFieldEntryEdited,
-      moddle: moddle,
-      label: label,
-      description: description
-    },
-    {
-      id: 'launchEditorButton' + scriptType,
-      target_tag: scriptType,
-      element,
-      component: LaunchEditorButton,
-      isEdited: isTextFieldEntryEdited,
-      moddle: moddle
-    },
-  ];
-}
 
 function PythonScript(props) {
   const { element, id } = props;
-  const type = props.targetTag;
-  const moddle = props.moddle;
-  const label = props.label;
-  const description = props.description;
+  const { type } = props;
+  const { moddle } = props;
+  const { label } = props;
+  const { description } = props;
 
   const translate = useService('translate');
   const debounce = useService('debounceInput');
@@ -72,31 +45,33 @@ function PythonScript(props) {
     }
     if (!bizObj.extensionElements) {
       return null;
-    } else {
-      return bizObj.extensionElements.get("values").filter(function(e) {
+    }
+    return bizObj.extensionElements
+      .get('values')
+      .filter(function getInstanceOfType(e) {
         return e.$instanceOf(type);
       })[0];
-    }
   };
 
   const getValue = () => {
-    const scriptObj = getScriptObject()
+    const scriptObj = getScriptObject();
     if (scriptObj) {
       return scriptObj.script;
-    } else {
-      return ""
     }
+    return '';
   };
 
-  const setValue = value => {
-    const businessObject = element.businessObject;
-    let scriptObj = getScriptObject()
+  const setValue = (value) => {
+    const { businessObject } = element;
+    let scriptObj = getScriptObject();
     // Create the script object if needed.
     if (!scriptObj) {
       scriptObj = moddle.create(type);
       if (type !== SCRIPT_TYPE.bpmn) {
         if (!businessObject.extensionElements) {
-          businessObject.extensionElements = moddle.create('bpmn:ExtensionElements');
+          businessObject.extensionElements = moddle.create(
+            'bpmn:ExtensionElements'
+          );
         }
         businessObject.extensionElements.get('values').push(scriptObj);
       }
@@ -104,26 +79,67 @@ function PythonScript(props) {
     scriptObj.script = value;
   };
 
-  return <TextAreaEntry
-    id={ id }
-    element={ element }
-    description={ translate(description) }
-    label={ translate(label) }
-    getValue={ getValue }
-    setValue={ setValue }
-    debounce={ debounce }
-  />;
+  return (
+    <TextAreaEntry
+      id={id}
+      element={element}
+      description={translate(description)}
+      label={translate(label)}
+      getValue={getValue}
+      setValue={setValue}
+      debounce={debounce}
+    />
+  );
 }
 
 function LaunchEditorButton(props) {
-  const { element, id, type } = props;
+  const { element, type } = props;
   const eventBus = useService('eventBus');
-  const modeling = useService('modeling');
   // fixme: add a call up date as a property
-  return <HeaderButton
-    className="spiffworkflow-properties-panel-button"
-    onClick={() => {
-      eventBus.fire('launch.script.editor', { element: element , type});
-    }}
-  >Launch Editor</HeaderButton>;
+  return (
+    <HeaderButton
+      className="spiffworkflow-properties-panel-button"
+      onClick={() => {
+        eventBus.fire('launch.script.editor', { element, type });
+      }}
+    >
+      Launch Editor
+    </HeaderButton>
+  );
+}
+
+/**
+ * Generates a python script.
+ * @param element The elemment that should get the script task.
+ * @param scriptType The type of script -- can be a preScript, postScript or a BPMN:Script for script tags
+ * @param moddle For updating the underlying xml document when needed.
+ * @returns {[{component: (function(*)), isEdited: *, id: string, element},{component: (function(*)), isEdited: *, id: string, element}]}
+ */
+export default function getEntries(
+  element,
+  moddle,
+  scriptType,
+  label,
+  description
+) {
+  return [
+    {
+      id: `pythonScript_${scriptType}`,
+      element,
+      type: scriptType,
+      component: PythonScript,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+      label,
+      description,
+    },
+    {
+      id: `launchEditorButton${scriptType}`,
+      type: scriptType,
+      element,
+      component: LaunchEditorButton,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+    },
+  ];
 }
