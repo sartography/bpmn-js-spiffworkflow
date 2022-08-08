@@ -9,16 +9,9 @@ import {
   findDataObjects,
   findDataReferenceShapes,
 } from '../../DataObject/DataObjectHelpers';
+import {findCorrelationKeys} from '../MessageHelpers';
 
-export function findCorrelationKeys(element) {
-  const correlationProperties = [];
-  for (const rootElement of element.businessObject.$parent.rootElements) {
-    if (rootElement.$type === 'bpmn:CorrelationProperty') {
-      correlationProperties.push(rootElement);
-    }
-  }
-  return correlationProperties;
-}
+
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -27,11 +20,11 @@ export function findCorrelationKeys(element) {
  */
 export function CorrelationKeysArray(props) {
   const { moddle } = props;
-  const { element } = props;
+  const { element } = props; // fixme:  Is it a shape or a moddle element?
   const { commandStack } = props;
   const { elementRegistry } = props;
 
-  const correlationProperties = findCorrelationKeys(element);
+  const correlationProperties = findCorrelationKeys(element.businessObject);
   const items = correlationProperties.map((correlationProperty, index) => {
     const id = `correlation-${correlationProperty.id}`;
     return {

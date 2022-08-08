@@ -7,6 +7,8 @@ import {
 import { useService } from 'bpmn-js-properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { CorrelationKeysArray } from './CorrelationKeysArray';
+import {DataObjectSelect} from '../../DataObject/propertiesPanel/DataObjectSelect';
+import {MessageSelect} from './MessageSelect';
 
 // import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 // import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
@@ -24,7 +26,9 @@ export default function MessagesPropertiesProvider(
       if (is(element, 'bpmn:Collaboration')) {
         groups.push(createCollaborationGroup(element, translate, moddle, commandStack, elementRegistry));
       }
-
+      if (is(element, 'bpmn:SendTask')) {
+        groups.push(createMessageGroup(element, translate, moddle, commandStack, elementRegistry));
+      }
       return groups;
     };
   };
@@ -125,3 +129,26 @@ function createCollaborationGroup(element, translate, moddle, commandStack, elem
     ...CorrelationKeysArray({ element, moddle, commandStack, elementRegistry }),
   };
 }
+
+/**
+ * Adds a group to the properties panel for editing messages for the SendTask
+ * @param element
+ * @param translate
+ * @returns The components to add to the properties panel. */
+function createMessageGroup(element, translate, moddle, commandStack, elementRegistry) {
+  return {
+    id: 'messages',
+    label: translate('Message'),
+    entries: [
+      {
+        id: 'selectMessage',
+        element,
+        component: MessageSelect,
+        isEdited: isTextFieldEntryEdited,
+        moddle,
+        commandStack,
+      },
+    ],
+  };
+}
+

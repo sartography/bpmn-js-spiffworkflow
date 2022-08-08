@@ -28,7 +28,7 @@ module.exports = function(karma) {
       'test/spec/**/*Spec.js': [ 'webpack', 'env' ]
     },
 
-    browsers: [ 'Chrome' ],
+    browsers: [ 'ChromeHeadless' ],
 
     browserNoActivityTimeout: 30000,
 

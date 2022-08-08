@@ -1,5 +1,5 @@
 import TestContainer from 'mocha-test-container-support';
-import { bootstrapPropertiesPanel, findGroupEntry } from './helpers';
+import {bootstrapPropertiesPanel, expectSelected, findEntry, findGroupEntry, findSelect} from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
@@ -32,5 +32,35 @@ describe('Messages should work', function() {
     let entry = findGroupEntry('correlation_keys', container);
     expect(entry).to.exist;
   });
+
+  it('should show a Message Properties group when a send task is selected',async function() {
+
+    // Select the send Task
+    const send_shape = await expectSelected('ActivitySendLetter');
+    expect(send_shape, "Can't find Send Task").to.exist;
+
+    // THEN - a select Data Object section should appear in the properties panel
+    let entry = findGroupEntry('messages', container);
+    expect(entry, "Can't find the message group in the properties panel").to.exist;
+  });
+
+  it('should show a list of messages in a drop down inside the message group',async function() {
+
+    // Select the send Task
+    const send_shape = await expectSelected('ActivitySendLetter');
+    expect(send_shape, "Can't find Send Task").to.exist;
+
+    // THEN - there are two options to choose from.
+    let entry = findEntry('selectMessage', container);
+    expect(entry, "Can't find the message select list").to.exist;
+
+    // AND - There should be two entries in it, one for each message.
+    let selector = findSelect(entry);
+    expect(selector).to.exist;
+    expect(selector.length).to.equal(2);
+
+
+  });
+
 
 });

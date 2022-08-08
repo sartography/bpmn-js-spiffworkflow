@@ -12,11 +12,13 @@ import { bootstrapBpmnJS, inject, insertCSS } from 'bpmn-js/test/helper';
 import {getBusinessObject} from 'bpmn-js/lib/util/ModelUtil';
 import {createMoveEvent} from 'diagram-js/lib/features/mouse/Mouse';
 
-let PROPERTIES_PANEL_CONTAINER;
+export let PROPERTIES_PANEL_CONTAINER;
+export let CONTAINER;
 
 export function bootstrapPropertiesPanel(diagram, options, locals) {
   return async function() {
     let container = options.container;
+    CONTAINER = container;
     if (!container) {
       container = TestContainer.get(this);
     }
