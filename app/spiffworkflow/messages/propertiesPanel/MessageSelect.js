@@ -11,13 +11,33 @@ export function MessageSelect(props) {
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    return "";
+    console.log('messageRef', shapeElement.businessObject.messageRef);
+    return shapeElement.businessObject.messageRef.id
   }
 
   const setValue = value => {
-    return;
+    /* Need to add the selected message as the messageRef on the current message task */
+    const businessObject = shapeElement.businessObject;
+    if (businessObject.$type === 'bpmn:SendTask') {
+      commandStack.execute('element.updateModdleProperties', {
+        shapeElement,
+        moddleElement: shapeElement,
+        properties: {
+          messageRef: value
+        }
+      });
+      commandStack.execute('element.updateProperties', {
+        shapeElement,
+        moddleElement: shapeElement,
+        properties: {
+          messageRef: value
+        }
+      });
+    }
+
+    // return;
+
     /*
-    const businessObject = element.businessObject;
     for (const flowElem of businessObject.$parent.flowElements) {
       if (flowElem.$type === 'bpmn:DataObject' && flowElem.id === value) {
         commandStack.execute('element.updateModdleProperties', {
