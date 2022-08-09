@@ -71,13 +71,14 @@ describe('Messages should work', function() {
     let payload = findEntry('messagePayload', container);
     expect(payload, "Can't find the message payload").to.exist;
 
-    let textArea = findTextarea('bio-properties-panel-messagePayload', container);
+    let textArea = findTextarea('bio-properties-panel-messagePayload', payload);
     expect(textArea, "Can't find the payload text").to.exist;
-    expect(textArea.innerHTML, "Can't find innerHTML").to.exist;
-
+    expect(textArea.value, "Can't find innerHTML").to.exist;
+    expect(textArea.value).to.equal("\n" +
+      "          {\n" +
+      "            'to': { 'name': my_lover_variable }\n" +
+      "          }\n" +
+      "        ");
     console.log('innerHTML', textArea.innerHTML);
-
   });
-
-
-  });
+});
