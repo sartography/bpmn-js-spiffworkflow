@@ -111,6 +111,10 @@ export function findInput(type, container) {
   return domQuery(`input[type='${ type }']`, container);
 }
 
+export function findTextarea(id, container) {
+  return domQuery(`textarea[id='${ id }']`, container);
+}
+
 export function findButton(id, container) {
   return domQuery(`button[id='${ id }']`, container);
 }

@@ -1,5 +1,5 @@
 import TestContainer from 'mocha-test-container-support';
-import {bootstrapPropertiesPanel, expectSelected, findEntry, findGroupEntry, findSelect} from './helpers';
+import { bootstrapPropertiesPanel, expectSelected, findEntry, findGroupEntry, findInput, findSelect, findTextarea } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
@@ -59,8 +59,25 @@ describe('Messages should work', function() {
     expect(selector).to.exist;
     expect(selector.length).to.equal(2);
 
+  });
+
+  it('should show the payload inside the message group',async function() {
+
+    // Select the second Task
+    const send_shape = await expectSelected('ActivitySendLetter');
+    expect(send_shape, "Can't find Send Task").to.exist;
+
+    // THEN - there is a payload.
+    let payload = findEntry('messagePayload', container);
+    expect(payload, "Can't find the message payload").to.exist;
+
+    let textArea = findTextarea('bio-properties-panel-messagePayload', container);
+    expect(textArea, "Can't find the payload text").to.exist;
+    expect(textArea.innerHTML, "Can't find innerHTML").to.exist;
+
+    console.log('innerHTML', textArea.innerHTML);
 
   });
 
 
-});
+  });
