@@ -1,38 +1,40 @@
-import {useService } from 'bpmn-js-properties-panel';
+import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
-import {findMessages} from '../MessageHelpers';
+import { findMessageModdleElements } from '../MessageHelpers';
 
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
  */
 export function MessageSelect(props) {
   const shapeElement = props.element;
-  const commandStack = props.commandStack;
+  const { commandStack } = props;
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    console.log('messageRef', shapeElement.businessObject.messageRef);
-    return shapeElement.businessObject.messageRef.id
-  }
+    return shapeElement.businessObject.messageRef.id;
+  };
 
-  const setValue = value => {
+  const setValue = (value) => {
     /* Need to add the selected message as the messageRef on the current message task */
-    const businessObject = shapeElement.businessObject;
-    if (businessObject.$type === 'bpmn:SendTask') {
-      commandStack.execute('element.updateModdleProperties', {
-        shapeElement,
-        moddleElement: shapeElement,
-        properties: {
-          messageRef: value
-        }
-      });
-      commandStack.execute('element.updateProperties', {
-        shapeElement,
-        moddleElement: shapeElement,
-        properties: {
-          messageRef: value
-        }
-      });
+    const { businessObject } = shapeElement;
+    const messages = findMessageModdleElements(shapeElement.businessObject);
+    for (const message of messages) {
+      if (businessObject.$type === 'bpmn:SendTask' && message.id == value) {
+        commandStack.execute('element.updateModdleProperties', {
+          element: shapeElement,
+          moddleElement: businessObject,
+          properties: {
+            messageRef: message,
+          },
+        });
+        commandStack.execute('element.updateProperties', {
+          element: shapeElement,
+          moddleElement: businessObject,
+          properties: {
+            messageRef: message,
+          },
+        });
+      }
     }
 
     // return;
@@ -57,26 +59,27 @@ export function MessageSelect(props) {
       }
     }
   */
-  }
+  };
 
-  const getOptions = value => {
-    const messages = findMessages(shapeElement.businessObject)
-    let options = []
+  const getOptions = (value) => {
+    const messages = findMessageModdleElements(shapeElement.businessObject);
+    const options = [];
     for (const message of messages) {
-      options.push({label: message.id, value: message.name})
+      options.push({ label: message.name, value: message.id });
     }
-    return options
-  }
+    return options;
+  };
 
-  return <SelectEntry
-    id={'selectMessage'}
-    element={shapeElement}
-    description={"Select the Message to associate with this task or event."}
-    label={"Which message is this associated with?"}
-    getValue={ getValue }
-    setValue={ setValue }
-    getOptions={ getOptions }
-    debounce={debounce}
-  />;
-
+  return (
+    <SelectEntry
+      id="selectMessage"
+      element={shapeElement}
+      description="Select the Message to associate with this task or event."
+      label="Which message is this associated with?"
+      getValue={getValue}
+      setValue={setValue}
+      getOptions={getOptions}
+      debounce={debounce}
+    />
+  );
 }

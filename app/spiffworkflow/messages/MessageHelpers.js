@@ -21,7 +21,7 @@ export function findCorrelationKeys(element) {
   return correlationProperties;
 }
 
-export function findMessages(element) {
+export function findMessageModdleElements(element) {
   const messages = [];
   const root = getRoot(element)
   for (const rootElement of root.rootElements) {
