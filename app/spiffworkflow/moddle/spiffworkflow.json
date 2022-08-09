@@ -27,6 +27,17 @@
       ]
     },
     {
+      "name": "messagePayload",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "payload",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
       "name": "calledDecision",
       "superClass": [ "Element" ],
       "properties": [

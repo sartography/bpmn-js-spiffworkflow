@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0qmxumb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0qmxumb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core">
   <bpmn:collaboration id="my_collaboration">
     <bpmn:participant id="buddy" name="Buddy" processRef="process_buddy" />
     <bpmn:participant id="Person" name="Person" processRef="random_person_process" />
@@ -43,6 +43,13 @@
       <bpmn:outgoing>Flow_1bl6jeh</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sendTask id="ActivitySendLetter" name="Send Letter" messageRef="love_letter">
+      <bpmn:extensionElements>
+        <spiffworkflow:messagePayload>
+          {
+            'to': { 'name': my_lover_variable }
+          }
+        </spiffworkflow:messagePayload>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1bl6jeh</bpmn:incoming>
       <bpmn:outgoing>Flow_0tp8uut</bpmn:outgoing>
     </bpmn:sendTask>

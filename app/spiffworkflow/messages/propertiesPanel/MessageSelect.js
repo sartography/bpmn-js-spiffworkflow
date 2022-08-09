@@ -11,7 +11,10 @@ export function MessageSelect(props) {
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    return shapeElement.businessObject.messageRef.id;
+    if (shapeElement.businessObject.messageRef) {
+      return shapeElement.businessObject.messageRef.id;
+    }
+    return '';
   };
 
   const setValue = (value) => {
@@ -36,29 +39,6 @@ export function MessageSelect(props) {
         });
       }
     }
-
-    // return;
-
-    /*
-    for (const flowElem of businessObject.$parent.flowElements) {
-      if (flowElem.$type === 'bpmn:DataObject' && flowElem.id === value) {
-        commandStack.execute('element.updateModdleProperties', {
-          element,
-          moddleElement: businessObject,
-          properties: {
-            dataObjectRef: flowElem
-          }
-        });
-        commandStack.execute('element.updateProperties', {
-          element,
-          moddleElement: businessObject,
-          properties: {
-            'name': flowElem.id
-          }
-        });
-      }
-    }
-  */
   };
 
   const getOptions = (value) => {
