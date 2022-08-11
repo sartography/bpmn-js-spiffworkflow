@@ -132,7 +132,7 @@ function CorrelationKeyTextField(props) {
   };
 
   const getValue = (parameter) => {
-    return correlationProperty.id;
+    return correlationProperty.name;
   };
 
   return TextFieldEntry({

@@ -3,7 +3,7 @@ import { TextAreaEntry } from '@bpmn-io/properties-panel';
 import { findMessageModdleElements } from '../MessageHelpers';
 
 /**
- * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
+ * Allows the creation, or editing of messagePayload at the bpmn:sendTask level of a BPMN document.
  */
 export function MessagePayload(props) {
   const shapeElement = props.element;
