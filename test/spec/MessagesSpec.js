@@ -72,13 +72,27 @@ describe('Messages should work', function() {
     expect(payload, "Can't find the message payload").to.exist;
 
     let textArea = findTextarea('bio-properties-panel-messagePayload', payload);
-    expect(textArea, "Can't find the payload text").to.exist;
-    expect(textArea.value, "Can't find innerHTML").to.exist;
+    expect(textArea, "Can't find the payload textarea").to.exist;
+    expect(textArea.value, "Can't find payload value").to.exist;
     expect(textArea.value).to.equal("\n" +
       "          {\n" +
       "            'to': { 'name': my_lover_variable }\n" +
       "          }\n" +
       "        ");
-    console.log('innerHTML', textArea.innerHTML);
   });
+
+  it('should show the correlations inside the message group',async function() {
+
+    // Select the second Task
+    const send_shape = await expectSelected('ActivitySendLetter');
+    expect(send_shape, "Can't find Send Task").to.exist;
+
+    // THEN - there are correlations.
+    let correlations = findTextarea('bio-properties-panel-messageCorrelations', container);
+    expect(correlations, "Can't find the message correlations").to.exist;
+
+    console.log("Message Correlations: ");
+
+  });
+
 });
