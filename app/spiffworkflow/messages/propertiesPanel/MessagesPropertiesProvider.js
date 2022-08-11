@@ -10,6 +10,7 @@ import { CorrelationKeysArray } from './CorrelationKeysArray';
 import {DataObjectSelect} from '../../DataObject/propertiesPanel/DataObjectSelect';
 import {MessageSelect} from './MessageSelect';
 import {MessagePayload} from './MessagePayload';
+import { MessageCorrelations } from './MessageCorrelations';
 
 // import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 // import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
@@ -153,6 +154,14 @@ function createMessageGroup(element, translate, moddle, commandStack, elementReg
         id: 'messagePayload',
         element,
         component: MessagePayload,
+        isEdited: isTextFieldEntryEdited,
+        moddle,
+        commandStack,
+      },
+      {
+        id: 'messageCorrelations',
+        element,
+        component: MessageCorrelations,
         isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
