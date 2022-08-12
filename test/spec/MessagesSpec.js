@@ -74,11 +74,7 @@ describe('Messages should work', function() {
     let textArea = findTextarea('bio-properties-panel-messagePayload', payload);
     expect(textArea, "Can't find the payload textarea").to.exist;
     expect(textArea.value, "Can't find payload value").to.exist;
-    expect(textArea.value).to.equal("\n" +
-      "          {\n" +
-      "            'to': { 'name': my_lover_variable }\n" +
-      "          }\n" +
-      "        ");
+    expect(textArea.value).to.include("'to': { 'name': my_lover_variable }");
   });
 
   it('should show the correlations inside the message group',async function() {
