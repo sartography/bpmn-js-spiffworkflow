@@ -11,6 +11,9 @@
     <bpmn:correlationKey name="lover">
       <bpmn:correlationPropertyRef>lover_name</bpmn:correlationPropertyRef>
     </bpmn:correlationKey>
+    <bpmn:correlationKey name="instrument">
+      <bpmn:correlationPropertyRef>lover_instrument</bpmn:correlationPropertyRef>
+    </bpmn:correlationKey>
     <bpmn:correlationKey name="singer" />
   </bpmn:collaboration>
 
@@ -24,6 +27,16 @@
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmn:message id="love_letter_response" name="Love Letter Response" />
+
+  <bpmn:correlationProperty id="lover_instrument" name="Lover&#39;s Instrument">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="love_letter">
+      <bpmn:formalExpression>lover.instrument</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+    <bpmn:correlationPropertyRetrievalExpression messageRef="love_letter_response">
+      <bpmn:formalExpression>from.instrument</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+
 
   <bpmn:correlationProperty id="lover_name" name="Lover&#39;s Name">
     <bpmn:correlationPropertyRetrievalExpression messageRef="love_letter">
