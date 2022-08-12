@@ -84,7 +84,7 @@ describe('Messages should work', function() {
     expect(send_shape, "Can't find Send Task").to.exist;
 
     // THEN - there are correlations.
-    let correlations = findTextarea('bio-properties-panel-messageCorrelations', container);
+    let correlations = findEntry('messageCorrelations', container);
     expect(correlations, "Can't find the message correlations").to.exist;
 
     console.log("Message Correlations: ");
