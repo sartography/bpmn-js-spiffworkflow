@@ -12,14 +12,18 @@ export function MessagePayload(props) {
 
   const getMessagePayloadObject = () => {
     const businessObject = shapeElement.businessObject;
-    if (!businessObject.extensionElements) {
-      return null;
+    const taskMessage = businessObject.messageRef
+    const messages = findMessageModdleElements(businessObject)
+    for (let message of messages) {
+      if (message.id === taskMessage.id) {
+        return message.extensionElements
+          .get('values')
+          .filter(function getInstanceOfType(e) {
+            return e.$instanceOf('spiffworkflow:messagePayload');
+          })[0];
+      }
     }
-    return businessObject.extensionElements
-      .get('values')
-      .filter(function getInstanceOfType(e) {
-        return e.$instanceOf('spiffworkflow:messagePayload');
-      })[0];
+    return null;
   };
 
   const getValue = () => {
