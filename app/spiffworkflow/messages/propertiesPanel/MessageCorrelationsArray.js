@@ -4,13 +4,14 @@ import { findFormalExpressions, getRoot } from '../MessageHelpers';
 import { findCorrelationKeys } from '../MessageHelpers';
 import { CorrelationKeysArray } from './CorrelationKeysArray';
 import translate from 'diagram-js/lib/i18n/translate';
+import dataObject from '../../DataObject';
 
 /**
  * Allows the creation, or editing of messageCorrelations at the bpmn:sendTask level of a BPMN document.
  */
 export function MessageCorrelationsArray(props) {
   const { moddle } = props;
-  const { element } = props; // fixme:  Is it a shape or a moddle element?
+  const { element } = props;
   const { commandStack } = props;
   const { elementRegistry } = props;
 
@@ -19,7 +20,6 @@ export function MessageCorrelationsArray(props) {
     const id = `correlation-${formalExpression.correlationId}`;
     const entries = MessageCorrelationGroup({
       idPrefix: id,
-      element,
       formalExpression,
     })
     return {
@@ -82,13 +82,13 @@ function MessageCorrelationTextField(props) {
   };
 
   const getValue = (parameter) => {
-    return formalExpression.name;
+    return formalExpression.expression;
   };
 
   return TextFieldEntry({
     element: parameter,
     id: `${idPrefix}-textField`,
-    label: 'Message Correlation',
+    label: 'Expression',
     getValue,
     setValue,
     debounce,
