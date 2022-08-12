@@ -3,6 +3,7 @@
  * @param element
  */
 export function getRoot(element) {
+  // todo: Do we want element to be a shape or moddle object?
   if (element.$type === 'bpmn:Definitions') {
     return element;
   } else if ( typeof element.$parent != 'undefined') {
@@ -20,10 +21,14 @@ export function findFormalExpressions(element) {
     if (root.$type === 'bpmn:Definitions') {
       for (const child_element of root.rootElements) {
         if (child_element.$type === 'bpmn:CorrelationProperty') {
+
           let retrieval_expression = processCorrelationProperty(child_element, element.messageRef);
           // todo: is there a better test for this than length === 1?
           if (retrieval_expression.length === 1){
-            formalExpressions.push(retrieval_expression[0]);
+            let formalExpression = {};
+            formalExpression['correlationId'] = child_element.id;
+            formalExpression['expression'] = retrieval_expression[0];
+            formalExpressions.push(formalExpression);
           }
         }
       }
