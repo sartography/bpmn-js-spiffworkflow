@@ -13,11 +13,18 @@
     </bpmn:correlationKey>
     <bpmn:correlationKey name="singer" />
   </bpmn:collaboration>
- 
-  <bpmn:message id="love_letter" name="Love Letter" />
+
+  <bpmn:message id="love_letter" name="Love Letter">
+    <bpmn:extensionElements>
+      <spiffworkflow:messagePayload>
+        {
+        'to': { 'name': my_lover_variable }
+        }
+      </spiffworkflow:messagePayload>
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmn:message id="love_letter_response" name="Love Letter Response" />
- 
-  
+
   <bpmn:correlationProperty id="lover_name" name="Lover&#39;s Name">
     <bpmn:correlationPropertyRetrievalExpression messageRef="love_letter">
       <bpmn:formalExpression>lover.name</bpmn:formalExpression>
@@ -29,27 +36,18 @@
       <bpmn:formalExpression>heartbreaker</bpmn:formalExpression>
     </bpmn:correlationPropertyRetrievalExpression>
   </bpmn:correlationProperty>
-  
-  
+
   <bpmn:correlationProperty id="singer" name="Singer&#39;s Name">
     <bpmn:correlationPropertyRetrievalExpression messageRef="love_letter_response">
       <bpmn:formalExpression>to.name</bpmn:formalExpression>
     </bpmn:correlationPropertyRetrievalExpression>
   </bpmn:correlationProperty>
-  
-  
+
   <bpmn:process id="process_buddy" name="Process Buddy" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_1bl6jeh</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sendTask id="ActivitySendLetter" name="Send Letter" messageRef="love_letter">
-      <bpmn:extensionElements>
-        <spiffworkflow:messagePayload>
-          {
-            'to': { 'name': my_lover_variable }
-          }
-        </spiffworkflow:messagePayload>
-      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1bl6jeh</bpmn:incoming>
       <bpmn:outgoing>Flow_0tp8uut</bpmn:outgoing>
     </bpmn:sendTask>
@@ -92,6 +90,7 @@
     </bpmn:endEvent>
   </bpmn:process>
   <bpmn:process id="Process_04o9jmt" isExecutable="false" />
+
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="my_collaboration">
       <bpmndi:BPMNShape id="Participant_1tlkvw1_di" bpmnElement="Participant_1tlkvw1" isHorizontal="true">
@@ -189,4 +188,5 @@
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
+
 </bpmn:definitions>
