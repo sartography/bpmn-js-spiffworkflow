@@ -28,22 +28,24 @@ export function getMessageRefElement(businessObject) {
   return '';
 }
 
-export function findFormalExpressions(element) {
+export function findFormalExpressions(businessObject) {
   const formalExpressions = [];
-  if (element.messageRef) {
-    const root = getRoot(element);
+  const messageRef = getMessageRefElement(businessObject);
+  if (messageRef) {
+    const root = getRoot(businessObject);
     if (root.$type === 'bpmn:Definitions') {
-      for (const child_element of root.rootElements) {
-        if (child_element.$type === 'bpmn:CorrelationProperty') {
-          const retrieval_expression = processCorrelationProperty(
-            child_element,
-            element.messageRef
+      for (const childElement of root.rootElements) {
+        if (childElement.$type === 'bpmn:CorrelationProperty') {
+          const retrievalExpression = processCorrelationProperty(
+            childElement,
+            messageRef
           );
           // todo: is there a better test for this than length === 1?
-          if (retrieval_expression.length === 1) {
-            const formalExpression = {};
-            formalExpression.correlationId = child_element.id;
-            formalExpression.expression = retrieval_expression[0];
+          if (retrievalExpression.length === 1) {
+            const formalExpression = {
+              correlationId: childElement.id,
+              expression: retrievalExpression[0],
+            };
             formalExpressions.push(formalExpression);
           }
         }
@@ -55,15 +57,15 @@ export function findFormalExpressions(element) {
 
 function processCorrelationProperty(correlationProperty, message) {
   const expressions = [];
-  for (const retrieval_expression of correlationProperty.correlationPropertyRetrievalExpression) {
+  for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
     if (
-      retrieval_expression.$type ===
+      retrievalExpression.$type ===
         'bpmn:CorrelationPropertyRetrievalExpression' &&
-      retrieval_expression.messageRef &&
-      retrieval_expression.messageRef.id === message.id &&
-      retrieval_expression.messagePath.body
+      retrievalExpression.messageRef &&
+      retrievalExpression.messageRef.id === message.id &&
+      retrievalExpression.messagePath.body
     ) {
-      expressions.push(retrieval_expression.messagePath.body);
+      expressions.push(retrievalExpression.messagePath.body);
     }
   }
   return expressions;
