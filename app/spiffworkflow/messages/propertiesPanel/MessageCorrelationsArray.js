@@ -1,9 +1,17 @@
 import { useService } from 'bpmn-js-properties-panel';
-import { isTextFieldEntryEdited, ListGroup, TextAreaEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
-import { findFormalExpressions, getRoot } from '../MessageHelpers';
-import { findCorrelationKeys } from '../MessageHelpers';
-import { CorrelationKeysArray } from './CorrelationKeysArray';
+import {
+  isTextFieldEntryEdited,
+  ListGroup,
+  TextAreaEntry,
+  TextFieldEntry,
+} from '@bpmn-io/properties-panel';
 import translate from 'diagram-js/lib/i18n/translate';
+import {
+  findFormalExpressions,
+  getRoot,
+  findCorrelationKeys,
+} from '../MessageHelpers';
+import { CorrelationKeysArray } from './CorrelationKeysArray';
 import dataObject from '../../DataObject';
 
 /**
@@ -21,11 +29,11 @@ export function MessageCorrelationsArray(props) {
     const entries = MessageCorrelationGroup({
       idPrefix: id,
       formalExpression,
-    })
+    });
     return {
       id,
       label: formalExpression.correlationId,
-      entries: entries,
+      entries,
       autoFocusEntry: id,
       // remove: removeFactory({ element, correlationProperty, commandStack, elementRegistry })
     };
@@ -33,7 +41,9 @@ export function MessageCorrelationsArray(props) {
 
   function add(event) {
     event.stopPropagation();
-    const newRetrievalExpression = moddle.create('bpmn:CorrelationPropertyRetrievalExpression');
+    const newRetrievalExpression = moddle.create(
+      'bpmn:CorrelationPropertyRetrievalExpression'
+    );
     const newElements = formalExpressions;
     newRetrievalExpression.messageRef = element.businessObject.messageRef;
     newElements.push(newRetrievalExpression);
@@ -42,25 +52,9 @@ export function MessageCorrelationsArray(props) {
       element,
       moddleElement: element.businessObject,
     });
-
   }
 
-  return { items, add }
-
-}
-
-function MessageKeyGroup(props) {
-  const { idPrefix, keys } = props;
-
-  return [
-    {
-      id: `${idPrefix}-group`,
-      component: MessageCorrelationGroup,
-      isEdited: isTextFieldEntryEdited,
-      idPrefix,
-      formalExpression: keys
-    }
-  ]
+  return { items, add };
 }
 
 function MessageCorrelationGroup(props) {

@@ -22,7 +22,7 @@ export function MessageSelect(props) {
     const { businessObject } = shapeElement;
     const messages = findMessageModdleElements(shapeElement.businessObject);
     for (const message of messages) {
-      if (businessObject.$type === 'bpmn:SendTask' && message.id == value) {
+      if (businessObject.$type === 'bpmn:SendTask' && message.id === value) {
         commandStack.execute('element.updateModdleProperties', {
           element: shapeElement,
           moddleElement: businessObject,
@@ -41,7 +41,7 @@ export function MessageSelect(props) {
     }
   };
 
-  const getOptions = (value) => {
+  const getOptions = (_value) => {
     const messages = findMessageModdleElements(shapeElement.businessObject);
     const options = [];
     for (const message of messages) {

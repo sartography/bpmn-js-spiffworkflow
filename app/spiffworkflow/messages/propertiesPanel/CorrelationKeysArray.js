@@ -1,6 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import {
-  isTextFieldEntryEdited, ListGroup,
+  isTextFieldEntryEdited,
+  ListGroup,
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
 import { without } from 'min-dash';
@@ -9,9 +10,11 @@ import {
   findDataObjects,
   findDataReferenceShapes,
 } from '../../DataObject/DataObjectHelpers';
-import { findCorrelationProperties, findCorrelationKeys, getRoot } from '../MessageHelpers';
-
-
+import {
+  findCorrelationProperties,
+  findCorrelationKeys,
+  getRoot,
+} from '../MessageHelpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -27,16 +30,18 @@ export function CorrelationKeysArray(props) {
   const correlationProperties = findCorrelationKeys(element.businessObject);
   const items = correlationProperties.map((correlationProperty, index) => {
     const id = `correlationGroup-${correlationProperty.name}`;
+    // console.log('correlationProperty.refs', correlationProperty.refs);
+    console.log('id', id);
     return {
       id,
       correlationProperty,
       label: correlationProperty.name,
-      entries: correlationProperty.refs,
-      // entries: correlationGroup({
-      //   id,
-      //   element,
-      //   correlationProperty,
-      // }),
+      // entries: correlationProperty.refs,
+      entries: correlationGroup({
+        id,
+        element,
+        correlationProperty,
+      }),
       autoFocusEntry: id,
       // remove: removeFactory({ element, correlationProperty, commandStack, elementRegistry })
     };
@@ -50,7 +55,7 @@ export function CorrelationKeysArray(props) {
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: element.businessObject,
-      newElements: newCorrelationKey
+      newElements: newCorrelationKey,
     });
   }
 
@@ -71,50 +76,101 @@ function removeFactory(props) {
     });
     // Also update the label of all the references
     const references = findDataReferenceShapes(element, dataObject.id);
-    for (const ref of references) {
+    for (const cpRef of references) {
       commandStack.execute('element.updateProperties', {
-        element: ref,
-        moddleElement: ref.businessObject,
+        element: cpRef,
+        moddleElement: cpRef.businessObject,
         properties: {
           name: '???',
         },
-        changed: [ref], // everything is already marked as changed, don't recalculate.
+        changed: [cpRef], // everything is already marked as changed, don't recalculate.
       });
     }
   };
 }
 
+// <bpmn:correlationKey name="lover"> <--- The CorrelationKeyGroup
+//   <bpmn:correlationPropertyRef>lover_name</bpmn:correlationPropertyRef>
+//   <bpmn:correlationPropertyRef>lover_instrument</bpmn:correlationPropertyRef>
+// </bpmn:correlationKey>
+// <bpmn:correlationKey name="singer" />
 function correlationGroup(props) {
   const { element, correlationProperty } = props;
-  const id = `correlation-${correlationProperty.id}`;
-  return {
-    id,
-    label: correlationProperty.id,
-    entries: CorrelationKeyGroup({
-      id,
-      element,
+  const id = `correlation-${correlationProperty.name}`;
+  console.log('HELL1');
+  // return [
+  //   {
+  //     // id,
+  //     // label: correlationProperty.name,
+  //     // entries: [],
+  //     // entries: CorrelationKeyGroup({
+  //     //   id,
+  //     //   element,
+  //     //   correlationProperty,
+  //     // }),
+  //     id: `${id}-hey-group`,
+  //     // component: CorrelationKeyGroup,
+  //     component: CorrelationKeyTextField,
+  //     // isEdited: isTextFieldEntryEdited,
+  //     correlationProperty,
+  //     // autoFocusEntry: id,
+  //   },
+  // ];
+  return correlationProperty.refs.map((cpRef, index) => {
+    console.log('ref1', cpRef);
+    return {
+      // id,
+      // label: correlationProperty.name,
+      // entries: [],
+      // entries: CorrelationKeyGroup({
+      //   id,
+      //   element,
+      //   correlationProperty,
+      // }),
+      id: `${id}-${cpRef.id}-group`,
+      // component: CorrelationKeyGroup,
+      component: CorrelationKeyTextField,
+      // isEdited: isTextFieldEntryEdited,
       correlationProperty,
-    }),
-    autoFocusEntry: id,
-  };
+      cpRef,
+      // autoFocusEntry: id,
+    };
+  });
 }
 
 function CorrelationKeyGroup(props) {
-  const { idPrefix, correlationProperty } = props;
+  const { id, correlationProperty } = props;
+  console.log('HELLO');
 
-  return [
-    {
-      id: `${idPrefix}-group`,
+  const entries = correlationProperty.refs.map((cpRef, index) => {
+    // debugger;
+    // return CorrelationKeyTextField({
+    return {
+      id: `${id}-${cpRef.id}-group`,
       component: CorrelationKeyTextField,
       isEdited: isTextFieldEntryEdited,
-      idPrefix,
+      correlationProperty,
+    };
+    // })
+  });
+  // console.log('stuff', stuff);
+
+  console.log('entries', entries);
+  return [
+    {
+      id: `${id}-group`,
+      entries,
+      isEdited: isTextFieldEntryEdited,
       correlationProperty,
     },
   ];
 }
 
 function CorrelationKeyTextField(props) {
-  const { idPrefix, element, parameter, correlationProperty } = props;
+  console.log('WE IN TEXT');
+  console.log('props', props);
+  const { id, element, parameter, correlationProperty, cpRef } = props;
+  console.log('cpRef', cpRef);
 
   const commandStack = useService('commandStack');
   const debounce = useService('debounceInput');
@@ -131,14 +187,14 @@ function CorrelationKeyTextField(props) {
     // Also update the label of all the references
     // const references = findDataReferenceShapes(element, correlationProperty.id);
     const references = ['hello1', 'hello2'];
-    for (const ref of references) {
+    for (const cpRef of references) {
       commandStack.execute('element.updateProperties', {
-        element: ref,
-        moddleElement: ref.businessObject,
+        element: cpRef,
+        moddleElement: cpRef.businessObject,
         properties: {
           name: value,
         },
-        changed: [ref], // everything is already marked as changed, don't recalculate.
+        changed: [cpRef], // everything is already marked as changed, don't recalculate.
       });
     }
   };
@@ -147,11 +203,20 @@ function CorrelationKeyTextField(props) {
     return correlationProperty.refs;
   };
 
-  return ListGroup({
+  // return ListGroup({
+  //   element: parameter,
+  //   items: correlationProperty.refs,
+  //   id: `${idPrefix}-textField`,
+  //   label: 'Correlation Properties',
+  //   getValue,
+  //   setValue,
+  //   debounce,
+  // });
+  console.log('correlationProperty.id', correlationProperty.name);
+  return TextFieldEntry({
     element: parameter,
-    items: correlationProperty.refs,
-    id: `${idPrefix}-textField`,
-    label: 'Correlation Properties',
+    id: `${id}-textField`,
+    label: cpRef.id,
     getValue,
     setValue,
     debounce,

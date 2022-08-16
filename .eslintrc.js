@@ -45,5 +45,9 @@ module.exports = {
     'react/prop-types': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'no-use-before-define': 0,
+    'func-names': 'off',
+    'react/destructuring-assignment': 'off',
+    'import/prefer-default-export': 'off',
+    'no-restricted-syntax': 'off',
   },
 };
