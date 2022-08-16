@@ -75,7 +75,7 @@
   "dependencies": {
     "@bpmn-io/properties-panel": "^0.18.0",
     "bpmn-js": "^9.2.2",
-    "bpmn-js-properties-panel": "^1.1.1",
+    "bpmn-js-properties-panel": "^1.2.0",
     "diagram-js": "^8.5.0",
     "inherits": "^2.0.4",
     "inherits-browser": "^0.0.1",
