@@ -7,10 +7,13 @@ import {
 import { useService } from 'bpmn-js-properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { CorrelationKeysArray } from './CorrelationKeysArray';
-import {DataObjectSelect} from '../../DataObject/propertiesPanel/DataObjectSelect';
-import {MessageSelect} from './MessageSelect';
-import {MessagePayload} from './MessagePayload';
-import { MessageCorrelations, MessageCorrelationsArray } from './MessageCorrelationsArray';
+import { DataObjectSelect } from '../../DataObject/propertiesPanel/DataObjectSelect';
+import { MessageSelect } from './MessageSelect';
+import { MessagePayload } from './MessagePayload';
+import {
+  MessageCorrelations,
+  MessageCorrelationsArray,
+} from './MessageCorrelationsArray';
 
 // import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 // import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
@@ -26,14 +29,44 @@ export default function MessagesPropertiesProvider(
   this.getGroups = function getGroupsCallback(element) {
     return function pushGroup(groups) {
       if (is(element, 'bpmn:Collaboration')) {
-        groups.push(createCollaborationGroup(element, translate, moddle, commandStack, elementRegistry));
-      }
-      if (is(element, 'bpmn:SendTask')) {
-        groups.push(createMessageGroup(element, translate, moddle, commandStack, elementRegistry));
+        groups.push(
+          createCollaborationGroup(
+            element,
+            translate,
+            moddle,
+            commandStack,
+            elementRegistry
+          )
+        );
+      } else if (
+        is(element, 'bpmn:SendTask') ||
+        is(element, 'bpmn:IntermediateThrowEvent')
+      ) {
+        const messageIndex = findEntry(groups, 'message');
+        groups.splice(messageIndex, 1);
+        groups.push(
+          createMessageGroup(
+            element,
+            translate,
+            moddle,
+            commandStack,
+            elementRegistry
+          )
+        );
       }
       return groups;
     };
   };
+
+  function findEntry(entries, entryId) {
+    let entryIndex = null;
+    entries.forEach(function (value, index) {
+      if (value.id === entryId) {
+        entryIndex = index;
+      }
+    });
+    return entryIndex;
+  }
   propertiesPanel.registerProvider(LOW_PRIORITY, this);
 }
 
@@ -123,7 +156,13 @@ MessagesPropertiesProvider.$inject = [
  * @param element
  * @param translate
  * @returns The components to add to the properties panel. */
-function createCollaborationGroup(element, translate, moddle, commandStack, elementRegistry) {
+function createCollaborationGroup(
+  element,
+  translate,
+  moddle,
+  commandStack,
+  elementRegistry
+) {
   return {
     id: 'correlation_keys',
     label: translate('Correlation Keys'),
@@ -137,7 +176,13 @@ function createCollaborationGroup(element, translate, moddle, commandStack, elem
  * @param element
  * @param translate
  * @returns The components to add to the properties panel. */
-function createMessageGroup(element, translate, moddle, commandStack, elementRegistry) {
+function createMessageGroup(
+  element,
+  translate,
+  moddle,
+  commandStack,
+  elementRegistry
+) {
   return {
     id: 'messages',
     label: translate('Message'),
@@ -160,11 +205,15 @@ function createMessageGroup(element, translate, moddle, commandStack, elementReg
       },
       {
         id: 'messageCorrelations',
-        label: translate("Message Correlations"),
+        label: translate('Message Correlations'),
         component: ListGroup,
-        ...MessageCorrelationsArray({ element, moddle, commandStack, elementRegistry }),
+        ...MessageCorrelationsArray({
+          element,
+          moddle,
+          commandStack,
+          elementRegistry,
+        }),
       },
     ],
   };
 }
-
