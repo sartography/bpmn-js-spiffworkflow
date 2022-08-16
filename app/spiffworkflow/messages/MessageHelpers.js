@@ -50,15 +50,39 @@ function processCorrelationProperty(correlationProperty, message) {
   return expressions
 }
 
-export function findCorrelationKeys(element) {
+export function findCorrelationProperties(element) {
   const root = getRoot(element);
   const correlationProperties = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:CorrelationProperty') {
       correlationProperties.push(rootElement);
     }
+
   }
-  return correlationProperties;
+  return correlationProperties
+}
+
+export function findCorrelationKeys(element) {
+  const root = getRoot(element);
+  const correlationKeys = [];
+  for (const rootElement of root.rootElements) {
+    if (rootElement.$type === 'bpmn:Collaboration') {
+      const currentKeys = rootElement.correlationKeys;
+      for (let correlationKey in currentKeys) {
+        let correlationProperties = [];
+        const currentCorrelation = rootElement.correlationKeys[correlationKey];
+        let currentProperty = {}
+        currentProperty.name = currentCorrelation.name;
+        currentProperty.refs = [];
+        for (let correlationProperty in currentCorrelation.correlationPropertyRef) {
+          console.log("findCorrelationKeys: propertyRef", correlationProperty);
+          currentProperty.refs.push(currentCorrelation.correlationPropertyRef[correlationProperty]);
+        }
+        correlationKeys.push(currentProperty);
+      }
+    }
+  }
+  return correlationKeys
 }
 
 export function findMessageModdleElements(element) {

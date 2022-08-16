@@ -119,6 +119,10 @@ export function findButton(id, container) {
   return domQuery(`button[id='${ id }']`, container);
 }
 
+export function findButtonByClass(buttonClass, container) {
+  return domQuery(`button[class='${ buttonClass }']`, container)
+}
+
 export function findSelect(container) {
   return domQuery('select', container);
 }
@@ -129,6 +133,10 @@ export function changeInput(input, value) {
 
 export function pressButton(button) {
   fireEvent.click(button);
+}
+
+export function findDivByClass(divClass, container) {
+  return domQuery(`div[class='${ divClass }']`, container)
 }
 
 

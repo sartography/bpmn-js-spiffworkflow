@@ -31,10 +31,36 @@ export function MessageCorrelationsArray(props) {
     };
   });
 
-  function add(event) {}
+  function add(event) {
+    event.stopPropagation();
+    const newRetrievalExpression = moddle.create('bpmn:CorrelationPropertyRetrievalExpression');
+    const newElements = formalExpressions;
+    newRetrievalExpression.messageRef = element.businessObject.messageRef;
+    newElements.push(newRetrievalExpression);
+    console.log('element', element);
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: element.businessObject,
+    });
+
+  }
 
   return { items, add }
 
+}
+
+function MessageKeyGroup(props) {
+  const { idPrefix, keys } = props;
+
+  return [
+    {
+      id: `${idPrefix}-group`,
+      component: MessageCorrelationGroup,
+      isEdited: isTextFieldEntryEdited,
+      idPrefix,
+      formalExpression: keys
+    }
+  ]
 }
 
 function MessageCorrelationGroup(props) {

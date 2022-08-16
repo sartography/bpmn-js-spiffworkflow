@@ -1,5 +1,5 @@
 import TestContainer from 'mocha-test-container-support';
-import { bootstrapPropertiesPanel, expectSelected, findEntry, findGroupEntry, findInput, findSelect, findTextarea } from './helpers';
+import { bootstrapPropertiesPanel, expectSelected, findEntry, findGroupEntry, findInput, findSelect, findTextarea, findButtonByClass, pressButton, findDivByClass } from './helpers';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
@@ -89,6 +89,37 @@ describe('Messages should work', function() {
 
     console.log("Message Correlations: ");
 
+  });
+
+  it('should add a new correlation when clicked', async function() {
+
+    // Select the second Task
+    const send_shape = await expectSelected('ActivitySendLetter');
+    expect(send_shape, "Can't find Send Task").to.exist;
+
+    const buttonClass = "bio-properties-panel-group-header-button bio-properties-panel-add-entry";
+    let button = findButtonByClass(buttonClass, container);
+    pressButton(button);
+
+    console.log(button);
+
+  });
+
+  it('should add a new Correlation Key when clicked', async function() {
+    const divClass = "bio-properties-panel-list";
+    const divs = findDivByClass(divClass, container);
+
+    const buttonClass = "bio-properties-panel-group-header-button bio-properties-panel-add-entry";
+    let button = findButtonByClass(buttonClass, container);
+    pressButton(button);
+
+    // THEN - a select Data Object section should appear in the properties panel
+    let entry = findGroupEntry('correlation_keys', container);
+    expect(entry).to.exist;
+
+    let divs2 = findDivByClass(divClass, container);
+
+    console.log(button);
   });
 
 });

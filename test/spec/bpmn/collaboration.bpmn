@@ -10,8 +10,6 @@
     <bpmn:messageFlow id="Flow_0vonyt2" sourceRef="Participant_1tlkvw1" targetRef="Event_06829ki" />
     <bpmn:correlationKey name="lover">
       <bpmn:correlationPropertyRef>lover_name</bpmn:correlationPropertyRef>
-    </bpmn:correlationKey>
-    <bpmn:correlationKey name="instrument">
       <bpmn:correlationPropertyRef>lover_instrument</bpmn:correlationPropertyRef>
     </bpmn:correlationKey>
     <bpmn:correlationKey name="singer" />
