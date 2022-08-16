@@ -11,7 +11,16 @@ export function MessageSelect(props) {
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    if (shapeElement.businessObject.messageRef) {
+    if (shapeElement.businessObject.$type === 'bpmn:IntermediateThrowEvent') {
+      const messageEventDefinition =
+        shapeElement.businessObject.eventDefinitions[0];
+      if (messageEventDefinition.messageRef) {
+        return messageEventDefinition.messageRef.id;
+      }
+    } else if (
+      shapeElement.businessObject.$type === 'bpmn:SendTask' &&
+      shapeElement.businessObject.messageRef
+    ) {
       return shapeElement.businessObject.messageRef.id;
     }
     return '';
@@ -22,21 +31,26 @@ export function MessageSelect(props) {
     const { businessObject } = shapeElement;
     const messages = findMessageModdleElements(shapeElement.businessObject);
     for (const message of messages) {
-      if (businessObject.$type === 'bpmn:SendTask' && message.id === value) {
-        commandStack.execute('element.updateModdleProperties', {
-          element: shapeElement,
-          moddleElement: businessObject,
-          properties: {
-            messageRef: message,
-          },
-        });
-        commandStack.execute('element.updateProperties', {
-          element: shapeElement,
-          moddleElement: businessObject,
-          properties: {
-            messageRef: message,
-          },
-        });
+      if (message.id === value) {
+        if (businessObject.$type === 'bpmn:IntermediateThrowEvent') {
+          const messageEventDefinition = businessObject.eventDefinitions[0];
+          messageEventDefinition.messageRef = message;
+        } else if (businessObject.$type === 'bpmn:SendTask') {
+          commandStack.execute('element.updateModdleProperties', {
+            element: shapeElement,
+            moddleElement: businessObject,
+            properties: {
+              messageRef: message,
+            },
+          });
+          commandStack.execute('element.updateProperties', {
+            element: shapeElement,
+            moddleElement: businessObject,
+            properties: {
+              messageRef: message,
+            },
+          });
+        }
       }
     }
   };

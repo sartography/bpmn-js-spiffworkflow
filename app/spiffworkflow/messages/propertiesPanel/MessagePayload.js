@@ -13,6 +13,7 @@ export function MessagePayload(props) {
   const getMessagePayloadObject = () => {
     const { businessObject } = shapeElement;
     const taskMessage = businessObject.messageRef;
+    console.log('taskMessage', taskMessage);
     const messages = findMessageModdleElements(businessObject);
     if (taskMessage) {
       for (const message of messages) {
