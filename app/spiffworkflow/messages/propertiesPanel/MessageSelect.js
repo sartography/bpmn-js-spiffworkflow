@@ -1,6 +1,9 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
-import { findMessageModdleElements } from '../MessageHelpers';
+import {
+  findMessageModdleElements,
+  getMessageRefElement,
+} from '../MessageHelpers';
 
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
@@ -11,17 +14,9 @@ export function MessageSelect(props) {
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    if (shapeElement.businessObject.$type === 'bpmn:IntermediateThrowEvent') {
-      const messageEventDefinition =
-        shapeElement.businessObject.eventDefinitions[0];
-      if (messageEventDefinition.messageRef) {
-        return messageEventDefinition.messageRef.id;
-      }
-    } else if (
-      shapeElement.businessObject.$type === 'bpmn:SendTask' &&
-      shapeElement.businessObject.messageRef
-    ) {
-      return shapeElement.businessObject.messageRef.id;
+    const messageRefElement = getMessageRefElement(shapeElement.businessObject);
+    if (messageRefElement) {
+      return messageRefElement.id;
     }
     return '';
   };
@@ -35,6 +30,11 @@ export function MessageSelect(props) {
         if (businessObject.$type === 'bpmn:IntermediateThrowEvent') {
           const messageEventDefinition = businessObject.eventDefinitions[0];
           messageEventDefinition.messageRef = message;
+          // call this to update the other elements in the props panel like payload
+          commandStack.execute('element.updateModdleProperties', {
+            element: shapeElement,
+            moddleElement: businessObject,
+          });
         } else if (businessObject.$type === 'bpmn:SendTask') {
           commandStack.execute('element.updateModdleProperties', {
             element: shapeElement,

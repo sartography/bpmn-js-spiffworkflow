@@ -13,6 +13,21 @@ export function getRoot(element) {
   return element;
 }
 
+export function getMessageRefElement(businessObject) {
+  if (businessObject.$type === 'bpmn:IntermediateThrowEvent') {
+    const messageEventDefinition = businessObject.eventDefinitions[0];
+    if (messageEventDefinition.messageRef) {
+      return messageEventDefinition.messageRef;
+    }
+  } else if (
+    businessObject.$type === 'bpmn:SendTask' &&
+    businessObject.messageRef
+  ) {
+    return businessObject.messageRef;
+  }
+  return '';
+}
+
 export function findFormalExpressions(element) {
   const formalExpressions = [];
   if (element.messageRef) {
