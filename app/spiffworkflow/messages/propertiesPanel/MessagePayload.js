@@ -11,16 +11,21 @@ export function MessagePayload(props) {
   const debounce = useService('debounceInput');
 
   const getMessagePayloadObject = () => {
-    const businessObject = shapeElement.businessObject;
-    const taskMessage = businessObject.messageRef
-    const messages = findMessageModdleElements(businessObject)
-    for (let message of messages) {
-      if (message.id === taskMessage.id) {
-        return message.extensionElements
-          .get('values')
-          .filter(function getInstanceOfType(e) {
-            return e.$instanceOf('spiffworkflow:messagePayload');
-          })[0];
+    const { businessObject } = shapeElement;
+    const taskMessage = businessObject.messageRef;
+    const messages = findMessageModdleElements(businessObject);
+    if (taskMessage) {
+      for (const message of messages) {
+        if (message.id === taskMessage.id) {
+          const { extensionElements } = message;
+          if (extensionElements) {
+            return message.extensionElements
+              .get('values')
+              .filter(function getInstanceOfType(e) {
+                return e.$instanceOf('spiffworkflow:messagePayload');
+              })[0];
+          }
+        }
       }
     }
     return null;
@@ -38,14 +43,16 @@ export function MessagePayload(props) {
     const { businessObject } = shapeElement;
     let MessagePayloadObject = getMessagePayloadObject();
     if (!MessagePayloadObject) {
-      MessagePayloadObject = businessObject.$model.create('spiffworkflow:messagePayload');
+      MessagePayloadObject = businessObject.$model.create(
+        'spiffworkflow:messagePayload'
+      );
       // if (type !== SCRIPT_TYPE.bpmn) {
-        if (!businessObject.extensionElements) {
-          businessObject.extensionElements = businessObject.$model.create(
-            'bpmn:ExtensionElements'
-          );
-        }
-        businessObject.extensionElements.get('values').push(MessagePayloadObject);
+      if (!businessObject.extensionElements) {
+        businessObject.extensionElements = businessObject.$model.create(
+          'bpmn:ExtensionElements'
+        );
+      }
+      businessObject.extensionElements.get('values').push(MessagePayloadObject);
       // }
     }
     MessagePayloadObject.payload = value;

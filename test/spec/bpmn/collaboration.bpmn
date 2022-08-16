@@ -48,7 +48,7 @@
     </bpmn:correlationPropertyRetrievalExpression>
   </bpmn:correlationProperty>
 
-  <bpmn:correlationProperty id="singer" name="Singer&#39;s Name">
+  <bpmn:correlationProperty id="singer_name" name="Singer&#39;s Name">
     <bpmn:correlationPropertyRetrievalExpression messageRef="love_letter_response">
       <bpmn:formalExpression>to.name</bpmn:formalExpression>
     </bpmn:correlationPropertyRetrievalExpression>
