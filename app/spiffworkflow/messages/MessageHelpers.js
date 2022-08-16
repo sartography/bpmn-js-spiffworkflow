@@ -1,3 +1,5 @@
+import { is } from 'bpmn-js/lib/util/ModelUtil';
+
 /**
  * loops up until it can find the root.
  * @param element
@@ -13,10 +15,18 @@ export function getRoot(element) {
   return element;
 }
 
+export function isMessageEvent(shapeElement) {
+  const { eventDefinitions } = shapeElement.businessObject;
+  if (eventDefinitions && eventDefinitions[0]) {
+    return eventDefinitions[0].$type === 'bpmn:MessageEventDefinition';
+  }
+  return false;
+}
+
 export function getMessageRefElement(businessObject) {
   if (businessObject.$type === 'bpmn:IntermediateThrowEvent') {
     const messageEventDefinition = businessObject.eventDefinitions[0];
-    if (messageEventDefinition.messageRef) {
+    if (messageEventDefinition && messageEventDefinition.messageRef) {
       return messageEventDefinition.messageRef;
     }
   } else if (

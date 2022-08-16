@@ -1,22 +1,11 @@
-import {
-  ListGroup,
-  TextAreaEntry,
-  TextFieldEntry,
-  isTextFieldEntryEdited,
-} from '@bpmn-io/properties-panel';
-import { useService } from 'bpmn-js-properties-panel';
-import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
+import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
+import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { CorrelationKeysArray } from './CorrelationKeysArray';
-import { DataObjectSelect } from '../../DataObject/propertiesPanel/DataObjectSelect';
 import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
-import {
-  MessageCorrelations,
-  MessageCorrelationsArray,
-} from './MessageCorrelationsArray';
+import { MessageCorrelationsArray } from './MessageCorrelationsArray';
+import { isMessageEvent } from '../MessageHelpers';
 
-// import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
-// import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 const LOW_PRIORITY = 500;
 
 export default function MessagesPropertiesProvider(
@@ -38,10 +27,7 @@ export default function MessagesPropertiesProvider(
             elementRegistry
           )
         );
-      } else if (
-        is(element, 'bpmn:SendTask') ||
-        is(element, 'bpmn:IntermediateThrowEvent')
-      ) {
+      } else if (is(element, 'bpmn:SendTask') || isMessageEvent(element)) {
         const messageIndex = findEntry(groups, 'message');
         groups.splice(messageIndex, 1);
         groups.push(
@@ -77,78 +63,6 @@ MessagesPropertiesProvider.$inject = [
   'commandStack',
   'elementRegistry',
 ];
-
-// function CorrelationKeysComponent(props) {
-//   const { element } = props;
-//   const debounce = useService('debounceInput');
-//   const getValue = () => {
-//     return '';
-//   };
-//
-//   const setValue = (value) => {};
-//
-//   return (
-//     <TextAreaEntry
-//       id="message_collaborations"
-//       element={element}
-//       description="description"
-//       label="label"
-//       getValue={getValue}
-//       setValue={setValue}
-//       debounce={debounce}
-//     />
-//   );
-// }
-//
-// function CorrelationKeyNew() {
-//
-// }
-//
-// function CorrelationKeyAddButton(props) {
-//   const { element } = props;
-//   const debounce = useService('debounceInput');
-//   const getValue = () => {
-//     return '';
-//   };
-//
-//   const setValue = (value) => {};
-//
-//   // return (
-//   //   <TextAreaEntry
-//   //     id="message_collaborations"
-//   //     element={element}
-//   //     description="description"
-//   //     label="label"
-//   //     getValue={getValue}
-//   //     setValue={setValue}
-//   //     debounce={debounce}
-//   //   />
-//   // );
-//   return (
-//     <HeaderButton
-//       className="spiffworkflow-properties-panel-button"
-//       onClick={CorrelationKeyNew}
-//     >
-//       Add Correlation Key
-//     </HeaderButton>
-//   )
-// }
-//
-// function correlationKeysEntries(element, moddle, _label, _description, commandStack, elementRegistry) {
-//   return [
-//     {
-//       component: ListGroup,
-//       element,
-//       id: 'editStuffs',
-//       label: 'The Stuffs',
-//       commandStack,
-//       elementRegistry,
-//       element,
-//       moddle,
-//       ...CorrelationKeysArray({ element, moddle, commandStack, elementRegistry }),
-//     },
-//   ];
-// }
 
 /**
  * Adds a group to the properties panel for the script task that allows you
