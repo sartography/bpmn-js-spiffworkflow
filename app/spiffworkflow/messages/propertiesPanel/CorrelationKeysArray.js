@@ -3,6 +3,7 @@ import {
   isTextFieldEntryEdited,
   ListGroup,
   TextFieldEntry,
+  SimpleEntry,
 } from '@bpmn-io/properties-panel';
 import { without } from 'min-dash';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
@@ -30,36 +31,32 @@ export function CorrelationKeysArray(props) {
   const correlationProperties = findCorrelationKeys(element.businessObject);
   const items = correlationProperties.map((correlationProperty, index) => {
     const id = `correlationGroup-${correlationProperty.name}`;
-    // console.log('correlationProperty.refs', correlationProperty.refs);
-    console.log('id', id);
     return {
       id,
       correlationProperty,
       label: correlationProperty.name,
-      // entries: correlationProperty.refs,
       entries: correlationGroup({
         id,
         element,
         correlationProperty,
       }),
       autoFocusEntry: id,
-      // remove: removeFactory({ element, correlationProperty, commandStack, elementRegistry })
     };
   });
 
-  function add(event) {
-    event.stopPropagation();
-    const newCorrelationKey = moddle.create('bpmn:CorrelationKey');
-    newCorrelationKey.name = moddle.ids.nextPrefixed('CorrelationKey_');
-    console.log('newCorrelationKey', newCorrelationKey);
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: element.businessObject,
-      newElements: newCorrelationKey,
-    });
-  }
+  // function add(event) {
+  //   event.stopPropagation();
+  //   const newCorrelationKey = moddle.create('bpmn:CorrelationKey');
+  //   newCorrelationKey.name = moddle.ids.nextPrefixed('CorrelationKey_');
+  //   console.log('newCorrelationKey', newCorrelationKey);
+  //   commandStack.execute('element.updateModdleProperties', {
+  //     element,
+  //     moddleElement: element.businessObject,
+  //     newElements: newCorrelationKey,
+  //   });
+  // }
 
-  return { items, add };
+  return { items };
 }
 
 function removeFactory(props) {
@@ -97,128 +94,33 @@ function removeFactory(props) {
 function correlationGroup(props) {
   const { element, correlationProperty } = props;
   const id = `correlation-${correlationProperty.name}`;
-  console.log('HELL1');
-  // return [
-  //   {
-  //     // id,
-  //     // label: correlationProperty.name,
-  //     // entries: [],
-  //     // entries: CorrelationKeyGroup({
-  //     //   id,
-  //     //   element,
-  //     //   correlationProperty,
-  //     // }),
-  //     id: `${id}-hey-group`,
-  //     // component: CorrelationKeyGroup,
-  //     component: CorrelationKeyTextField,
-  //     // isEdited: isTextFieldEntryEdited,
-  //     correlationProperty,
-  //     // autoFocusEntry: id,
-  //   },
-  // ];
   return correlationProperty.refs.map((cpRef, index) => {
-    console.log('ref1', cpRef);
     return {
-      // id,
-      // label: correlationProperty.name,
-      // entries: [],
-      // entries: CorrelationKeyGroup({
-      //   id,
-      //   element,
-      //   correlationProperty,
-      // }),
       id: `${id}-${cpRef.id}-group`,
-      // component: CorrelationKeyGroup,
       component: CorrelationKeyTextField,
-      // isEdited: isTextFieldEntryEdited,
       correlationProperty,
       cpRef,
-      // autoFocusEntry: id,
     };
   });
-}
-
-function CorrelationKeyGroup(props) {
-  const { id, correlationProperty } = props;
-  console.log('HELLO');
-
-  const entries = correlationProperty.refs.map((cpRef, index) => {
-    // debugger;
-    // return CorrelationKeyTextField({
-    return {
-      id: `${id}-${cpRef.id}-group`,
-      component: CorrelationKeyTextField,
-      isEdited: isTextFieldEntryEdited,
-      correlationProperty,
-    };
-    // })
-  });
-  // console.log('stuff', stuff);
-
-  console.log('entries', entries);
-  return [
-    {
-      id: `${id}-group`,
-      entries,
-      isEdited: isTextFieldEntryEdited,
-      correlationProperty,
-    },
-  ];
 }
 
 function CorrelationKeyTextField(props) {
-  console.log('WE IN TEXT');
-  console.log('props', props);
   const { id, element, parameter, correlationProperty, cpRef } = props;
-  console.log('cpRef', cpRef);
 
   const commandStack = useService('commandStack');
   const debounce = useService('debounceInput');
 
-  const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: correlationProperty,
-      properties: {
-        id: value,
-      },
-    });
-
-    // Also update the label of all the references
-    // const references = findDataReferenceShapes(element, correlationProperty.id);
-    const references = ['hello1', 'hello2'];
-    for (const cpRef of references) {
-      commandStack.execute('element.updateProperties', {
-        element: cpRef,
-        moddleElement: cpRef.businessObject,
-        properties: {
-          name: value,
-        },
-        changed: [cpRef], // everything is already marked as changed, don't recalculate.
-      });
-    }
-  };
-
   const getValue = (parameter) => {
-    return correlationProperty.refs;
+    return cpRef.id;
   };
 
-  // return ListGroup({
-  //   element: parameter,
-  //   items: correlationProperty.refs,
-  //   id: `${idPrefix}-textField`,
-  //   label: 'Correlation Properties',
-  //   getValue,
-  //   setValue,
-  //   debounce,
-  // });
-  console.log('correlationProperty.id', correlationProperty.name);
-  return TextFieldEntry({
+  return SimpleEntry({
     element: parameter,
     id: `${id}-textField`,
     label: cpRef.id,
+    editable: false,
     getValue,
-    setValue,
+    disabled: true,
     debounce,
   });
 }

@@ -8,7 +8,7 @@ import {
   expectSelected,
   findEntry,
   findGroupEntry,
-  findInput,
+  // findInput,
   findSelect,
   findTextarea,
   findButtonByClass,
@@ -47,7 +47,7 @@ describe('Messages should work', function () {
     expect(entry).to.exist;
   });
 
-  it.only('should show a Message Properties group when a send task is selected', async function () {
+  it('should show a Message Properties group when a send task is selected', async function () {
     // Select the send Task
     const send_shape = await expectSelected('ActivitySendLetter');
     expect(send_shape, "Can't find Send Task").to.exist;
@@ -99,38 +99,34 @@ describe('Messages should work', function () {
     // THEN - there are correlations.
     const correlations = findGroupEntry('messageCorrelations', container);
     expect(correlations, "Can't find the message correlations").to.exist;
-
-    console.log('Message Correlations: ');
   });
 
-  it('should add a new correlation when clicked', async function () {
-    // Select the second Task
-    const send_shape = await expectSelected('ActivitySendLetter');
-    expect(send_shape, "Can't find Send Task").to.exist;
-
-    const buttonClass =
-      'bio-properties-panel-group-header-button bio-properties-panel-add-entry';
-    const button = findButtonByClass(buttonClass, container);
-    pressButton(button);
-
-    console.log(button);
-  });
-
-  it('should add a new Correlation Key when clicked', async function () {
-    const divClass = 'bio-properties-panel-list';
-    const divs = findDivByClass(divClass, container);
-
-    const buttonClass =
-      'bio-properties-panel-group-header-button bio-properties-panel-add-entry';
-    const button = findButtonByClass(buttonClass, container);
-    pressButton(button);
-
-    // THEN - a select Data Object section should appear in the properties panel
-    const entry = findGroupEntry('correlation_keys', container);
-    expect(entry).to.exist;
-
-    const divs2 = findDivByClass(divClass, container);
-
-    console.log(button);
-  });
+  // it('should add a new correlation when clicked', async function () {
+  //   // Select the second Task
+  //   const send_shape = await expectSelected('ActivitySendLetter');
+  //   expect(send_shape, "Can't find Send Task").to.exist;
+  //
+  //   const buttonClass =
+  //     'bio-properties-panel-group-header-button bio-properties-panel-add-entry';
+  //   const button = findButtonByClass(buttonClass, container);
+  //   pressButton(button);
+  //
+  //   console.log(button);
+  // });
+  //
+  // it('should add a new Correlation Key when clicked', async function () {
+  //   const divClass = 'bio-properties-panel-list';
+  //   const divs = findDivByClass(divClass, container);
+  //
+  //   const buttonClass =
+  //     'bio-properties-panel-group-header-button bio-properties-panel-add-entry';
+  //   const button = findButtonByClass(buttonClass, container);
+  //   pressButton(button);
+  //
+  //   // THEN - a select Data Object section should appear in the properties panel
+  //   const entry = findGroupEntry('correlation_keys', container);
+  //   expect(entry).to.exist;
+  //
+  //   const divs2 = findDivByClass(divClass, container);
+  // });
 });

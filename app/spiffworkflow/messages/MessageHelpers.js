@@ -10,7 +10,6 @@ export function getRoot(element) {
   if (typeof element.$parent !== 'undefined') {
     return getRoot(element.$parent);
   }
-  console.log('Cannot getRoot: ', element);
   return element;
 }
 
@@ -79,7 +78,6 @@ export function findCorrelationKeys(element) {
         currentProperty.name = currentCorrelation.name;
         currentProperty.refs = [];
         for (const correlationProperty in currentCorrelation.correlationPropertyRef) {
-          console.log('findCorrelationKeys: propertyRef', correlationProperty);
           currentProperty.refs.push(
             currentCorrelation.correlationPropertyRef[correlationProperty]
           );
