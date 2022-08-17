@@ -86,6 +86,20 @@ export function findFormalExpressions(shapeElement) {
   return formalExpressions;
 }
 
+export function getMessageElementForShapeElement(shapeElement) {
+  const { businessObject } = shapeElement;
+  const taskMessage = getMessageRefElement(shapeElement);
+  const messages = findMessageModdleElements(businessObject);
+  if (taskMessage) {
+    for (const message of messages) {
+      if (message.id === taskMessage.id) {
+        return message;
+      }
+    }
+  }
+  return null;
+}
+
 function processCorrelationProperty(correlationProperty, message) {
   const expressions = [];
   for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {

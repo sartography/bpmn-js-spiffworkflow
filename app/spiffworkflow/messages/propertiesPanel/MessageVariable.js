@@ -1,9 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import {
-  findMessageModdleElements,
-  getMessageRefElement,
-} from '../MessageHelpers';
+import { getMessageElementForShapeElement } from '../MessageHelpers';
 
 /**
  * Allows the creation, or editing of messageVariable at the bpmn:sendTask level of a BPMN document.
@@ -13,21 +10,15 @@ export function MessageVariable(props) {
   const debounce = useService('debounceInput');
 
   const getMessageVariableObject = () => {
-    const { businessObject } = shapeElement;
-    const taskMessage = getMessageRefElement(shapeElement);
-    const messages = findMessageModdleElements(businessObject);
-    if (taskMessage) {
-      for (const message of messages) {
-        if (message.id === taskMessage.id) {
-          const { extensionElements } = message;
-          if (extensionElements) {
-            return message.extensionElements
-              .get('values')
-              .filter(function getInstanceOfType(e) {
-                return e.$instanceOf('spiffworkflow:messageVariable');
-              })[0];
-          }
-        }
+    const messageElement = getMessageElementForShapeElement(shapeElement);
+    if (messageElement) {
+      const { extensionElements } = messageElement;
+      if (extensionElements) {
+        return messageElement.extensionElements
+          .get('values')
+          .filter(function getInstanceOfType(e) {
+            return e.$instanceOf('spiffworkflow:messageVariable');
+          })[0];
       }
     }
     return null;
@@ -35,7 +26,6 @@ export function MessageVariable(props) {
 
   const getValue = () => {
     const messageVariableObject = getMessageVariableObject();
-    // console.log('messageVariableObject', messageVariableObject);
     if (messageVariableObject) {
       return messageVariableObject.messageVariable;
     }
@@ -43,19 +33,18 @@ export function MessageVariable(props) {
   };
 
   const setValue = (value) => {
-    const { businessObject } = shapeElement;
     let messageVariableObject = getMessageVariableObject();
-    // console.log('messageVariableObject', messageVariableObject);
     if (!messageVariableObject) {
-      messageVariableObject = businessObject.$model.create(
+      const messageElement = getMessageElementForShapeElement(shapeElement);
+      messageVariableObject = messageElement.$model.create(
         'spiffworkflow:messageVariable'
       );
-      if (!businessObject.extensionElements) {
-        businessObject.extensionElements = businessObject.$model.create(
+      if (!messageElement.extensionElements) {
+        messageElement.extensionElements = messageElement.$model.create(
           'bpmn:ExtensionElements'
         );
       }
-      businessObject.extensionElements
+      messageElement.extensionElements
         .get('values')
         .push(messageVariableObject);
     }

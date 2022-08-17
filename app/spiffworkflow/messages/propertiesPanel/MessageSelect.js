@@ -16,7 +16,6 @@ export function MessageSelect(props) {
 
   const getValue = () => {
     const messageRefElement = getMessageRefElement(shapeElement);
-    console.log('messageRefElement', messageRefElement);
     if (messageRefElement) {
       return messageRefElement.id;
     }
