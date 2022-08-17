@@ -1,6 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SimpleEntry } from '@bpmn-io/properties-panel';
-import { findCorrelationKeys } from '../MessageHelpers';
+import { findCorrelationKeys, getRoot } from '../MessageHelpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -8,7 +8,7 @@ import { findCorrelationKeys } from '../MessageHelpers';
  * @constructor
  */
 export function CorrelationKeysArray(props) {
-  const { element } = props; // fixme:  Is it a shape or a moddle element?
+  const { element, moddle, commandStack } = props;
 
   const correlationProperties = findCorrelationKeys(element.businessObject);
   const items = correlationProperties.map((correlationProperty, _index) => {
@@ -26,7 +26,26 @@ export function CorrelationKeysArray(props) {
     };
   });
 
-  return { items };
+  function add(event) {
+    event.stopPropagation();
+    if (element.type === 'bpmn:Collaboration') {
+      const newCorrelationKeyElement = moddle.create('bpmn:CorrelationKey');
+      newCorrelationKeyElement.name =
+        moddle.ids.nextPrefixed('CorrelationKey_');
+      const correlationKeyElements =
+        element.businessObject.get('correlationKeys');
+      correlationKeyElements.push(newCorrelationKeyElement);
+      commandStack.execute('element.updateProperties', {
+        element,
+        moddleElement: moddle,
+        properties: {
+          correlationKey: correlationKeyElements,
+        },
+      });
+    }
+  }
+
+  return { items, add };
 }
 
 // <bpmn:correlationKey name="lover"> <--- The CorrelationKeyGroup

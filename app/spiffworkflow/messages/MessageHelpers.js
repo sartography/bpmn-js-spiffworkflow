@@ -4,15 +4,15 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
  * loops up until it can find the root.
  * @param element
  */
-export function getRoot(element) {
-  // todo: Do we want element to be a shape or moddle object?
-  if (element.$type === 'bpmn:Definitions') {
-    return element;
+export function getRoot(businessObject) {
+  // todo: Do we want businessObject to be a shape or moddle object?
+  if (businessObject.$type === 'bpmn:Definitions') {
+    return businessObject;
   }
-  if (typeof element.$parent !== 'undefined') {
-    return getRoot(element.$parent);
+  if (typeof businessObject.$parent !== 'undefined') {
+    return getRoot(businessObject.$parent);
   }
-  return element;
+  return businessObject;
 }
 
 export function isMessageElement(shapeElement) {
@@ -116,8 +116,8 @@ function processCorrelationProperty(correlationProperty, message) {
   return expressions;
 }
 
-export function findCorrelationProperties(element) {
-  const root = getRoot(element);
+export function findCorrelationProperties(businessObject) {
+  const root = getRoot(businessObject);
   const correlationProperties = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:CorrelationProperty') {
@@ -127,8 +127,8 @@ export function findCorrelationProperties(element) {
   return correlationProperties;
 }
 
-export function findCorrelationKeys(element) {
-  const root = getRoot(element);
+export function findCorrelationKeys(businessObject) {
+  const root = getRoot(businessObject);
   const correlationKeys = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:Collaboration') {
@@ -150,9 +150,9 @@ export function findCorrelationKeys(element) {
   return correlationKeys;
 }
 
-export function findMessageModdleElements(element) {
+export function findMessageModdleElements(businessObject) {
   const messages = [];
-  const root = getRoot(element);
+  const root = getRoot(businessObject);
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:Message') {
       messages.push(rootElement);
