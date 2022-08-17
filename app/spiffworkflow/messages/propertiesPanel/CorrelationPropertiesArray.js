@@ -10,7 +10,7 @@ import { findFormalExpressions } from '../MessageHelpers';
 /**
  * Allows the creation, or editing of messageCorrelations at the bpmn:sendTask level of a BPMN document.
  */
-export function MessageCorrelationsArray(props) {
+export function CorrelationPropertiesArray(props) {
   const { moddle } = props;
   const { element } = props;
   const { commandStack } = props;

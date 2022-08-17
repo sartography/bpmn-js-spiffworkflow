@@ -4,7 +4,7 @@ import { CorrelationKeysArray } from './CorrelationKeysArray';
 import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
 import { MessageVariable } from './MessageVariable';
-import { MessageCorrelationsArray } from './MessageCorrelationsArray';
+import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
 import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
 
 const LOW_PRIORITY = 500;
@@ -132,10 +132,10 @@ function createMessageGroup(
   }
 
   entries.push({
-    id: 'messageCorrelations',
-    label: translate('Message Correlations'),
+    id: 'correlationProperties',
+    label: translate('Correlation Properties'),
     component: ListGroup,
-    ...MessageCorrelationsArray({
+    ...CorrelationPropertiesArray({
       element,
       moddle,
       commandStack,
