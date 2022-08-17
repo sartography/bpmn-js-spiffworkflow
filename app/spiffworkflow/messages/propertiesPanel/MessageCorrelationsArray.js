@@ -5,14 +5,7 @@ import {
   TextAreaEntry,
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
-import translate from 'diagram-js/lib/i18n/translate';
-import {
-  findFormalExpressions,
-  getRoot,
-  findCorrelationKeys,
-} from '../MessageHelpers';
-import { CorrelationKeysArray } from './CorrelationKeysArray';
-import dataObject from '../../DataObject';
+import { findFormalExpressions } from '../MessageHelpers';
 
 /**
  * Allows the creation, or editing of messageCorrelations at the bpmn:sendTask level of a BPMN document.
@@ -21,10 +14,10 @@ export function MessageCorrelationsArray(props) {
   const { moddle } = props;
   const { element } = props;
   const { commandStack } = props;
-  const { elementRegistry } = props;
+  // const { elementRegistry } = props;
 
   const formalExpressions = findFormalExpressions(element.businessObject);
-  const items = formalExpressions.map((formalExpression, index) => {
+  const items = formalExpressions.map((formalExpression) => {
     const id = `correlation-${formalExpression.correlationId}`;
     const entries = MessageCorrelationGroup({
       idPrefix: id,
@@ -47,7 +40,6 @@ export function MessageCorrelationsArray(props) {
     const newElements = formalExpressions;
     newRetrievalExpression.messageRef = element.businessObject.messageRef;
     newElements.push(newRetrievalExpression);
-    console.log('element', element);
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: element.businessObject,
@@ -101,7 +93,7 @@ function MessageCorrelationTextField(props) {
     }
   };
 
-  const getValue = (parameter) => {
+  const getValue = (_parameter) => {
     return formalExpression.expression;
   };
 
@@ -114,33 +106,3 @@ function MessageCorrelationTextField(props) {
     debounce,
   });
 }
-
-// export function MessageCorrelations(props) {
-//   const shapeElement = props.element;
-//   const { commandStack } = props;
-//   const debounce = useService('debounceInput');
-//   const translate = useService('translate');
-//
-//   const getValue = () => {
-//     const formalExpressions = findFormalExpressions(shapeElement.businessObject)
-//     return formalExpressions
-//   };
-//
-//   const setValue = (value) => {
-//     return;
-//   };
-//
-//
-//   return (
-//     <TextAreaEntry
-//       id="messageCorrelations"
-//       element={shapeElement}
-//       description="The message correlations"
-//       label="Correlations"
-//       getValue={getValue}
-//       setValue={setValue}
-//       debounce={debounce}
-//     />
-//   );
-//
-// }

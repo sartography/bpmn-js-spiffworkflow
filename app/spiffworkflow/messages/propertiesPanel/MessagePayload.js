@@ -1,6 +1,9 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextAreaEntry } from '@bpmn-io/properties-panel';
-import { findMessageModdleElements } from '../MessageHelpers';
+import {
+  findMessageModdleElements,
+  getMessageRefElement,
+} from '../MessageHelpers';
 
 /**
  * Allows the creation, or editing of messagePayload at the bpmn:sendTask level of a BPMN document.
@@ -12,7 +15,7 @@ export function MessagePayload(props) {
 
   const getMessagePayloadObject = () => {
     const { businessObject } = shapeElement;
-    const taskMessage = businessObject.messageRef;
+    const taskMessage = getMessageRefElement(businessObject);
     const messages = findMessageModdleElements(businessObject);
     if (taskMessage) {
       for (const message of messages) {
