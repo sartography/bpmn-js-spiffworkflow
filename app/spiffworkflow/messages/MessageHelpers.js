@@ -135,15 +135,16 @@ export function findCorrelationKeys(businessObject) {
       const currentKeys = rootElement.correlationKeys;
       for (const correlationKey in currentKeys) {
         const currentCorrelation = rootElement.correlationKeys[correlationKey];
-        const currentProperty = {};
-        currentProperty.name = currentCorrelation.name;
-        currentProperty.refs = [];
-        for (const correlationProperty in currentCorrelation.correlationPropertyRef) {
-          currentProperty.refs.push(
-            currentCorrelation.correlationPropertyRef[correlationProperty]
-          );
-        }
-        correlationKeys.push(currentProperty);
+        correlationKeys.push(currentCorrelation);
+        // const currentProperty = {};
+        // currentProperty.name = currentCorrelation.name;
+        // currentProperty.refs = [];
+        // for (const correlationProperty in currentCorrelation.correlationPropertyRef) {
+        //   currentProperty.refs.push(
+        //     currentCorrelation.correlationPropertyRef[correlationProperty]
+        //   );
+        // }
+        // correlationKeys.push(currentProperty);
       }
     }
   }

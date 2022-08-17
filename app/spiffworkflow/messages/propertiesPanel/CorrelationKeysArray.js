@@ -1,5 +1,5 @@
 import { useService } from 'bpmn-js-properties-panel';
-import { SimpleEntry } from '@bpmn-io/properties-panel';
+import { SimpleEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
 import { findCorrelationKeys, getRoot } from '../MessageHelpers';
 
 /**
@@ -10,17 +10,17 @@ import { findCorrelationKeys, getRoot } from '../MessageHelpers';
 export function CorrelationKeysArray(props) {
   const { element, moddle, commandStack } = props;
 
-  const correlationProperties = findCorrelationKeys(element.businessObject);
-  const items = correlationProperties.map((correlationProperty, _index) => {
-    const id = `correlationGroup-${correlationProperty.name}`;
+  const correlationKeys = findCorrelationKeys(element.businessObject);
+  const items = correlationKeys.map((correlationKey, index) => {
+    const id = `correlationGroup-${index}`;
     return {
       id,
-      correlationProperty,
-      label: correlationProperty.name,
+      label: correlationKey.name,
       entries: correlationGroup({
         id,
         element,
-        correlationProperty,
+        correlationKey,
+        commandStack,
       }),
       autoFocusEntry: id,
     };
@@ -48,38 +48,74 @@ export function CorrelationKeysArray(props) {
   return { items, add };
 }
 
-// <bpmn:correlationKey name="lover"> <--- The CorrelationKeyGroup
+// <bpmn:correlationKey name="lover"> <--- The correlationGroup
 //   <bpmn:correlationPropertyRef>lover_name</bpmn:correlationPropertyRef>
 //   <bpmn:correlationPropertyRef>lover_instrument</bpmn:correlationPropertyRef>
 // </bpmn:correlationKey>
 // <bpmn:correlationKey name="singer" />
 function correlationGroup(props) {
-  const { correlationProperty } = props;
-  const id = `correlation-${correlationProperty.name}`;
-  return correlationProperty.refs.map((cpRef, _index) => {
-    return {
-      id: `${id}-${cpRef.id}-group`,
+  const { correlationKey, commandStack } = props;
+  const id = `correlation-${correlationKey.name}`;
+  const entries = [
+    {
+      id: `${id}-${correlationKey.name}-key`,
       component: CorrelationKeyTextField,
-      correlationProperty,
-      cpRef,
-    };
-  });
+      correlationKey,
+      commandStack,
+    },
+  ];
+  (correlationKey.correlationPropertyRef || []).forEach(
+    (correlationProperty) => {
+      entries.push({
+        id: `${id}-${correlationProperty.id}-group`,
+        component: CorrelationPropertyText,
+        correlationProperty,
+      });
+    }
+  );
+  return entries;
 }
 
 function CorrelationKeyTextField(props) {
-  const { id, parameter, cpRef } = props;
+  const { id, element, correlationKey, commandStack } = props;
+
+  const debounce = useService('debounceInput');
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: correlationKey,
+      properties: {
+        name: value,
+      },
+    });
+  };
+
+  const getValue = () => {
+    return correlationKey.name;
+  };
+
+  return TextFieldEntry({
+    element,
+    id: `${id}-textField`,
+    getValue,
+    setValue,
+    debounce,
+  });
+}
+
+function CorrelationPropertyText(props) {
+  const { id, parameter, correlationProperty } = props;
 
   const debounce = useService('debounceInput');
 
-  const getValue = (_parameter) => {
-    return cpRef.id;
+  const getValue = () => {
+    return correlationProperty.id;
   };
 
   return SimpleEntry({
     element: parameter,
     id: `${id}-textField`,
-    label: cpRef.id,
-    editable: false,
+    label: correlationProperty.id,
     getValue,
     disabled: true,
     debounce,

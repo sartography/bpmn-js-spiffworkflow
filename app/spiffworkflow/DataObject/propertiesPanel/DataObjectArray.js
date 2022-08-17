@@ -136,7 +136,7 @@ function DataObjectTextField(props) {
     }
   };
 
-  const getValue = (parameter) => {
+  const getValue = () => {
     return dataObject.id;
   };
 
