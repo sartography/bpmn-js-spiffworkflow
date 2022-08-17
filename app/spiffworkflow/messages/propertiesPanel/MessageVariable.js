@@ -8,9 +8,10 @@ import { getMessageElementForShapeElement } from '../MessageHelpers';
 export function MessageVariable(props) {
   const shapeElement = props.element;
   const debounce = useService('debounceInput');
+  const messageElement = getMessageElementForShapeElement(shapeElement);
+  const disabled = !messageElement;
 
   const getMessageVariableObject = () => {
-    const messageElement = getMessageElementForShapeElement(shapeElement);
     if (messageElement) {
       const { extensionElements } = messageElement;
       if (extensionElements) {
@@ -35,7 +36,6 @@ export function MessageVariable(props) {
   const setValue = (value) => {
     let messageVariableObject = getMessageVariableObject();
     if (!messageVariableObject) {
-      const messageElement = getMessageElementForShapeElement(shapeElement);
       messageVariableObject = messageElement.$model.create(
         'spiffworkflow:messageVariable'
       );
@@ -57,6 +57,7 @@ export function MessageVariable(props) {
       element={shapeElement}
       description="The name of the variable where we should store payload."
       label="Variable Name"
+      disabled={disabled}
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}
