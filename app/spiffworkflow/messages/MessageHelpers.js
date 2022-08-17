@@ -15,6 +15,14 @@ export function getRoot(element) {
   return element;
 }
 
+export function isMessageElement(shapeElement) {
+  return (
+    is(shapeElement, 'bpmn:SendTask') ||
+    is(shapeElement, 'bpmn:ReceiveTask') ||
+    isMessageEvent(shapeElement)
+  );
+}
+
 export function isMessageEvent(shapeElement) {
   const { eventDefinitions } = shapeElement.businessObject;
   if (eventDefinitions && eventDefinitions[0]) {
@@ -23,26 +31,39 @@ export function isMessageEvent(shapeElement) {
   return false;
 }
 
-export function getMessageRefElement(businessObject) {
-  if (businessObject.$type === 'bpmn:IntermediateThrowEvent') {
-    const messageEventDefinition = businessObject.eventDefinitions[0];
+export function canReceiveMessage(shapeElement) {
+  if (is(shapeElement, 'bpmn:ReceiveTask')) {
+    return true;
+  }
+  if (isMessageEvent(shapeElement)) {
+    return (
+      is(shapeElement, 'bpmn:StartEvent') || is(shapeElement, 'bpmn:CatchEvent')
+    );
+  }
+  return false;
+}
+
+export function getMessageRefElement(shapeElement) {
+  if (isMessageEvent(shapeElement)) {
+    const messageEventDefinition =
+      shapeElement.businessObject.eventDefinitions[0];
     if (messageEventDefinition && messageEventDefinition.messageRef) {
       return messageEventDefinition.messageRef;
     }
   } else if (
-    businessObject.$type === 'bpmn:SendTask' &&
-    businessObject.messageRef
+    isMessageElement(shapeElement) &&
+    shapeElement.businessObject.messageRef
   ) {
-    return businessObject.messageRef;
+    return shapeElement.businessObject.messageRef;
   }
-  return '';
+  return null;
 }
 
-export function findFormalExpressions(businessObject) {
+export function findFormalExpressions(shapeElement) {
   const formalExpressions = [];
-  const messageRef = getMessageRefElement(businessObject);
+  const messageRef = getMessageRefElement(shapeElement);
   if (messageRef) {
-    const root = getRoot(businessObject);
+    const root = getRoot(shapeElement.businessObject);
     if (root.$type === 'bpmn:Definitions') {
       for (const childElement of root.rootElements) {
         if (childElement.$type === 'bpmn:CorrelationProperty') {
@@ -99,7 +120,6 @@ export function findCorrelationKeys(element) {
     if (rootElement.$type === 'bpmn:Collaboration') {
       const currentKeys = rootElement.correlationKeys;
       for (const correlationKey in currentKeys) {
-        const correlationProperties = [];
         const currentCorrelation = rootElement.correlationKeys[correlationKey];
         const currentProperty = {};
         currentProperty.name = currentCorrelation.name;

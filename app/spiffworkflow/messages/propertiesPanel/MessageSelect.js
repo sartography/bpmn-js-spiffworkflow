@@ -3,6 +3,7 @@ import { SelectEntry } from '@bpmn-io/properties-panel';
 import {
   findMessageModdleElements,
   getMessageRefElement,
+  isMessageEvent,
 } from '../MessageHelpers';
 
 /**
@@ -14,7 +15,8 @@ export function MessageSelect(props) {
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    const messageRefElement = getMessageRefElement(shapeElement.businessObject);
+    const messageRefElement = getMessageRefElement(shapeElement);
+    console.log('messageRefElement', messageRefElement);
     if (messageRefElement) {
       return messageRefElement.id;
     }
@@ -27,7 +29,7 @@ export function MessageSelect(props) {
     const messages = findMessageModdleElements(shapeElement.businessObject);
     for (const message of messages) {
       if (message.id === value) {
-        if (businessObject.$type === 'bpmn:IntermediateThrowEvent') {
+        if (isMessageEvent(shapeElement)) {
           const messageEventDefinition = businessObject.eventDefinitions[0];
           messageEventDefinition.messageRef = message;
           // call this to update the other elements in the props panel like payload
@@ -35,7 +37,10 @@ export function MessageSelect(props) {
             element: shapeElement,
             moddleElement: businessObject,
           });
-        } else if (businessObject.$type === 'bpmn:SendTask') {
+        } else if (
+          businessObject.$type === 'bpmn:ReceiveTask' ||
+          businessObject.$type === 'bpmn:SendTask'
+        ) {
           commandStack.execute('element.updateModdleProperties', {
             element: shapeElement,
             moddleElement: businessObject,

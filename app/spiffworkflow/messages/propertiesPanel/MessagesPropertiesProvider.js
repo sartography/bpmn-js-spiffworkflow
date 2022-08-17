@@ -3,8 +3,9 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { CorrelationKeysArray } from './CorrelationKeysArray';
 import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
+import { MessageVariable } from './MessageVariable';
 import { MessageCorrelationsArray } from './MessageCorrelationsArray';
-import { isMessageEvent } from '../MessageHelpers';
+import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
 
 const LOW_PRIORITY = 500;
 
@@ -27,9 +28,11 @@ export default function MessagesPropertiesProvider(
             elementRegistry
           )
         );
-      } else if (is(element, 'bpmn:SendTask') || isMessageEvent(element)) {
+      } else if (isMessageElement(element)) {
         const messageIndex = findEntry(groups, 'message');
-        groups.splice(messageIndex, 1);
+        if (messageIndex) {
+          groups.splice(messageIndex, 1);
+        }
         groups.push(
           createMessageGroup(
             element,
@@ -97,37 +100,52 @@ function createMessageGroup(
   commandStack,
   elementRegistry
 ) {
+  const entries = [
+    {
+      id: 'selectMessage',
+      element,
+      component: MessageSelect,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+      commandStack,
+    },
+  ];
+
+  if (canReceiveMessage(element)) {
+    entries.push({
+      id: 'messageVariable',
+      element,
+      component: MessageVariable,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+      commandStack,
+    });
+  } else {
+    entries.push({
+      id: 'messagePayload',
+      element,
+      component: MessagePayload,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+      commandStack,
+    });
+  }
+
+  entries.push({
+    id: 'messageCorrelations',
+    label: translate('Message Correlations'),
+    component: ListGroup,
+    ...MessageCorrelationsArray({
+      element,
+      moddle,
+      commandStack,
+      elementRegistry,
+    }),
+  });
+
   return {
     id: 'messages',
     label: translate('Message'),
-    entries: [
-      {
-        id: 'selectMessage',
-        element,
-        component: MessageSelect,
-        isEdited: isTextFieldEntryEdited,
-        moddle,
-        commandStack,
-      },
-      {
-        id: 'messagePayload',
-        element,
-        component: MessagePayload,
-        isEdited: isTextFieldEntryEdited,
-        moddle,
-        commandStack,
-      },
-      {
-        id: 'messageCorrelations',
-        label: translate('Message Correlations'),
-        component: ListGroup,
-        ...MessageCorrelationsArray({
-          element,
-          moddle,
-          commandStack,
-          elementRegistry,
-        }),
-      },
-    ],
+    entries,
   };
 }

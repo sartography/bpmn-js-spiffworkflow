@@ -16,7 +16,7 @@ export function MessageCorrelationsArray(props) {
   const { commandStack } = props;
   // const { elementRegistry } = props;
 
-  const formalExpressions = findFormalExpressions(element.businessObject);
+  const formalExpressions = findFormalExpressions(element);
   const items = formalExpressions.map((formalExpression) => {
     const id = `correlation-${formalExpression.correlationId}`;
     const entries = MessageCorrelationGroup({

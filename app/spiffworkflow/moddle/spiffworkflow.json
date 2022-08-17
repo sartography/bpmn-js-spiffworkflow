@@ -31,7 +31,18 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "payload",
+          "name": "messagePayload",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "messageVariable",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "messageVariable",
           "isBody": true,
           "type": "String"
         }

@@ -1,18 +1,18 @@
 import { useService } from 'bpmn-js-properties-panel';
-import { TextAreaEntry } from '@bpmn-io/properties-panel';
+import { TextFieldEntry } from '@bpmn-io/properties-panel';
 import {
   findMessageModdleElements,
   getMessageRefElement,
 } from '../MessageHelpers';
 
 /**
- * Allows the creation, or editing of messagePayload at the bpmn:sendTask level of a BPMN document.
+ * Allows the creation, or editing of messageVariable at the bpmn:sendTask level of a BPMN document.
  */
-export function MessagePayload(props) {
+export function MessageVariable(props) {
   const shapeElement = props.element;
   const debounce = useService('debounceInput');
 
-  const getMessagePayloadObject = () => {
+  const getMessageVariableObject = () => {
     const { businessObject } = shapeElement;
     const taskMessage = getMessageRefElement(shapeElement);
     const messages = findMessageModdleElements(businessObject);
@@ -24,7 +24,7 @@ export function MessagePayload(props) {
             return message.extensionElements
               .get('values')
               .filter(function getInstanceOfType(e) {
-                return e.$instanceOf('spiffworkflow:messagePayload');
+                return e.$instanceOf('spiffworkflow:messageVariable');
               })[0];
           }
         }
@@ -34,36 +34,40 @@ export function MessagePayload(props) {
   };
 
   const getValue = () => {
-    const messagePayloadObject = getMessagePayloadObject();
-    if (messagePayloadObject) {
-      return messagePayloadObject.messagePayload;
+    const messageVariableObject = getMessageVariableObject();
+    // console.log('messageVariableObject', messageVariableObject);
+    if (messageVariableObject) {
+      return messageVariableObject.messageVariable;
     }
     return '';
   };
 
   const setValue = (value) => {
     const { businessObject } = shapeElement;
-    let messagePayloadObject = getMessagePayloadObject();
-    if (!messagePayloadObject) {
-      messagePayloadObject = businessObject.$model.create(
-        'spiffworkflow:messagePayload'
+    let messageVariableObject = getMessageVariableObject();
+    // console.log('messageVariableObject', messageVariableObject);
+    if (!messageVariableObject) {
+      messageVariableObject = businessObject.$model.create(
+        'spiffworkflow:messageVariable'
       );
       if (!businessObject.extensionElements) {
         businessObject.extensionElements = businessObject.$model.create(
           'bpmn:ExtensionElements'
         );
       }
-      businessObject.extensionElements.get('values').push(messagePayloadObject);
+      businessObject.extensionElements
+        .get('values')
+        .push(messageVariableObject);
     }
-    messagePayloadObject.messagePayload = value;
+    messageVariableObject.messageVariable = value;
   };
 
   return (
-    <TextAreaEntry
-      id="messagePayload"
+    <TextFieldEntry
+      id="messageVariable"
       element={shapeElement}
-      description="The payload of the message."
-      label="Payload"
+      description="The name of the variable where we should store payload."
+      label="Variable Name"
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}

@@ -4,7 +4,7 @@ import {
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
 import FileSaver from 'file-saver';
-import diagramXML from '../test/spec/bpmn/collaboration.bpmn';
+import diagramXML from '../test/spec/bpmn/simple_collab.bpmn';
 import spiffworkflow from './spiffworkflow';
 
 const modelerEl = document.getElementById('modeler');
