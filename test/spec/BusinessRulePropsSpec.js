@@ -54,4 +54,17 @@ describe('Business Rule Properties Panel', function() {
     expect(element.decisionId).to.equal('wonderful');
   });
 
+  it('should load up the xml and the value for the called decision should match the xml', async function() {
+    const businessRuleTask = await expectSelected('business_rule_task');
+    let entry = findEntry('extension_called_decision', getPropertiesPanel());
+    const textInput = domQuery('input', entry);
+    expect(textInput.value).to.equal('test_decision');
+
+    // THEN - the script tag in the BPMN Business object / XML is updated as well.
+    let businessObject = getBusinessObject(businessRuleTask);
+    expect(businessObject.extensionElements).to.exist;
+    let element = businessObject.extensionElements.values[0];
+    expect(element.decisionId).to.equal('test_decision');
+  });
+
 });

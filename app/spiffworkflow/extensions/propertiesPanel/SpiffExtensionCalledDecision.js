@@ -12,7 +12,7 @@ const SPIFF_PROP = "spiffworkflow:calledDecision"
  *
     <bpmn:businessRuleTask id="Activity_0t218za">
       <bpmn:extensionElements>
-        <spiffworkflow:calledDecision decisionId="my_id" />
+        <spiffworkflow:calledDecision>my_id</spiffworkflow:calledDecision>
       </bpmn:extensionElements>
     </bpmn:businessRuleTask>
  *

@@ -32,7 +32,7 @@
       "properties": [
         {
           "name": "decisionId",
-          "isAttr": true,
+          "isBody": true,
           "type": "String"
         }
       ]
