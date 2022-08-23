@@ -27,6 +27,28 @@
       ]
     },
     {
+      "name": "messagePayload",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "messagePayload",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "messageVariable",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "messageVariable",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
       "name": "calledDecisionId",
       "superClass": [ "Element" ],
       "properties": [

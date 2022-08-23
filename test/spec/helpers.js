@@ -12,11 +12,13 @@ import { bootstrapBpmnJS, inject, insertCSS } from 'bpmn-js/test/helper';
 import {getBusinessObject} from 'bpmn-js/lib/util/ModelUtil';
 import {createMoveEvent} from 'diagram-js/lib/features/mouse/Mouse';
 
-let PROPERTIES_PANEL_CONTAINER;
+export let PROPERTIES_PANEL_CONTAINER;
+export let CONTAINER;
 
 export function bootstrapPropertiesPanel(diagram, options, locals) {
   return async function() {
     let container = options.container;
+    CONTAINER = container;
     if (!container) {
       container = TestContainer.get(this);
     }
@@ -109,8 +111,16 @@ export function findInput(type, container) {
   return domQuery(`input[type='${ type }']`, container);
 }
 
+export function findTextarea(id, container) {
+  return domQuery(`textarea[id='${ id }']`, container);
+}
+
 export function findButton(id, container) {
   return domQuery(`button[id='${ id }']`, container);
+}
+
+export function findButtonByClass(buttonClass, container) {
+  return domQuery(`button[class='${ buttonClass }']`, container)
 }
 
 export function findSelect(container) {
@@ -123,6 +133,10 @@ export function changeInput(input, value) {
 
 export function pressButton(button) {
   fireEvent.click(button);
+}
+
+export function findDivByClass(divClass, container) {
+  return domQuery(`div[class='${ divClass }']`, container)
 }
 
 

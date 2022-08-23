@@ -2,16 +2,35 @@ import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { DataObjectSelect } from './DataObjectSelect';
 import { DataObjectArray } from './DataObjectArray';
+
 const LOW_PRIORITY = 500;
 
-export default function DataObjectPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
-  this.getGroups = function(element) {
-    return function(groups) {
+export default function DataObjectPropertiesProvider(
+  propertiesPanel,
+  translate,
+  moddle,
+  commandStack,
+  elementRegistry
+) {
+  this.getGroups = function (element) {
+    return function (groups) {
       if (is(element, 'bpmn:DataObjectReference')) {
-        groups.push(createDataObjectSelector(element, translate, moddle, commandStack));
+        groups.push(
+          createDataObjectSelector(element, translate, moddle, commandStack)
+        );
       }
-      if (isAny(element, [ 'bpmn:Process', 'bpmn:SubProcess', 'bpmn:Participant' ])) {
-        groups.push(createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry));
+      if (
+        isAny(element, ['bpmn:Process', 'bpmn:SubProcess', 'bpmn:Participant'])
+      ) {
+        groups.push(
+          createDataObjectEditor(
+            element,
+            translate,
+            moddle,
+            commandStack,
+            elementRegistry
+          )
+        );
       }
       return groups;
     };
@@ -19,7 +38,13 @@ export default function DataObjectPropertiesProvider(propertiesPanel, translate,
   propertiesPanel.registerProvider(LOW_PRIORITY, this);
 }
 
-DataObjectPropertiesProvider.$inject = [ 'propertiesPanel', 'translate', 'moddle', 'commandStack', 'elementRegistry' ];
+DataObjectPropertiesProvider.$inject = [
+  'propertiesPanel',
+  'translate',
+  'moddle',
+  'commandStack',
+  'elementRegistry',
+];
 
 /**
  * Create a group on the main panel with a select box (for choosing the Data Object to connect)
@@ -38,10 +63,10 @@ function createDataObjectSelector(element, translate, moddle, commandStack) {
         element,
         component: DataObjectSelect,
         isEdited: isTextFieldEntryEdited,
-        moddle: moddle,
-        commandStack: commandStack,
-      }
-    ]
+        moddle,
+        commandStack,
+      },
+    ],
   };
 }
 
@@ -53,13 +78,19 @@ function createDataObjectSelector(element, translate, moddle, commandStack) {
  * @param moddle
  * @returns entries
  */
-function createDataObjectEditor(element, translate, moddle, commandStack, elementRegistry) {
+function createDataObjectEditor(
+  element,
+  translate,
+  moddle,
+  commandStack,
+  elementRegistry
+) {
   const dataObjectArray = {
     id: 'editDataObjects',
     element,
     label: 'Data Objects',
     component: ListGroup,
-    ...DataObjectArray({ element, moddle, commandStack, elementRegistry })
+    ...DataObjectArray({ element, moddle, commandStack, elementRegistry }),
   };
 
   if (dataObjectArray.items) {
