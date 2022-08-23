@@ -49,12 +49,12 @@
       ]
     },
     {
-      "name": "calledDecision",
+      "name": "calledDecisionId",
       "superClass": [ "Element" ],
       "properties": [
         {
           "name": "decisionId",
-          "isAttr": true,
+          "isBody": true,
           "type": "String"
         }
       ]

@@ -39,7 +39,7 @@ describe('Business Rule Properties Panel', function() {
     expect(textInput).to.exist;
   });
 
-  it('should update the spiffworkflow:calledDecision tag when you modify the called decision text input', async function() {
+  it('should update the spiffworkflow:calledDecisionId tag when you modify the called decision text input', async function() {
 
     // IF - a script tag is selected, and you change the script in the properties panel
     const businessRuleTask = await expectSelected('business_rule_task');
@@ -52,6 +52,19 @@ describe('Business Rule Properties Panel', function() {
     expect(businessObject.extensionElements).to.exist;
     let element = businessObject.extensionElements.values[0];
     expect(element.decisionId).to.equal('wonderful');
+  });
+
+  it('should load up the xml and the value for the called decision should match the xml', async function() {
+    const businessRuleTask = await expectSelected('business_rule_task');
+    let entry = findEntry('extension_called_decision', getPropertiesPanel());
+    const textInput = domQuery('input', entry);
+    expect(textInput.value).to.equal('test_decision');
+
+    // THEN - the script tag in the BPMN Business object / XML is updated as well.
+    let businessObject = getBusinessObject(businessRuleTask);
+    expect(businessObject.extensionElements).to.exist;
+    let element = businessObject.extensionElements.values[0];
+    expect(element.decisionId).to.equal('test_decision');
   });
 
 });
