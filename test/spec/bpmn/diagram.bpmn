@@ -65,7 +65,7 @@
     <bpmn:sequenceFlow id="Flow_1lu1qyz" sourceRef="business_rule_task" targetRef="Event_14wzv4j" />
     <bpmn:businessRuleTask id="business_rule_task">
       <bpmn:extensionElements>
-        <spiffworkflow:calledDecision decisionId="test_decision" />
+        <spiffworkflow:calledDecisionId>test_decision</spiffworkflow:calledDecisionId>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_132laxn</bpmn:incoming>
       <bpmn:outgoing>Flow_1lu1qyz</bpmn:outgoing>

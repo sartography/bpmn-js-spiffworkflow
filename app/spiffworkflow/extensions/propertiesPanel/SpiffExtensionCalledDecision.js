@@ -1,7 +1,7 @@
 import {useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
 
-const SPIFF_PROP = "spiffworkflow:calledDecision"
+const SPIFF_PROP = "spiffworkflow:calledDecisionId"
 
 /**
  * A generic properties' editor for text input.
@@ -12,7 +12,7 @@ const SPIFF_PROP = "spiffworkflow:calledDecision"
  *
     <bpmn:businessRuleTask id="Activity_0t218za">
       <bpmn:extensionElements>
-        <spiffworkflow:calledDecision decisionId="my_id" />
+        <spiffworkflow:calledDecisionId>my_id</spiffworkflow:calledDecisionId>
       </bpmn:extensionElements>
     </bpmn:businessRuleTask>
  *
