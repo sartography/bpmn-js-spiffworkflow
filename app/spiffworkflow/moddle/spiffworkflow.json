@@ -27,7 +27,7 @@
       ]
     },
     {
-      "name": "calledDecision",
+      "name": "calledDecisionId",
       "superClass": [ "Element" ],
       "properties": [
         {

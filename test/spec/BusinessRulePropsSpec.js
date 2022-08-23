@@ -39,7 +39,7 @@ describe('Business Rule Properties Panel', function() {
     expect(textInput).to.exist;
   });
 
-  it('should update the spiffworkflow:calledDecision tag when you modify the called decision text input', async function() {
+  it('should update the spiffworkflow:calledDecisionId tag when you modify the called decision text input', async function() {
 
     // IF - a script tag is selected, and you change the script in the properties panel
     const businessRuleTask = await expectSelected('business_rule_task');
