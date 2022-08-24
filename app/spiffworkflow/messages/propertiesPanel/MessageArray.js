@@ -1,5 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
+import { without } from 'min-dash';
 import {
   findCorrelationKeys,
   getRoot,
@@ -28,6 +29,12 @@ export function MessageArray(props) {
         translate,
       }),
       autoFocusEntry: id,
+      remove: removeFactory({
+        element,
+        messageElement,
+        commandStack,
+        moddle,
+      }),
     };
   });
 
@@ -52,6 +59,27 @@ export function MessageArray(props) {
   }
 
   return { items, add };
+}
+
+function removeFactory(props) {
+  const { element, messageElement, moddle, commandStack } = props;
+
+  return function (event) {
+    event.stopPropagation();
+    const rootElement = getRoot(element.businessObject);
+    const { rootElements } = rootElement;
+    const messageElementIndex = rootElements.indexOf(messageElement);
+    if (messageElementIndex > -1) {
+      rootElements.splice(messageElementIndex, 1);
+    }
+    commandStack.execute('element.updateProperties', {
+      element,
+      moddleElement: moddle,
+      properties: {
+        messages: rootElements,
+      },
+    });
+  };
 }
 
 function messageGroup(props) {
