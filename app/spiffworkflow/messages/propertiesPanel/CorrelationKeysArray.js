@@ -105,7 +105,6 @@ function CorrelationKeyTextField(props) {
 
 function CorrelationPropertyText(props) {
   const { id, parameter, correlationProperty } = props;
-
   const debounce = useService('debounceInput');
 
   const getValue = () => {

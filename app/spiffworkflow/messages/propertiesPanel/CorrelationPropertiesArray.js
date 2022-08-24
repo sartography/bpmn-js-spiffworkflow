@@ -77,20 +77,6 @@ function MessageCorrelationTextField(props) {
         id: value,
       },
     });
-
-    // Also update the label of all the references
-    // const references = findDataReferenceShapes(element, correlationProperty.id);
-    const references = ['hello1', 'hello2'];
-    for (const ref of references) {
-      commandStack.execute('element.updateProperties', {
-        element: ref,
-        moddleElement: ref.businessObject,
-        properties: {
-          name: value,
-        },
-        changed: [ref], // everything is already marked as changed, don't recalculate.
-      });
-    }
   };
 
   const getValue = (_parameter) => {
