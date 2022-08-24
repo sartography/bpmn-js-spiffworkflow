@@ -91,6 +91,7 @@ function createCollaborationGroup(
         moddle,
         commandStack,
         elementRegistry,
+        translate,
       }),
     },
     {
@@ -181,6 +182,7 @@ function createMessageGroup(
       moddle,
       commandStack,
       elementRegistry,
+      translate,
     }),
   });
 

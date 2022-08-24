@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" id="Definitions_96f6665" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.0.0-dev">
-  <bpmn:collaboration id="Collaboration_0oye1os">
+  <bpmn:collaboration id="Collaboration_0oye1os" correlationKey="[object Object],[object Object]">
     <bpmn:participant id="message_initiator" name="Message Initiator" processRef="message_send_process" />
     <bpmn:participant id="message_receiver" name="Message Receiver" processRef="message_receiver_process" />
     <bpmn:messageFlow id="message_send_flow" name="Message Send Flow" sourceRef="send_message" targetRef="receive_message" />
     <bpmn:messageFlow id="message_response_flow" name="Message Response Flow" sourceRef="respond_to_message" targetRef="receive_message_response" />
-    <bpmn:correlationKey name="message_correlation_key">
+    <bpmn:correlationKey name="message_correlation_key" />
+    <bpmn:correlationKey name="new_key">
       <bpmn:correlationPropertyRef>message_correlation_property</bpmn:correlationPropertyRef>
     </bpmn:correlationKey>
   </bpmn:collaboration>
@@ -69,18 +70,6 @@
         <dc:Bounds x="120" y="52" width="600" height="250" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_176e02g_di" bpmnElement="Flow_176e02g">
-        <di:waypoint x="215" y="177" />
-        <di:waypoint x="280" y="177" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1qgz6p0_di" bpmnElement="Flow_1qgz6p0">
-        <di:waypoint x="478" y="177" />
-        <di:waypoint x="552" y="177" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_037vpjk_di" bpmnElement="Flow_037vpjk">
-        <di:waypoint x="380" y="177" />
-        <di:waypoint x="442" y="177" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="159" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -97,17 +86,21 @@
       <bpmndi:BPMNShape id="Event_0kndoyu_di" bpmnElement="Event_0kndoyu">
         <dc:Bounds x="552" y="159" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_037vpjk_di" bpmnElement="Flow_037vpjk">
+        <di:waypoint x="380" y="177" />
+        <di:waypoint x="442" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qgz6p0_di" bpmnElement="Flow_1qgz6p0">
+        <di:waypoint x="478" y="177" />
+        <di:waypoint x="552" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_176e02g_di" bpmnElement="Flow_176e02g">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="280" y="177" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Participant_0mr0gg1_di" bpmnElement="message_receiver" isHorizontal="true">
         <dc:Bounds x="120" y="350" width="600" height="250" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0505x87_di" bpmnElement="Flow_0505x87">
-        <di:waypoint x="248" y="480" />
-        <di:waypoint x="372" y="480" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1273yit_di" bpmnElement="Flow_1273yit">
-        <di:waypoint x="408" y="480" />
-        <di:waypoint x="532" y="480" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_052nccg_di" bpmnElement="receive_message">
         <dc:Bounds x="212" y="462" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -123,6 +116,14 @@
           <dc:Bounds x="362" y="505" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0505x87_di" bpmnElement="Flow_0505x87">
+        <di:waypoint x="248" y="480" />
+        <di:waypoint x="372" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1273yit_di" bpmnElement="Flow_1273yit">
+        <di:waypoint x="408" y="480" />
+        <di:waypoint x="532" y="480" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ueajoz_di" bpmnElement="message_send_flow">
         <di:waypoint x="300" y="217" />
         <di:waypoint x="300" y="340" />

@@ -59,7 +59,22 @@ export function getMessageRefElement(shapeElement) {
   return null;
 }
 
-export function findFormalExpressions(shapeElement) {
+export function findCorrelationKeyForCorrelationProperty(shapeElement) {
+  const correlationKeyElements = findCorrelationKeys(shapeElement);
+  for (const cke of correlationKeyElements) {
+    if (cke.correlationPropertyRef) {
+      for (const correlationPropertyRef of cke.correlationPropertyRef) {
+        if (correlationPropertyRef.id === shapeElement.id) {
+          return cke;
+        }
+      }
+    }
+  }
+}
+
+export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
+  shapeElement
+) {
   const formalExpressions = [];
   const messageRef = getMessageRefElement(shapeElement);
   if (messageRef) {
@@ -67,15 +82,16 @@ export function findFormalExpressions(shapeElement) {
     if (root.$type === 'bpmn:Definitions') {
       for (const childElement of root.rootElements) {
         if (childElement.$type === 'bpmn:CorrelationProperty') {
-          const retrievalExpression = processCorrelationProperty(
-            childElement,
-            messageRef
-          );
-          // todo: is there a better test for this than length === 1?
-          if (retrievalExpression.length === 1) {
+          const retrievalExpression =
+            getRetrievalExpressionFromCorrelationProperty(
+              childElement,
+              messageRef
+            );
+          if (retrievalExpression) {
             const formalExpression = {
-              correlationId: childElement.id,
-              expression: retrievalExpression[0],
+              correlationPropertyModdleElement: childElement,
+              correlationPropertyRetrievalExpressionElement:
+                retrievalExpression,
             };
             formalExpressions.push(formalExpression);
           }
@@ -100,8 +116,10 @@ export function getMessageElementForShapeElement(shapeElement) {
   return null;
 }
 
-function processCorrelationProperty(correlationProperty, message) {
-  const expressions = [];
+function getRetrievalExpressionFromCorrelationProperty(
+  correlationProperty,
+  message
+) {
   for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
     if (
       retrievalExpression.$type ===
@@ -110,10 +128,10 @@ function processCorrelationProperty(correlationProperty, message) {
       retrievalExpression.messageRef.id === message.id &&
       retrievalExpression.messagePath.body
     ) {
-      expressions.push(retrievalExpression.messagePath.body);
+      return retrievalExpression;
     }
   }
-  return expressions;
+  return null;
 }
 
 export function findCorrelationProperties(businessObject) {

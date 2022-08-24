@@ -6,6 +6,7 @@ import {
   getRoot,
   findMessageModdleElements,
 } from '../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -68,10 +69,7 @@ function removeFactory(props) {
     event.stopPropagation();
     const rootElement = getRoot(element.businessObject);
     const { rootElements } = rootElement;
-    const messageElementIndex = rootElements.indexOf(messageElement);
-    if (messageElementIndex > -1) {
-      rootElements.splice(messageElementIndex, 1);
-    }
+    removeFirstInstanceOfItemFromArrayInPlace(rootElements, messageElement);
     commandStack.execute('element.updateProperties', {
       element,
       moddleElement: moddle,
