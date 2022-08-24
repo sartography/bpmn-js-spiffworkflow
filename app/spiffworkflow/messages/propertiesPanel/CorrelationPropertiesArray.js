@@ -40,7 +40,12 @@ export function CorrelationPropertiesArray(props) {
         label: correlationPropertyModdleElement.id,
         entries,
         autoFocusEntry: id,
-        // remove: removeFactory({ element, correlationProperty, commandStack, elementRegistry })
+        remove: removeFactory({
+          element,
+          correlationPropertyModdleElement,
+          commandStack,
+          moddle,
+        }),
       };
     }
   );
@@ -67,24 +72,40 @@ export function CorrelationPropertiesArray(props) {
 
   return { items, add };
 }
-//
-// function removeFactory(props) {
-//   const { element, correlationPropertyModdleElement, moddle, commandStack } = props;
-//
-//   return function (event) {
-//     event.stopPropagation();
-//     const rootElement = getRoot(element.businessObject);
-//     const { rootElements } = rootElement;
-//     removeFirstInstanceOfItemFromArrayInPlace(rootElements, correlationPropertyModdleElement);
-//     commandStack.execute('element.updateProperties', {
-//       element,
-//       moddleElement: moddle,
-//       properties: {
-//         messages: rootElements,
-//       },
-//     });
-//   };
-// }
+
+function removeFactory(props) {
+  const { element, correlationPropertyModdleElement, moddle, commandStack } =
+    props;
+
+  return function (event) {
+    event.stopPropagation();
+    const rootElement = getRoot(element.businessObject);
+    const { rootElements } = rootElement;
+
+    const oldCorrelationKeyElement = findCorrelationKeyForCorrelationProperty(
+      correlationPropertyModdleElement,
+      moddle
+    );
+    if (oldCorrelationKeyElement) {
+      removeFirstInstanceOfItemFromArrayInPlace(
+        oldCorrelationKeyElement.correlationPropertyRef,
+        correlationPropertyModdleElement
+      );
+    }
+
+    removeFirstInstanceOfItemFromArrayInPlace(
+      rootElements,
+      correlationPropertyModdleElement
+    );
+    commandStack.execute('element.updateProperties', {
+      element,
+      moddleElement: moddle,
+      properties: {
+        messages: rootElements,
+      },
+    });
+  };
+}
 
 function MessageCorrelationPropertyGroup(props) {
   const {
