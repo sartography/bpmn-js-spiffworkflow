@@ -6,6 +6,7 @@ import DataObjectInterceptor from './DataObject/DataObjectInterceptor';
 import DataObjectRules from './DataObject/DataObjectRules';
 import DataObjectRenderer from './DataObject/DataObjectRenderer';
 import DataObjectPropertiesProvider from './DataObject/propertiesPanel/DataObjectPropertiesProvider';
+import ConditionsPropertiesProvider from './conditions/propertiesPanel/ConditionsPropertiesProvider';
 import ExtensionsPropertiesProvider from './extensions/propertiesPanel/ExtensionsPropertiesProvider';
 import MessagesPropertiesProvider from './messages/propertiesPanel/MessagesPropertiesProvider';
 
@@ -15,6 +16,7 @@ export default {
     'dataObjectInterceptor',
     'dataObjectRules',
     'dataObjectPropertiesProvider',
+    'conditionsPropertiesProvider',
     'extensionsPropertiesProvider',
     'messagesPropertiesProvider',
     'ioPalette',
@@ -26,6 +28,7 @@ export default {
   dataObjectRules: ['type', DataObjectRules],
   dataObjectRenderer: ['type', DataObjectRenderer],
   dataObjectPropertiesProvider: ['type', DataObjectPropertiesProvider],
+  conditionsPropertiesProvider: ['type', ConditionsPropertiesProvider],
   extensionsPropertiesProvider: ['type', ExtensionsPropertiesProvider],
   messagesPropertiesProvider: ['type', MessagesPropertiesProvider],
   ioPalette: ['type', IoPalette],

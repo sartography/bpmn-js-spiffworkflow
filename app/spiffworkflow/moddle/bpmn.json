@@ -1,0 +1,19 @@
+{
+  "name": "SpiffBpmn",
+  "uri": "http://www.omg.org/spec/BPMN/20100524/MODEL",
+  "prefix": "bpmn",
+  "associations": [],
+  "types": [
+    {
+      "name": "ConditionExpression",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "expression",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}
