@@ -5,6 +5,7 @@ import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
 import { MessageVariable } from './MessageVariable';
 import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
+import { MessageCorrelationPropertiesArray } from './MessageCorrelationPropertiesArray';
 import { MessageArray } from './MessageArray';
 import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
 
@@ -95,6 +96,18 @@ function createCollaborationGroup(
       }),
     },
     {
+      id: 'correlation_properties',
+      label: translate('Correlation Properties'),
+      component: ListGroup,
+      ...CorrelationPropertiesArray({
+        element,
+        moddle,
+        commandStack,
+        elementRegistry,
+        translate,
+      }),
+    },
+    {
       id: 'messages',
       label: translate('Messages'),
       component: ListGroup,
@@ -107,27 +120,6 @@ function createCollaborationGroup(
       }),
     },
   ];
-}
-
-/**
- * Adds a group to the properties panel for the script task that allows you
- * to set the script.
- * @param element
- * @param translate
- * @returns The components to add to the properties panel. */
-function createMessageCollaborationGroup(
-  element,
-  translate,
-  moddle,
-  commandStack,
-  elementRegistry
-) {
-  return {
-    id: 'messages',
-    label: translate('Messages'),
-    component: ListGroup,
-    ...MessageArray({ element, moddle, commandStack, elementRegistry }),
-  };
 }
 
 /**
@@ -177,7 +169,7 @@ function createMessageGroup(
     id: 'correlationProperties',
     label: translate('Correlation Properties'),
     component: ListGroup,
-    ...CorrelationPropertiesArray({
+    ...MessageCorrelationPropertiesArray({
       element,
       moddle,
       commandStack,

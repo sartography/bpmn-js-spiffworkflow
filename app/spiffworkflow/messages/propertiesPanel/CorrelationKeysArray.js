@@ -46,7 +46,7 @@ export function CorrelationKeysArray(props) {
         element,
         moddleElement: moddle,
         properties: {
-          correlationKey: currentCorrelationKeyElements,
+          correlationKeys: currentCorrelationKeyElements,
         },
       });
     }

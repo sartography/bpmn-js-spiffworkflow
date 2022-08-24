@@ -59,8 +59,8 @@ export function getMessageRefElement(shapeElement) {
   return null;
 }
 
-export function findCorrelationKeyForCorrelationProperty(shapeElement) {
-  const correlationKeyElements = findCorrelationKeys(shapeElement);
+export function findCorrelationKeyForCorrelationProperty(shapeElement, moddle) {
+  const correlationKeyElements = findCorrelationKeys(shapeElement, moddle);
   for (const cke of correlationKeyElements) {
     if (cke.correlationPropertyRef) {
       for (const correlationPropertyRef of cke.correlationPropertyRef) {
@@ -120,15 +120,17 @@ function getRetrievalExpressionFromCorrelationProperty(
   correlationProperty,
   message
 ) {
-  for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
-    if (
-      retrievalExpression.$type ===
-        'bpmn:CorrelationPropertyRetrievalExpression' &&
-      retrievalExpression.messageRef &&
-      retrievalExpression.messageRef.id === message.id &&
-      retrievalExpression.messagePath.body
-    ) {
-      return retrievalExpression;
+  if (correlationProperty.correlationPropertyRetrievalExpression) {
+    for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
+      if (
+        retrievalExpression.$type ===
+          'bpmn:CorrelationPropertyRetrievalExpression' &&
+        retrievalExpression.messageRef &&
+        retrievalExpression.messageRef.id === message.id &&
+        retrievalExpression.messagePath.body
+      ) {
+        return retrievalExpression;
+      }
     }
   }
   return null;
@@ -145,8 +147,18 @@ export function findCorrelationProperties(businessObject) {
   return correlationProperties;
 }
 
-export function findCorrelationKeys(businessObject) {
-  const root = getRoot(businessObject);
+export function findCorrelationKeys(businessObject, moddle) {
+  let root;
+  // HACK: get the root element. need a more formal way to do this
+  if (moddle) {
+    for (const elementId in moddle.ids._seed.hats) {
+      if (elementId.startsWith('Definitions_')) {
+        root = moddle.ids._seed.hats[elementId];
+      }
+    }
+  } else {
+    root = getRoot(businessObject);
+  }
   const correlationKeys = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:Collaboration') {
