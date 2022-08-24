@@ -7,6 +7,8 @@ import {
 import {
   findCorrelationPropertiesAndRetrievalExpressionsForMessage,
   getRoot,
+  findCorrelationProperties,
+  getMessageRefElement,
   findCorrelationKeys,
   findCorrelationKeyForCorrelationProperty,
 } from '../MessageHelpers';
@@ -34,6 +36,7 @@ export function MessageCorrelationPropertiesArray(props) {
       correlationPropertyModdleElement,
       correlationPropertyRetrievalExpressionElement,
       translate,
+      moddle,
     });
     return {
       id,
@@ -89,15 +92,18 @@ function MessageCorrelationPropertyGroup(props) {
     correlationPropertyModdleElement,
     correlationPropertyRetrievalExpressionElement,
     translate,
+    moddle,
   } = props;
   return [
     {
       id: `${idPrefix}-correlation-key`,
-      component: MessageCorrelationKeySelect,
+      component: MessageCorrelationPropertySelect,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
       correlationPropertyModdleElement,
+      correlationPropertyRetrievalExpressionElement,
       translate,
+      moddle,
     },
     {
       id: `${idPrefix}-expression`,
@@ -110,62 +116,54 @@ function MessageCorrelationPropertyGroup(props) {
   ];
 }
 
-function MessageCorrelationKeySelect(props) {
-  const { idPrefix, correlationPropertyModdleElement, translate, parameter } =
-    props;
+function MessageCorrelationPropertySelect(props) {
+  const {
+    idPrefix,
+    correlationPropertyModdleElement,
+    correlationPropertyRetrievalExpressionElement,
+    translate,
+    parameter,
+    moddle,
+  } = props;
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    const correlationKeyElements = findCorrelationKeys(
-      correlationPropertyModdleElement
+    const correlationPropertyElements = findCorrelationProperties(
+      correlationPropertyModdleElement,
+      moddle
     );
-    let newCorrelationKeyElement;
-    for (const cke of correlationKeyElements) {
-      if (cke.name === value) {
-        newCorrelationKeyElement = cke;
+    const newCorrelationPropertyElement = correlationPropertyElements.find(
+      (cpe) => {
+        return cpe.id === value;
       }
-    }
-    const oldCorrelationKeyElement = findCorrelationKeyForCorrelationProperty(
-      correlationPropertyModdleElement
     );
 
-    if (newCorrelationKeyElement.correlationPropertyRef) {
-      newCorrelationKeyElement.correlationPropertyRef.push(
-        correlationPropertyModdleElement
-      );
-    } else {
-      newCorrelationKeyElement.correlationPropertyRef = [
-        correlationPropertyModdleElement,
-      ];
+    if (!newCorrelationPropertyElement.correlationPropertyRetrievalExpression) {
+      newCorrelationPropertyElement.correlationPropertyRetrievalExpression = [];
     }
-
-    if (oldCorrelationKeyElement) {
-      removeFirstInstanceOfItemFromArrayInPlace(
-        oldCorrelationKeyElement.correlationPropertyRef,
-        correlationPropertyModdleElement
-      );
-    }
+    newCorrelationPropertyElement.correlationPropertyRetrievalExpression.push(
+      correlationPropertyRetrievalExpressionElement
+    );
+    removeFirstInstanceOfItemFromArrayInPlace(
+      correlationPropertyModdleElement.correlationPropertyRetrievalExpression,
+      correlationPropertyRetrievalExpressionElement
+    );
   };
 
   const getValue = () => {
-    const correlationKeyElement = findCorrelationKeyForCorrelationProperty(
-      correlationPropertyModdleElement
-    );
-    if (correlationKeyElement) {
-      return correlationKeyElement.name;
-    }
-    return null;
+    return correlationPropertyModdleElement.id;
   };
 
   const getOptions = () => {
-    const correlationKeyElements = findCorrelationKeys(
-      correlationPropertyModdleElement
+    const correlationPropertyElements = findCorrelationProperties(
+      correlationPropertyModdleElement,
+      moddle
     );
     const options = [];
-    for (const correlationKeyElement of correlationKeyElements) {
+    for (const correlationPropertyElement of correlationPropertyElements) {
       options.push({
-        label: correlationKeyElement.name,
-        value: correlationKeyElement.name,
+        label: correlationPropertyElement.name,
+        value: correlationPropertyElement.id,
       });
     }
     return options;
@@ -174,7 +172,7 @@ function MessageCorrelationKeySelect(props) {
   return SelectEntry({
     id: `${idPrefix}-select`,
     element: parameter,
-    label: translate('Correlation Key'),
+    label: translate('Correlation Property'),
     getValue,
     setValue,
     getOptions,

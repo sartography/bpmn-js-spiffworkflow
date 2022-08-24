@@ -5,7 +5,6 @@ import {
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
 import {
-  findCorrelationPropertiesAndRetrievalExpressionsForMessage,
   getRoot,
   findCorrelationKeys,
   findCorrelationProperties,

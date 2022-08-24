@@ -4,13 +4,22 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
  * loops up until it can find the root.
  * @param element
  */
-export function getRoot(businessObject) {
-  // todo: Do we want businessObject to be a shape or moddle object?
-  if (businessObject.$type === 'bpmn:Definitions') {
-    return businessObject;
-  }
-  if (typeof businessObject.$parent !== 'undefined') {
-    return getRoot(businessObject.$parent);
+export function getRoot(businessObject, moddle) {
+  // HACK: get the root element. need a more formal way to do this
+  if (moddle) {
+    for (const elementId in moddle.ids._seed.hats) {
+      if (elementId.startsWith('Definitions_')) {
+        return moddle.ids._seed.hats[elementId];
+      }
+    }
+  } else {
+    // todo: Do we want businessObject to be a shape or moddle object?
+    if (businessObject.$type === 'bpmn:Definitions') {
+      return businessObject;
+    }
+    if (typeof businessObject.$parent !== 'undefined') {
+      return getRoot(businessObject.$parent);
+    }
   }
   return businessObject;
 }
@@ -136,8 +145,8 @@ function getRetrievalExpressionFromCorrelationProperty(
   return null;
 }
 
-export function findCorrelationProperties(businessObject) {
-  const root = getRoot(businessObject);
+export function findCorrelationProperties(businessObject, moddle) {
+  const root = getRoot(businessObject, moddle);
   const correlationProperties = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:CorrelationProperty') {
@@ -148,17 +157,7 @@ export function findCorrelationProperties(businessObject) {
 }
 
 export function findCorrelationKeys(businessObject, moddle) {
-  let root;
-  // HACK: get the root element. need a more formal way to do this
-  if (moddle) {
-    for (const elementId in moddle.ids._seed.hats) {
-      if (elementId.startsWith('Definitions_')) {
-        root = moddle.ids._seed.hats[elementId];
-      }
-    }
-  } else {
-    root = getRoot(businessObject);
-  }
+  const root = getRoot(businessObject, moddle);
   const correlationKeys = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:Collaboration') {

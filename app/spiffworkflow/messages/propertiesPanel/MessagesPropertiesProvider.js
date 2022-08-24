@@ -167,7 +167,7 @@ function createMessageGroup(
 
   entries.push({
     id: 'correlationProperties',
-    label: translate('Correlation Properties'),
+    label: translate('Correlation'),
     component: ListGroup,
     ...MessageCorrelationPropertiesArray({
       element,
