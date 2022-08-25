@@ -6,11 +6,8 @@ import {
 } from '@bpmn-io/properties-panel';
 import {
   findCorrelationPropertiesAndRetrievalExpressionsForMessage,
-  getRoot,
   findCorrelationProperties,
   getMessageRefElement,
-  findCorrelationKeys,
-  findCorrelationKeyForCorrelationProperty,
 } from '../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
 
@@ -30,18 +27,20 @@ export function MessageCorrelationPropertiesArray(props) {
     moddle
   );
   const items = correlationPropertyObjectsForCurrentMessage.map(
-    (correlationPropertyObject) => {
+    (correlationPropertyObject, index) => {
       const {
         correlationPropertyModdleElement,
         correlationPropertyRetrievalExpressionModdleElement,
       } = correlationPropertyObject;
-      const id = `correlation-${correlationPropertyModdleElement.id}`;
+      const id = `correlation-${index}`;
       const entries = MessageCorrelationPropertyGroup({
         idPrefix: id,
         correlationPropertyModdleElement,
         correlationPropertyRetrievalExpressionModdleElement,
         translate,
         moddle,
+        element,
+        commandStack,
       });
       return {
         id,
@@ -141,6 +140,8 @@ function MessageCorrelationPropertyGroup(props) {
     correlationPropertyRetrievalExpressionModdleElement,
     translate,
     moddle,
+    element,
+    commandStack,
   } = props;
   return [
     {
@@ -152,6 +153,8 @@ function MessageCorrelationPropertyGroup(props) {
       correlationPropertyRetrievalExpressionModdleElement,
       translate,
       moddle,
+      element,
+      commandStack,
     },
     {
       id: `${idPrefix}-expression`,
@@ -172,6 +175,8 @@ function MessageCorrelationPropertySelect(props) {
     translate,
     parameter,
     moddle,
+    element,
+    commandStack,
   } = props;
   const debounce = useService('debounceInput');
 
@@ -193,6 +198,10 @@ function MessageCorrelationPropertySelect(props) {
       correlationPropertyModdleElement.correlationPropertyRetrievalExpression,
       correlationPropertyRetrievalExpressionModdleElement
     );
+    commandStack.execute('element.updateProperties', {
+      element,
+      properties: {},
+    });
   };
 
   const getValue = () => {
@@ -204,12 +213,26 @@ function MessageCorrelationPropertySelect(props) {
       correlationPropertyModdleElement,
       moddle
     );
+    const correlationPropertyObjectsForCurrentMessage =
+      findCorrelationPropertiesAndRetrievalExpressionsForMessage(element);
     const options = [];
-    for (const correlationPropertyElement of allCorrelationPropertyModdleElements) {
-      options.push({
-        label: correlationPropertyElement.name,
-        value: correlationPropertyElement.id,
-      });
+    for (const cpe of allCorrelationPropertyModdleElements) {
+      const foundElement = correlationPropertyObjectsForCurrentMessage.find(
+        (cpo) => {
+          const cpme = cpo.correlationPropertyModdleElement;
+          return cpme.id === cpe.id;
+        }
+      );
+      if (
+        !foundElement ||
+        foundElement.correlationPropertyModdleElement ===
+          correlationPropertyModdleElement
+      ) {
+        options.push({
+          label: cpe.name,
+          value: cpe.id,
+        });
+      }
     }
     return options;
   };
