@@ -4,12 +4,13 @@ import {
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
 import FileSaver from 'file-saver';
-import diagramXML from '../test/spec/bpmn/basic_message.bpmn';
+import diagramXML from '../test/spec/bpmn/gateway.bpmn';
 import spiffworkflow from './spiffworkflow';
 
 const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
 const spiffModdleExtension = require('./spiffworkflow/moddle/spiffworkflow.json');
+const bpmnModdleExtension = require('./spiffworkflow/moddle/bpmn.json');
 
 let bpmnModeler;
 
@@ -27,6 +28,7 @@ try {
     ],
     moddleExtensions: {
       spiffworkflowModdle: spiffModdleExtension,
+      // bpmnModdleExtension,
     },
   });
 } catch (error) {
