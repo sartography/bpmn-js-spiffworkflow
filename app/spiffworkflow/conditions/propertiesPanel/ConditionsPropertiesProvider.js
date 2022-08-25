@@ -70,8 +70,6 @@ function ConditionExpressionTextField(props) {
   const { element } = props;
   const { moddle } = props;
   const { label } = props;
-  console.log('props', props);
-  debugger;
 
   const debounce = useService('debounceInput');
   const getValue = () => {
@@ -82,33 +80,14 @@ function ConditionExpressionTextField(props) {
     return '';
   };
 
-  const setValue = (value, event) => {
-    const { conditionExpression } = element.businessObject;
-    if (!conditionExpression) {
-      const newDataObject = moddle.create('bpmn:DataObject');
-
-      // FIXME: bpmn-io doesn't support this element and doesn't allow us
-      // to add items to the bpmn prefix. We need to find a way around this.
-      const conditionExpressionElement = moddle.create(
-        'bpmn:conditionExpression'
-      );
-      element.businessObject.push(conditionExpressionElement);
+  const setValue = (value) => {
+    let { conditionExpressionModdleElement } = element.businessObject;
+    if (!conditionExpressionModdleElement) {
+      conditionExpressionModdleElement = moddle.create('bpmn:Expression');
     }
-    // const { businessObject } = element;
-    // let scriptObj = getScriptObject();
-    // // Create the script object if needed.
-    // if (!scriptObj) {
-    //   scriptObj = moddle.create(type);
-    //   if (type !== SCRIPT_TYPE.bpmn) {
-    //     if (!businessObject.extensionElements) {
-    //       businessObject.extensionElements = moddle.create(
-    //         'bpmn:ExtensionElements'
-    //       );
-    //     }
-    //     businessObject.extensionElements.get('values').push(scriptObj);
-    //   }
-    // }
-    // scriptObj.script = value;
+    conditionExpressionModdleElement.body = value;
+    element.businessObject.conditionExpression =
+      conditionExpressionModdleElement;
   };
 
   return TextFieldEntry({
