@@ -133,9 +133,7 @@ function MessageCorrelationPropertySelect(props) {
       moddle
     );
     const newCorrelationPropertyElement = correlationPropertyElements.find(
-      (cpe) => {
-        return cpe.id === value;
-      }
+      (cpe) => cpe.id === value
     );
 
     if (!newCorrelationPropertyElement.correlationPropertyRetrievalExpression) {
