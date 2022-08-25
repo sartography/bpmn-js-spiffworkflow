@@ -5,7 +5,9 @@
     <bpmn:participant id="message_receiver" name="Message Receiver" processRef="message_receiver_process" />
     <bpmn:messageFlow id="message_send_flow" name="Message Send Flow" sourceRef="send_message" targetRef="receive_message" />
     <bpmn:messageFlow id="message_response_flow" name="Message Response Flow" sourceRef="respond_to_message" targetRef="receive_message_response" />
-    <bpmn:correlationKey name="message_correlation_key" />
+    <bpmn:correlationKey name="message_correlation_key">
+      <bpmn:correlationPropertyRef>correlation_property_one</bpmn:correlationPropertyRef>
+    </bpmn:correlationKey>
     <bpmn:correlationKey name="new_key">
       <bpmn:correlationPropertyRef>message_correlation_property</bpmn:correlationPropertyRef>
     </bpmn:correlationKey>
@@ -64,6 +66,11 @@
       <bpmn:messageEventDefinition id="MessageEventDefinition_0kakria" />
     </bpmn:intermediateThrowEvent>
   </bpmn:process>
+  <bpmn:correlationProperty id="correlation_property_one" name="Correlation Property One">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="message_send">
+      <bpmn:formalExpression>new</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0oye1os">
       <bpmndi:BPMNShape id="Participant_0bjh770_di" bpmnElement="message_initiator" isHorizontal="true">

@@ -79,14 +79,15 @@ export function findCorrelationKeyForCorrelationProperty(shapeElement, moddle) {
       }
     }
   }
+  return null;
 }
 
 export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
   shapeElement
 ) {
   const formalExpressions = [];
-  const messageRef = getMessageRefElement(shapeElement);
-  if (messageRef) {
+  const messageRefElement = getMessageRefElement(shapeElement);
+  if (messageRefElement) {
     const root = getRoot(shapeElement.businessObject);
     if (root.$type === 'bpmn:Definitions') {
       for (const childElement of root.rootElements) {
@@ -94,12 +95,12 @@ export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
           const retrievalExpression =
             getRetrievalExpressionFromCorrelationProperty(
               childElement,
-              messageRef
+              messageRefElement
             );
           if (retrievalExpression) {
             const formalExpression = {
               correlationPropertyModdleElement: childElement,
-              correlationPropertyRetrievalExpressionElement:
+              correlationPropertyRetrievalExpressionModdleElement:
                 retrievalExpression,
             };
             formalExpressions.push(formalExpression);
@@ -135,8 +136,7 @@ function getRetrievalExpressionFromCorrelationProperty(
         retrievalExpression.$type ===
           'bpmn:CorrelationPropertyRetrievalExpression' &&
         retrievalExpression.messageRef &&
-        retrievalExpression.messageRef.id === message.id &&
-        retrievalExpression.messagePath.body
+        retrievalExpression.messageRef.id === message.id
       ) {
         return retrievalExpression;
       }

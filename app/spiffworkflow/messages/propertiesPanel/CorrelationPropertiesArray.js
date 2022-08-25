@@ -62,9 +62,24 @@ export function CorrelationPropertiesArray(props) {
     const rootElement = getRoot(element.businessObject);
     const { rootElements } = rootElement;
     rootElements.push(newCorrelationPropertyElement);
+
+    const correlationKeyElements = findCorrelationKeys(
+      newCorrelationPropertyElement,
+      moddle
+    );
+    const correlationKeyElement = correlationKeyElements[0];
+    if (correlationKeyElement.correlationPropertyRef) {
+      correlationKeyElement.correlationPropertyRef.push(
+        newCorrelationPropertyElement
+      );
+    } else {
+      correlationKeyElement.correlationPropertyRef = [
+        newCorrelationPropertyElement,
+      ];
+    }
+
     commandStack.execute('element.updateProperties', {
       element,
-      moddleElement: moddle,
       properties: {},
     });
   }
@@ -98,7 +113,6 @@ function removeFactory(props) {
     );
     commandStack.execute('element.updateProperties', {
       element,
-      moddleElement: moddle,
       properties: {
         messages: rootElements,
       },

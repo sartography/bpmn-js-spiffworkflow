@@ -23,74 +23,122 @@ export function MessageCorrelationPropertiesArray(props) {
   const { commandStack } = props;
   const { translate } = props;
 
-  const correlationPropertyArray =
+  const correlationPropertyObjectsForCurrentMessage =
     findCorrelationPropertiesAndRetrievalExpressionsForMessage(element);
-  const items = correlationPropertyArray.map((correlationPropertyObject) => {
-    const {
-      correlationPropertyModdleElement,
-      correlationPropertyRetrievalExpressionElement,
-    } = correlationPropertyObject;
-    const id = `correlation-${correlationPropertyModdleElement.id}`;
-    const entries = MessageCorrelationPropertyGroup({
-      idPrefix: id,
-      correlationPropertyModdleElement,
-      correlationPropertyRetrievalExpressionElement,
-      translate,
-      moddle,
-    });
-    return {
-      id,
-      label: correlationPropertyModdleElement.id,
-      entries,
-      autoFocusEntry: id,
-      // remove: removeFactory({ element, correlationProperty, commandStack, elementRegistry })
-    };
-  });
+  const allCorrelationPropertyModdleElements = findCorrelationProperties(
+    element,
+    moddle
+  );
+  const items = correlationPropertyObjectsForCurrentMessage.map(
+    (correlationPropertyObject) => {
+      const {
+        correlationPropertyModdleElement,
+        correlationPropertyRetrievalExpressionModdleElement,
+      } = correlationPropertyObject;
+      const id = `correlation-${correlationPropertyModdleElement.id}`;
+      const entries = MessageCorrelationPropertyGroup({
+        idPrefix: id,
+        correlationPropertyModdleElement,
+        correlationPropertyRetrievalExpressionModdleElement,
+        translate,
+        moddle,
+      });
+      return {
+        id,
+        label: correlationPropertyModdleElement.id,
+        entries,
+        autoFocusEntry: id,
+        remove: removeFactory({
+          element,
+          correlationPropertyModdleElement,
+          correlationPropertyRetrievalExpressionModdleElement,
+          commandStack,
+        }),
+      };
+    }
+  );
 
   function add(event) {
     event.stopPropagation();
-    const newCorrelationPropertyElement = moddle.create(
-      'bpmn:CorrelationProperty'
-    );
-    const newRetrievalExpressionElement = moddle.create(
-      'bpmn:CorrelationPropertyRetrievalExpression'
-    );
-    const newFormalExpression = moddle.create('bpmn:FormalExpression');
-    // const rootElement = getRoot(element.businessObject);
-    // const { rootElements } = rootElement;
-    // rootElements.push(newRetrievalExpressionElement);
-    // commandStack.execute('element.updateProperties', {
-    //   element,
-    //   moddleElement: element.businessObject,
-    // });
+
+    let correlationPropertyElement;
+    allCorrelationPropertyModdleElements.forEach((cpe) => {
+      let foundElement = false;
+      correlationPropertyObjectsForCurrentMessage.forEach((cpo) => {
+        const cpme = cpo.correlationPropertyModdleElement;
+        if (cpme.id === cpe.id) {
+          foundElement = true;
+        }
+      });
+      if (!foundElement) {
+        correlationPropertyElement = cpe;
+      }
+    });
+
+    // TODO: we should have some way to show an error if element is not found instead
+    // we need to check this since the code assumes each message only has one ref
+    // and will not display all properties if there are multiple
+    if (correlationPropertyElement) {
+      const newRetrievalExpressionElement = moddle.create(
+        'bpmn:CorrelationPropertyRetrievalExpression'
+      );
+      const messageRefElement = getMessageRefElement(element);
+      const newFormalExpression = moddle.create('bpmn:FormalExpression');
+      newFormalExpression.body = '';
+
+      newRetrievalExpressionElement.messageRef = messageRefElement;
+      newRetrievalExpressionElement.messagePath = newFormalExpression;
+
+      if (!correlationPropertyElement.correlationPropertyRetrievalExpression) {
+        correlationPropertyElement.correlationPropertyRetrievalExpression = [];
+      }
+      correlationPropertyElement.correlationPropertyRetrievalExpression.push(
+        newRetrievalExpressionElement
+      );
+      commandStack.execute('element.updateProperties', {
+        element,
+        properties: {},
+      });
+    } else {
+      console.log(
+        'ERROR: There are not any more correlation properties this message can be added to'
+      );
+    }
   }
 
-  return { items, add };
+  const returnObject = { items };
+  if (allCorrelationPropertyModdleElements.length !== 0) {
+    returnObject.add = add;
+  }
+  return returnObject;
 }
-//
-// function removeFactory(props) {
-//   const { element, messageElement, moddle, commandStack } = props;
-//
-//   return function (event) {
-//     event.stopPropagation();
-//     const rootElement = getRoot(element.businessObject);
-//     const { rootElements } = rootElement;
-//     removeFirstInstanceOfItemFromArrayInPlace(rootElements, messageElement);
-//     commandStack.execute('element.updateProperties', {
-//       element,
-//       moddleElement: moddle,
-//       properties: {
-//         messages: rootElements,
-//       },
-//     });
-//   };
-// }
+
+function removeFactory(props) {
+  const {
+    element,
+    correlationPropertyModdleElement,
+    correlationPropertyRetrievalExpressionModdleElement,
+    commandStack,
+  } = props;
+
+  return function (event) {
+    event.stopPropagation();
+    removeFirstInstanceOfItemFromArrayInPlace(
+      correlationPropertyModdleElement.correlationPropertyRetrievalExpression,
+      correlationPropertyRetrievalExpressionModdleElement
+    );
+    commandStack.execute('element.updateProperties', {
+      element,
+      properties: {},
+    });
+  };
+}
 
 function MessageCorrelationPropertyGroup(props) {
   const {
     idPrefix,
     correlationPropertyModdleElement,
-    correlationPropertyRetrievalExpressionElement,
+    correlationPropertyRetrievalExpressionModdleElement,
     translate,
     moddle,
   } = props;
@@ -101,7 +149,7 @@ function MessageCorrelationPropertyGroup(props) {
       isEdited: isTextFieldEntryEdited,
       idPrefix,
       correlationPropertyModdleElement,
-      correlationPropertyRetrievalExpressionElement,
+      correlationPropertyRetrievalExpressionModdleElement,
       translate,
       moddle,
     },
@@ -110,7 +158,7 @@ function MessageCorrelationPropertyGroup(props) {
       component: MessageCorrelationExpressionTextField,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
-      correlationPropertyRetrievalExpressionElement,
+      correlationPropertyRetrievalExpressionModdleElement,
       translate,
     },
   ];
@@ -120,7 +168,7 @@ function MessageCorrelationPropertySelect(props) {
   const {
     idPrefix,
     correlationPropertyModdleElement,
-    correlationPropertyRetrievalExpressionElement,
+    correlationPropertyRetrievalExpressionModdleElement,
     translate,
     parameter,
     moddle,
@@ -128,23 +176,22 @@ function MessageCorrelationPropertySelect(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    const correlationPropertyElements = findCorrelationProperties(
+    const allCorrelationPropertyModdleElements = findCorrelationProperties(
       correlationPropertyModdleElement,
       moddle
     );
-    const newCorrelationPropertyElement = correlationPropertyElements.find(
-      (cpe) => cpe.id === value
-    );
+    const newCorrelationPropertyElement =
+      allCorrelationPropertyModdleElements.find((cpe) => cpe.id === value);
 
     if (!newCorrelationPropertyElement.correlationPropertyRetrievalExpression) {
       newCorrelationPropertyElement.correlationPropertyRetrievalExpression = [];
     }
     newCorrelationPropertyElement.correlationPropertyRetrievalExpression.push(
-      correlationPropertyRetrievalExpressionElement
+      correlationPropertyRetrievalExpressionModdleElement
     );
     removeFirstInstanceOfItemFromArrayInPlace(
       correlationPropertyModdleElement.correlationPropertyRetrievalExpression,
-      correlationPropertyRetrievalExpressionElement
+      correlationPropertyRetrievalExpressionModdleElement
     );
   };
 
@@ -153,12 +200,12 @@ function MessageCorrelationPropertySelect(props) {
   };
 
   const getOptions = () => {
-    const correlationPropertyElements = findCorrelationProperties(
+    const allCorrelationPropertyModdleElements = findCorrelationProperties(
       correlationPropertyModdleElement,
       moddle
     );
     const options = [];
-    for (const correlationPropertyElement of correlationPropertyElements) {
+    for (const correlationPropertyElement of allCorrelationPropertyModdleElements) {
       options.push({
         label: correlationPropertyElement.name,
         value: correlationPropertyElement.id,
@@ -182,18 +229,19 @@ function MessageCorrelationExpressionTextField(props) {
   const {
     idPrefix,
     parameter,
-    correlationPropertyRetrievalExpressionElement,
+    correlationPropertyRetrievalExpressionModdleElement,
     translate,
   } = props;
 
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    correlationPropertyRetrievalExpressionElement.messagePath.body = value;
+    correlationPropertyRetrievalExpressionModdleElement.messagePath.body =
+      value;
   };
 
   const getValue = (_parameter) => {
-    return correlationPropertyRetrievalExpressionElement.messagePath.body;
+    return correlationPropertyRetrievalExpressionModdleElement.messagePath.body;
   };
 
   return TextFieldEntry({
