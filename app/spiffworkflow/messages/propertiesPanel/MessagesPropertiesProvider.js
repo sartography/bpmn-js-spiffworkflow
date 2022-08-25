@@ -5,6 +5,8 @@ import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
 import { MessageVariable } from './MessageVariable';
 import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
+import { MessageCorrelationPropertiesArray } from './MessageCorrelationPropertiesArray';
+import { MessageArray } from './MessageArray';
 import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
 
 const LOW_PRIORITY = 500;
@@ -20,7 +22,7 @@ export default function MessagesPropertiesProvider(
     return function pushGroup(groups) {
       if (is(element, 'bpmn:Collaboration')) {
         groups.push(
-          createCollaborationGroup(
+          ...createCollaborationGroup(
             element,
             translate,
             moddle,
@@ -80,12 +82,44 @@ function createCollaborationGroup(
   commandStack,
   elementRegistry
 ) {
-  return {
-    id: 'correlation_keys',
-    label: translate('Correlation Keys'),
-    component: ListGroup,
-    ...CorrelationKeysArray({ element, moddle, commandStack, elementRegistry }),
-  };
+  return [
+    {
+      id: 'correlation_keys',
+      label: translate('Correlation Keys'),
+      component: ListGroup,
+      ...CorrelationKeysArray({
+        element,
+        moddle,
+        commandStack,
+        elementRegistry,
+        translate,
+      }),
+    },
+    {
+      id: 'correlation_properties',
+      label: translate('Correlation Properties'),
+      component: ListGroup,
+      ...CorrelationPropertiesArray({
+        element,
+        moddle,
+        commandStack,
+        elementRegistry,
+        translate,
+      }),
+    },
+    {
+      id: 'messages',
+      label: translate('Messages'),
+      component: ListGroup,
+      ...MessageArray({
+        element,
+        moddle,
+        commandStack,
+        elementRegistry,
+        translate,
+      }),
+    },
+  ];
 }
 
 /**
@@ -133,13 +167,14 @@ function createMessageGroup(
 
   entries.push({
     id: 'correlationProperties',
-    label: translate('Correlation Properties'),
+    label: translate('Correlation'),
     component: ListGroup,
-    ...CorrelationPropertiesArray({
+    ...MessageCorrelationPropertiesArray({
       element,
       moddle,
       commandStack,
       elementRegistry,
+      translate,
     }),
   });
 

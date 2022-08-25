@@ -1,11 +1,16 @@
 import { useService } from 'bpmn-js-properties-panel';
 import {
+  SelectEntry,
   isTextFieldEntryEdited,
-  ListGroup,
-  TextAreaEntry,
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
-import { findFormalExpressions } from '../MessageHelpers';
+import {
+  getRoot,
+  findCorrelationKeys,
+  findCorrelationProperties,
+  findCorrelationKeyForCorrelationProperty,
+} from '../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
 
 /**
  * Allows the creation, or editing of messageCorrelations at the bpmn:sendTask level of a BPMN document.
@@ -14,93 +19,289 @@ export function CorrelationPropertiesArray(props) {
   const { moddle } = props;
   const { element } = props;
   const { commandStack } = props;
-  // const { elementRegistry } = props;
+  const { translate } = props;
 
-  const formalExpressions = findFormalExpressions(element);
-  const items = formalExpressions.map((formalExpression) => {
-    const id = `correlation-${formalExpression.correlationId}`;
-    const entries = MessageCorrelationGroup({
-      idPrefix: id,
-      formalExpression,
-    });
-    return {
-      id,
-      label: formalExpression.correlationId,
-      entries,
-      autoFocusEntry: id,
-      // remove: removeFactory({ element, correlationProperty, commandStack, elementRegistry })
-    };
-  });
+  const correlationPropertyArray = findCorrelationProperties(
+    element.businessObject
+  );
+  const items = correlationPropertyArray.map(
+    (correlationPropertyModdleElement, index) => {
+      const id = `correlation-${index}`;
+      const entries = MessageCorrelationPropertyGroup({
+        idPrefix: id,
+        correlationPropertyModdleElement,
+        translate,
+        commandStack,
+        moddle,
+      });
+      return {
+        id,
+        label: correlationPropertyModdleElement.id,
+        entries,
+        autoFocusEntry: id,
+        remove: removeFactory({
+          element,
+          correlationPropertyModdleElement,
+          commandStack,
+          moddle,
+        }),
+      };
+    }
+  );
 
   function add(event) {
     event.stopPropagation();
-    const newRetrievalExpression = moddle.create(
-      'bpmn:CorrelationPropertyRetrievalExpression'
+    const newCorrelationPropertyElement = moddle.create(
+      'bpmn:CorrelationProperty'
     );
-    const newElements = formalExpressions;
-    newRetrievalExpression.messageRef = element.businessObject.messageRef;
-    newElements.push(newRetrievalExpression);
-    commandStack.execute('element.updateModdleProperties', {
+    const correlationPropertyId = moddle.ids.nextPrefixed(
+      'CorrelationProperty_'
+    );
+    newCorrelationPropertyElement.id = correlationPropertyId;
+    newCorrelationPropertyElement.name = correlationPropertyId;
+    const rootElement = getRoot(element.businessObject);
+    const { rootElements } = rootElement;
+    rootElements.push(newCorrelationPropertyElement);
+
+    const correlationKeyElements = findCorrelationKeys(
+      newCorrelationPropertyElement,
+      moddle
+    );
+    const correlationKeyElement = correlationKeyElements[0];
+    if (correlationKeyElement.correlationPropertyRef) {
+      correlationKeyElement.correlationPropertyRef.push(
+        newCorrelationPropertyElement
+      );
+    } else {
+      correlationKeyElement.correlationPropertyRef = [
+        newCorrelationPropertyElement,
+      ];
+    }
+
+    commandStack.execute('element.updateProperties', {
       element,
-      moddleElement: element.businessObject,
+      properties: {},
     });
   }
 
   return { items, add };
 }
 
-function MessageCorrelationGroup(props) {
-  const { idPrefix, formalExpression } = props;
+function removeFactory(props) {
+  const { element, correlationPropertyModdleElement, moddle, commandStack } =
+    props;
 
+  return function (event) {
+    event.stopPropagation();
+    const rootElement = getRoot(element.businessObject);
+    const { rootElements } = rootElement;
+
+    const oldCorrelationKeyElement = findCorrelationKeyForCorrelationProperty(
+      correlationPropertyModdleElement,
+      moddle
+    );
+    if (oldCorrelationKeyElement) {
+      removeFirstInstanceOfItemFromArrayInPlace(
+        oldCorrelationKeyElement.correlationPropertyRef,
+        correlationPropertyModdleElement
+      );
+    }
+
+    removeFirstInstanceOfItemFromArrayInPlace(
+      rootElements,
+      correlationPropertyModdleElement
+    );
+    commandStack.execute('element.updateProperties', {
+      element,
+      properties: {
+        messages: rootElements,
+      },
+    });
+  };
+}
+
+function MessageCorrelationPropertyGroup(props) {
+  const {
+    idPrefix,
+    correlationPropertyModdleElement,
+    translate,
+    commandStack,
+    moddle,
+  } = props;
   return [
     {
-      id: `${idPrefix}-group`,
-      component: MessageCorrelationTextField,
+      id: `${idPrefix}-correlation-key`,
+      component: MessageCorrelationKeySelect,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
-      formalExpression,
+      correlationPropertyModdleElement,
+      translate,
+      moddle,
+    },
+    {
+      id: `${idPrefix}-correlation-property-id`,
+      component: CorrelationPropertyIdTextField,
+      isEdited: isTextFieldEntryEdited,
+      idPrefix,
+      correlationPropertyModdleElement,
+      translate,
+      commandStack,
+    },
+    {
+      id: `${idPrefix}-correlation-property-name`,
+      component: CorrelationPropertyNameTextField,
+      isEdited: isTextFieldEntryEdited,
+      idPrefix,
+      correlationPropertyModdleElement,
+      translate,
+      commandStack,
     },
   ];
 }
 
-function MessageCorrelationTextField(props) {
-  const { idPrefix, element, parameter, formalExpression } = props;
-
-  const commandStack = useService('commandStack');
+function MessageCorrelationKeySelect(props) {
+  const {
+    idPrefix,
+    correlationPropertyModdleElement,
+    translate,
+    parameter,
+    moddle,
+  } = props;
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
+    const correlationKeyElements = findCorrelationKeys(
+      correlationPropertyModdleElement,
+      moddle
+    );
+    let newCorrelationKeyElement;
+    for (const cke of correlationKeyElements) {
+      if (cke.name === value) {
+        newCorrelationKeyElement = cke;
+      }
+    }
+    const oldCorrelationKeyElement = findCorrelationKeyForCorrelationProperty(
+      correlationPropertyModdleElement,
+      moddle
+    );
+
+    if (newCorrelationKeyElement.correlationPropertyRef) {
+      newCorrelationKeyElement.correlationPropertyRef.push(
+        correlationPropertyModdleElement
+      );
+    } else {
+      newCorrelationKeyElement.correlationPropertyRef = [
+        correlationPropertyModdleElement,
+      ];
+    }
+
+    if (oldCorrelationKeyElement) {
+      removeFirstInstanceOfItemFromArrayInPlace(
+        oldCorrelationKeyElement.correlationPropertyRef,
+        correlationPropertyModdleElement
+      );
+    }
+  };
+
+  const getValue = () => {
+    const correlationKeyElement = findCorrelationKeyForCorrelationProperty(
+      correlationPropertyModdleElement,
+      moddle
+    );
+    if (correlationKeyElement) {
+      return correlationKeyElement.name;
+    }
+    return null;
+  };
+
+  const getOptions = () => {
+    const correlationKeyElements = findCorrelationKeys(
+      correlationPropertyModdleElement,
+      moddle
+    );
+    const options = [];
+    for (const correlationKeyElement of correlationKeyElements) {
+      options.push({
+        label: correlationKeyElement.name,
+        value: correlationKeyElement.name,
+      });
+    }
+    return options;
+  };
+
+  return SelectEntry({
+    id: `${idPrefix}-select`,
+    element: parameter,
+    label: translate('Correlation Key'),
+    getValue,
+    setValue,
+    getOptions,
+    debounce,
+  });
+}
+
+function CorrelationPropertyIdTextField(props) {
+  const {
+    id,
+    element,
+    correlationPropertyModdleElement,
+    commandStack,
+    translate,
+  } = props;
+
+  const debounce = useService('debounceInput');
+  const setValue = (value) => {
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: formalExpression,
+      moddleElement: correlationPropertyModdleElement,
       properties: {
         id: value,
       },
     });
-
-    // Also update the label of all the references
-    // const references = findDataReferenceShapes(element, correlationProperty.id);
-    const references = ['hello1', 'hello2'];
-    for (const ref of references) {
-      commandStack.execute('element.updateProperties', {
-        element: ref,
-        moddleElement: ref.businessObject,
-        properties: {
-          name: value,
-        },
-        changed: [ref], // everything is already marked as changed, don't recalculate.
-      });
-    }
   };
 
-  const getValue = (_parameter) => {
-    return formalExpression.expression;
+  const getValue = () => {
+    return correlationPropertyModdleElement.id;
   };
 
   return TextFieldEntry({
-    element: parameter,
-    id: `${idPrefix}-textField`,
-    label: 'Expression',
+    element,
+    id: `${id}-id-textField`,
+    label: translate('ID'),
+    getValue,
+    setValue,
+    debounce,
+  });
+}
+
+function CorrelationPropertyNameTextField(props) {
+  const {
+    id,
+    element,
+    correlationPropertyModdleElement,
+    commandStack,
+    translate,
+  } = props;
+
+  const debounce = useService('debounceInput');
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: correlationPropertyModdleElement,
+      properties: {
+        name: value,
+      },
+    });
+  };
+
+  const getValue = () => {
+    return correlationPropertyModdleElement.name;
+  };
+
+  return TextFieldEntry({
+    element,
+    id: `${id}-name-textField`,
+    label: translate('Name'),
     getValue,
     setValue,
     debounce,

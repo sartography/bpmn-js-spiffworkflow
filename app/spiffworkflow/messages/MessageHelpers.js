@@ -4,13 +4,22 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
  * loops up until it can find the root.
  * @param element
  */
-export function getRoot(businessObject) {
-  // todo: Do we want businessObject to be a shape or moddle object?
-  if (businessObject.$type === 'bpmn:Definitions') {
-    return businessObject;
-  }
-  if (typeof businessObject.$parent !== 'undefined') {
-    return getRoot(businessObject.$parent);
+export function getRoot(businessObject, moddle) {
+  // HACK: get the root element. need a more formal way to do this
+  if (moddle) {
+    for (const elementId in moddle.ids._seed.hats) {
+      if (elementId.startsWith('Definitions_')) {
+        return moddle.ids._seed.hats[elementId];
+      }
+    }
+  } else {
+    // todo: Do we want businessObject to be a shape or moddle object?
+    if (businessObject.$type === 'bpmn:Definitions') {
+      return businessObject;
+    }
+    if (typeof businessObject.$parent !== 'undefined') {
+      return getRoot(businessObject.$parent);
+    }
   }
   return businessObject;
 }
@@ -59,23 +68,40 @@ export function getMessageRefElement(shapeElement) {
   return null;
 }
 
-export function findFormalExpressions(shapeElement) {
+export function findCorrelationKeyForCorrelationProperty(shapeElement, moddle) {
+  const correlationKeyElements = findCorrelationKeys(shapeElement, moddle);
+  for (const cke of correlationKeyElements) {
+    if (cke.correlationPropertyRef) {
+      for (const correlationPropertyRef of cke.correlationPropertyRef) {
+        if (correlationPropertyRef.id === shapeElement.id) {
+          return cke;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
+  shapeElement
+) {
   const formalExpressions = [];
-  const messageRef = getMessageRefElement(shapeElement);
-  if (messageRef) {
+  const messageRefElement = getMessageRefElement(shapeElement);
+  if (messageRefElement) {
     const root = getRoot(shapeElement.businessObject);
     if (root.$type === 'bpmn:Definitions') {
       for (const childElement of root.rootElements) {
         if (childElement.$type === 'bpmn:CorrelationProperty') {
-          const retrievalExpression = processCorrelationProperty(
-            childElement,
-            messageRef
-          );
-          // todo: is there a better test for this than length === 1?
-          if (retrievalExpression.length === 1) {
+          const retrievalExpression =
+            getRetrievalExpressionFromCorrelationProperty(
+              childElement,
+              messageRefElement
+            );
+          if (retrievalExpression) {
             const formalExpression = {
-              correlationId: childElement.id,
-              expression: retrievalExpression[0],
+              correlationPropertyModdleElement: childElement,
+              correlationPropertyRetrievalExpressionModdleElement:
+                retrievalExpression,
             };
             formalExpressions.push(formalExpression);
           }
@@ -100,24 +126,27 @@ export function getMessageElementForShapeElement(shapeElement) {
   return null;
 }
 
-function processCorrelationProperty(correlationProperty, message) {
-  const expressions = [];
-  for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
-    if (
-      retrievalExpression.$type ===
-        'bpmn:CorrelationPropertyRetrievalExpression' &&
-      retrievalExpression.messageRef &&
-      retrievalExpression.messageRef.id === message.id &&
-      retrievalExpression.messagePath.body
-    ) {
-      expressions.push(retrievalExpression.messagePath.body);
+function getRetrievalExpressionFromCorrelationProperty(
+  correlationProperty,
+  message
+) {
+  if (correlationProperty.correlationPropertyRetrievalExpression) {
+    for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
+      if (
+        retrievalExpression.$type ===
+          'bpmn:CorrelationPropertyRetrievalExpression' &&
+        retrievalExpression.messageRef &&
+        retrievalExpression.messageRef.id === message.id
+      ) {
+        return retrievalExpression;
+      }
     }
   }
-  return expressions;
+  return null;
 }
 
-export function findCorrelationProperties(businessObject) {
-  const root = getRoot(businessObject);
+export function findCorrelationProperties(businessObject, moddle) {
+  const root = getRoot(businessObject, moddle);
   const correlationProperties = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:CorrelationProperty') {
@@ -127,8 +156,8 @@ export function findCorrelationProperties(businessObject) {
   return correlationProperties;
 }
 
-export function findCorrelationKeys(businessObject) {
-  const root = getRoot(businessObject);
+export function findCorrelationKeys(businessObject, moddle) {
+  const root = getRoot(businessObject, moddle);
   const correlationKeys = [];
   for (const rootElement of root.rootElements) {
     if (rootElement.$type === 'bpmn:Collaboration') {
@@ -136,15 +165,6 @@ export function findCorrelationKeys(businessObject) {
       for (const correlationKey in currentKeys) {
         const currentCorrelation = rootElement.correlationKeys[correlationKey];
         correlationKeys.push(currentCorrelation);
-        // const currentProperty = {};
-        // currentProperty.name = currentCorrelation.name;
-        // currentProperty.refs = [];
-        // for (const correlationProperty in currentCorrelation.correlationPropertyRef) {
-        //   currentProperty.refs.push(
-        //     currentCorrelation.correlationPropertyRef[correlationProperty]
-        //   );
-        // }
-        // correlationKeys.push(currentProperty);
       }
     }
   }
