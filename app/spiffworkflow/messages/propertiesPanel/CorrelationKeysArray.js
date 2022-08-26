@@ -18,7 +18,7 @@ export function CorrelationKeysArray(props) {
       id,
       label: correlationKeyElement.name,
       entries: correlationGroup({
-        id,
+        idPrefix: id,
         element,
         correlationKeyElement,
         commandStack,
@@ -82,20 +82,19 @@ function removeFactory(props) {
 // </bpmn:correlationKey>
 // <bpmn:correlationKey name="singer" />
 function correlationGroup(props) {
-  const { correlationKeyElement, commandStack } = props;
-  const id = `correlation-${correlationKeyElement.name}`;
+  const { idPrefix, correlationKeyElement, commandStack } = props;
   const entries = [
     {
-      id: `${id}-${correlationKeyElement.name}-key`,
+      id: `${idPrefix}-key`,
       component: CorrelationKeyTextField,
       correlationKeyElement,
       commandStack,
     },
   ];
   (correlationKeyElement.correlationPropertyRef || []).forEach(
-    (correlationProperty) => {
+    (correlationProperty, index) => {
       entries.push({
-        id: `${id}-${correlationProperty.id}-group`,
+        id: `${idPrefix}-${index}-text`,
         component: CorrelationPropertyText,
         correlationProperty,
       });

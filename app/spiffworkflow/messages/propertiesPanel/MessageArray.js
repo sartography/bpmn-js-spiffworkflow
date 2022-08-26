@@ -23,7 +23,7 @@ export function MessageArray(props) {
       id,
       label: messageElement.name,
       entries: messageGroup({
-        id,
+        idPrefix: id,
         element,
         messageElement,
         commandStack,
@@ -81,18 +81,17 @@ function removeFactory(props) {
 }
 
 function messageGroup(props) {
-  const { messageElement, commandStack, translate } = props;
-  const id = `message-${messageElement.name}`;
+  const { messageElement, commandStack, translate, idPrefix } = props;
   return [
     {
-      id: `${id}-${messageElement.name}-key`,
+      id: `${idPrefix}-id`,
       component: MessageIdTextField,
       messageElement,
       commandStack,
       translate,
     },
     {
-      id: `${id}-${messageElement.name}-key`,
+      id: `${idPrefix}-name`,
       component: MessageNameTextField,
       messageElement,
       commandStack,
