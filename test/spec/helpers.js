@@ -1,31 +1,30 @@
-import {
-  query as domQuery,
-} from 'min-dom';
+import { query as domQuery } from 'min-dom';
 import { act, fireEvent } from '@testing-library/preact';
 
 import {
   getBpmnJS,
+  bootstrapBpmnJS,
+  inject,
+  insertCSS,
 } from 'bpmn-js/test/helper';
 import Modeler from 'bpmn-js/lib/Modeler';
 import TestContainer from 'mocha-test-container-support';
-import { bootstrapBpmnJS, inject, insertCSS } from 'bpmn-js/test/helper';
-import {getBusinessObject} from 'bpmn-js/lib/util/ModelUtil';
-import {createMoveEvent} from 'diagram-js/lib/features/mouse/Mouse';
+import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
+import { createMoveEvent } from 'diagram-js/lib/features/mouse/Mouse';
 
 export let PROPERTIES_PANEL_CONTAINER;
 export let CONTAINER;
 
 export function bootstrapPropertiesPanel(diagram, options, locals) {
-  return async function() {
-    let container = options.container;
-    CONTAINER = container;
+  return async function () {
+    let { container } = options;
     if (!container) {
       container = TestContainer.get(this);
     }
+    CONTAINER = container;
 
     insertBpmnStyles();
     insertCoreStyles();
-
     const createModeler = bootstrapBpmnJS(Modeler, diagram, options, locals);
     await act(() => createModeler.call(this));
 
@@ -33,7 +32,7 @@ export function bootstrapPropertiesPanel(diagram, options, locals) {
     clearPropertiesPanelContainer();
 
     // (3) attach properties panel
-    const attachPropertiesPanel = inject(function(propertiesPanel) {
+    const attachPropertiesPanel = inject(function (propertiesPanel) {
       PROPERTIES_PANEL_CONTAINER = document.createElement('div');
       PROPERTIES_PANEL_CONTAINER.classList.add('properties-container');
 
@@ -56,10 +55,7 @@ export function insertCoreStyles() {
     'properties-panel.css',
     require('bpmn-js-properties-panel/dist/assets/properties-panel.css').default
   );
-  insertCSS(
-    'test.css',
-    require('./test.css').default
-  );
+  insertCSS('test.css', require('./test.css').default);
 }
 
 export function insertBpmnStyles() {
@@ -69,10 +65,7 @@ export function insertBpmnStyles() {
   );
 
   // @barmac: this fails before bpmn-js@9
-  insertCSS(
-    'bpmn-js.css',
-    require('bpmn-js/dist/assets/bpmn-js.css').default
-  );
+  insertCSS('bpmn-js.css', require('bpmn-js/dist/assets/bpmn-js.css').default);
 
   insertCSS(
     'bpmn-font.css',
@@ -80,10 +73,8 @@ export function insertBpmnStyles() {
   );
 }
 
-
-
 export function expectSelected(id) {
-  return getBpmnJS().invoke(async function(elementRegistry, selection) {
+  return getBpmnJS().invoke(async function (elementRegistry, selection) {
     const element = elementRegistry.get(id);
 
     await act(() => {
@@ -98,29 +89,28 @@ export function getPropertiesPanel() {
   return PROPERTIES_PANEL_CONTAINER;
 }
 
-
 export function findEntry(id, container) {
-  return domQuery(`[data-entry-id='${ id }']`, container);
+  return domQuery(`[data-entry-id='${id}']`, container);
 }
 
 export function findGroupEntry(id, container) {
-  return domQuery(`[data-group-id='group-${ id }']`, container);
+  return domQuery(`[data-group-id='group-${id}']`, container);
 }
 
 export function findInput(type, container) {
-  return domQuery(`input[type='${ type }']`, container);
+  return domQuery(`input[type='${type}']`, container);
 }
 
 export function findTextarea(id, container) {
-  return domQuery(`textarea[id='${ id }']`, container);
+  return domQuery(`textarea[id='${id}']`, container);
 }
 
 export function findButton(id, container) {
-  return domQuery(`button[id='${ id }']`, container);
+  return domQuery(`button[id='${id}']`, container);
 }
 
 export function findButtonByClass(buttonClass, container) {
-  return domQuery(`button[class='${ buttonClass }']`, container)
+  return domQuery(`button[class='${buttonClass}']`, container);
 }
 
 export function findSelect(container) {
@@ -136,23 +126,19 @@ export function pressButton(button) {
 }
 
 export function findDivByClass(divClass, container) {
-  return domQuery(`div[class='${ divClass }']`, container)
+  return domQuery(`div[class='${divClass}']`, container);
 }
-
-
-
 
 /**
  * Drags an element from the palette onto the canvas.
  * @param id
  */
 export function triggerPaletteEntry(id) {
-  getBpmnJS().invoke(function(palette) {
-    var entry = palette.getEntries()[ id ];
+  getBpmnJS().invoke(function (palette) {
+    const entry = palette.getEntries()[id];
 
     if (entry && entry.action && entry.action.click) {
       entry.action.click(createMoveEvent(0, 0));
     }
   });
 }
-

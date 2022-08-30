@@ -11,9 +11,9 @@ import {
   // findInput,
   findSelect,
   findTextarea,
-  findButtonByClass,
-  pressButton,
-  findDivByClass,
+  // findButtonByClass,
+  // pressButton,
+  // findDivByClass,
 } from './helpers';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
@@ -45,23 +45,25 @@ describe('Messages should work', function () {
     // THEN - a select Data Object section should appear in the properties panel
     const entry = findGroupEntry('correlation_keys', container);
     expect(entry).to.exist;
+    await expectSelected('my_collaboration');
   });
 
   it('should show a Message Properties group when a send task is selected', async function () {
     // Select the send Task
-    const send_shape = await expectSelected('ActivitySendLetter');
-    expect(send_shape, "Can't find Send Task").to.exist;
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
 
     // THEN - a select Data Object section should appear in the properties panel
     const entry = findGroupEntry('messages', container);
     expect(entry, "Can't find the message group in the properties panel").to
       .exist;
+    await expectSelected('my_collaboration');
   });
 
   it('should show a list of messages in a drop down inside the message group', async function () {
     // Select the send Task
-    const send_shape = await expectSelected('ActivitySendLetter');
-    expect(send_shape, "Can't find Send Task").to.exist;
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
 
     // THEN - there are two options to choose from.
     const entry = findEntry('selectMessage', container);
@@ -71,12 +73,13 @@ describe('Messages should work', function () {
     const selector = findSelect(entry);
     expect(selector).to.exist;
     expect(selector.length).to.equal(2);
+    await expectSelected('my_collaboration');
   });
 
   it('should show the payload inside the message group', async function () {
     // Select the second Task
-    const send_shape = await expectSelected('ActivitySendLetter');
-    expect(send_shape, "Can't find Send Task").to.exist;
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
 
     // THEN - there is a payload.
     const payload = findEntry('messagePayload', container);
@@ -89,29 +92,30 @@ describe('Messages should work', function () {
     expect(textArea, "Can't find the payload textarea").to.exist;
     expect(textArea.value, "Can't find payload value").to.exist;
     expect(textArea.value).to.include("'to': { 'name': my_lover_variable }");
+    await expectSelected('my_collaboration');
   });
 
   it('should show the correlations inside the message group', async function () {
     // Select the second Task
-    const send_shape = await expectSelected('ActivitySendLetter');
-    expect(send_shape, "Can't find Send Task").to.exist;
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
 
     // THEN - there are correlations.
-    const correlations = findGroupEntry('messageCorrelations', container);
+    const correlations = findGroupEntry('correlationProperties', container);
     expect(correlations, "Can't find the message correlations").to.exist;
+    await expectSelected('my_collaboration');
   });
 
   // it('should add a new correlation when clicked', async function () {
   //   // Select the second Task
-  //   const send_shape = await expectSelected('ActivitySendLetter');
-  //   expect(send_shape, "Can't find Send Task").to.exist;
+  //   const sendShape = await expectSelected('ActivitySendLetter');
+  //   expect(sendShape, "Can't find Send Task").to.exist;
   //
   //   const buttonClass =
   //     'bio-properties-panel-group-header-button bio-properties-panel-add-entry';
   //   const button = findButtonByClass(buttonClass, container);
   //   pressButton(button);
   //
-  //   console.log(button);
   // });
   //
   // it('should add a new Correlation Key when clicked', async function () {
