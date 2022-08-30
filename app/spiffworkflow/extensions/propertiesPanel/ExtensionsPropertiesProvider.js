@@ -2,7 +2,7 @@ import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
-import { SpiffExtensionServiceProperties } from './SpiffExtensionServiceProperties';
+import { SpiffExtensionServiceProperties, ServiceTaskOperatorSelect } from './SpiffExtensionServiceProperties';
 const LOW_PRIORITY = 500;
 
 export default function ExtensionsPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
@@ -146,7 +146,7 @@ function createServiceGroup(element, translate, moddle, commandStack) {
         element: element,
         moddle: moddle,
         commandStack: commandStack,
-        component: SpiffExtensionServiceProperties,
+        component: ServiceTaskOperatorSelect,
         translate
       }
     ]

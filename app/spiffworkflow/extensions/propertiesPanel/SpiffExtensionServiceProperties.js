@@ -6,6 +6,7 @@ const SPIFF_PROP = "spiffworkflow:calledDecisionId"
 // let optionList = [{label: 'hello1', value: "hello1"}, {label: 'hello2', value: "hello3"}]
 // let optionList = []
 let serviceTaskOperators = []
+const LOW_PRIORITY = 500;
 
 /**
  * A generic properties' editor for text input.
@@ -33,24 +34,27 @@ function testFiring(eventBus, element, commandStack) {
     });
   });
 }
-export function SpiffExtensionServiceProperties(props) {
+// export function SpiffExtensionServiceProperties(
+//   propertiesPanel,
+//   translate,
+//   moddle,
+//   commandStack,
+//   _elementRegistry
+// ) {
 //   this.getGroups = function getGroupsCallback(element) {
 //     return function pushGroup(groups) {
-//       if (is(element, 'bpmn:SequenceFlow')) {
-//         const { source } = element;
-//         if (is(source, 'bpmn:ExclusiveGateway')) {
-//           groups.push(
-//             createConditionsGroup(element, translate, moddle, commandStack)
-//           );
-//         }
+//       if (is(element, 'bpmn:ServiceTask')) {
+//         groups.push(
+//           createServicesGroup(element, translate, moddle, commandStack)
+//         );
 //       }
 //       return groups;
 //     };
 //   };
 //   propertiesPanel.registerProvider(LOW_PRIORITY, this);
 // }
-
-// ConditionsPropertiesProvider.$inject = [
+//
+// SpiffExtensionServiceProperties.$inject = [
 //   'propertiesPanel',
 //   'translate',
 //   'moddle',
@@ -58,10 +62,76 @@ export function SpiffExtensionServiceProperties(props) {
 //   'elementRegistry',
 // ];
 
-// function serviceTaskOperatorSelect(props) {
+// // export function SpiffExtensionServiceProperties(element, translate, moddle, commandStack) {
+// export function SpiffExtensionServiceProperties(props) {
+//   const {element, translate, moddle, commandStack } = props
+//   return {
+//     id: 'conditions',
+//     label: translate('Conditions'),
+//     entries: serviceGroupEntries(
+//       element,
+//       moddle,
+//       'Condition Expression',
+//       'Expression to Execute',
+//       commandStack
+//     ),
+//   };
+// }
+//
+// function serviceGroupEntries(element, moddle, label, description, commandStack) {
+//   console.log("WE HERE1")
+//   return [
+//     {
+//       id: 'service_task_operator_select',
+//       element,
+//       component: ConditionExpressionTextField,
+//       moddle,
+//       label,
+//       description,
+//       commandStack,
+//     },
+//   ];
+// }
+// function ConditionExpressionTextField(props) {
+//   const { element } = props;
+//   const { moddle } = props;
+//   const { label } = props;
+//
+//   const debounce = useService('debounceInput');
+//   const getValue = () => {
+//     // const { conditionExpression } = element.businessObject;
+//     // if (conditionExpression) {
+//     //   return conditionExpression.body;
+//     // }
+//     return '';
+//   };
+//
+//   const setValue = (value) => {
+//     // let { conditionExpressionModdleElement } = element.businessObject;
+//     // if (!conditionExpressionModdleElement) {
+//     //   conditionExpressionModdleElement = moddle.create('bpmn:Expression');
+//     // }
+//     // conditionExpressionModdleElement.body = value;
+//     // element.businessObject.conditionExpression =
+//     //   conditionExpressionModdleElement;
+//   };
+//
+//   return TextFieldEntry({
+//     element,
+//     id: `the-id`,
+//     label,
+//     getValue,
+//     setValue,
+//     debounce,
+//   });
+// }
+
+export function ServiceTaskOperatorSelect(props) {
+  console.log("WE HERE")
   const element = props.element;
   const commandStack = props.commandStack, moddle = props.moddle;
   const label = props.label, description = props.description;
+
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
 
@@ -115,10 +185,10 @@ export function SpiffExtensionServiceProperties(props) {
   const getOptions = () => {
     const optionList = [];
     if (serviceTaskOperators) {
-      serviceTaskOperators.forEach((cto) => {
+      serviceTaskOperators.forEach((sto) => {
         optionList.push({
-          label: cto.name,
-          value: cto.name,
+          label: sto.name,
+          value: sto.name,
         })
       })
     }
@@ -134,17 +204,15 @@ export function SpiffExtensionServiceProperties(props) {
   //   setValue={setValue}
   //   debounce={debounce}
   // />;
-  return (
-    <SelectEntry
-      id="selectOperatorId"
-      element={element}
-      description="Select the operator id."
-      label="Which one?"
-      getValue={getValue}
-      setValue={setValue}
-      getOptions={getOptions}
-      debounce={debounce}
-    />
-  );
+  return SelectEntry({
+      id: "selectOperatorId",
+      element,
+      description: "Select the operator id.",
+      label: "Which one?",
+      getValue,
+      setValue,
+      getOptions,
+      debounce,
+  });
 
 }
