@@ -2,6 +2,7 @@ import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
+import { SpiffExtensionServiceProperties } from './SpiffExtensionServiceProperties';
 const LOW_PRIORITY = 500;
 
 export default function ExtensionsPropertiesProvider(propertiesPanel, translate, moddle, commandStack, elementRegistry) {
@@ -17,6 +18,9 @@ export default function ExtensionsPropertiesProvider(propertiesPanel, translate,
       }
       if (is(element, 'bpmn:BusinessRuleTask')) {
         groups.push(createBusinessRuleGroup(element, translate, moddle, commandStack));
+      }
+      if (is(element, 'bpmn:ServiceTask')) {
+        groups.push(createServiceGroup(element, translate, moddle, commandStack));
       }
 
       return groups;
@@ -121,6 +125,29 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
         component: SpiffExtensionCalledDecision,
         label: translate('Decision Id'),
         description: translate('Id of the decision'),
+      }
+    ]
+  };
+}
+
+/**
+ * Create a group on the main panel with a text box (for choosing the dmn to connect)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
+function createServiceGroup(element, translate, moddle, commandStack) {
+  return {
+    id: 'service_task_properties',
+    label: translate('Spiffworkflow Service Properties'),
+    entries: [
+      {
+        element: element,
+        moddle: moddle,
+        commandStack: commandStack,
+        component: SpiffExtensionServiceProperties,
+        translate
       }
     ]
   };
