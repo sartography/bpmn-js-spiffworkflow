@@ -42,7 +42,9 @@ function requestServiceTaskOperators(eventBus, element, commandStack) {
   eventBus.fire('spiff.service_tasks.requested', { eventBus });
   eventBus.on('spiff.service_tasks.returned', (event) => {
     if (event.serviceTaskOperators.length > 0) {
-      serviceTaskOperators = event.serviceTaskOperators;
+      serviceTaskOperators = event.serviceTaskOperators.sort((a, b) =>
+        a.id.localeCompare(b.id)
+      );
       commandStack.execute('element.updateProperties', {
         element,
         properties: {},
@@ -69,7 +71,7 @@ function getServiceTaskParameterModdleElements(shapeElement) {
   if (serviceTaskOperatorModdleElement) {
     const { parameterList } = serviceTaskOperatorModdleElement;
     if (parameterList) {
-      return parameterList.parameters;
+      return parameterList.parameters.sort((a, b) => a.id.localeCompare(b.id));
     }
   }
   return [];
