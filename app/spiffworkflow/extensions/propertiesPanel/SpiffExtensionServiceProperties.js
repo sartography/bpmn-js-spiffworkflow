@@ -1,11 +1,12 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
+import { SPIFFWORKFLOW_XML_NAMESPACE } from '../../constants';
 
-const SPIFF_PROP = 'spiffworkflow:calledDecisionId';
-// let optionList = [{label: 'hello1', value: "hello1"}, {label: 'hello2', value: "hello3"}]
-// let optionList = []
 let serviceTaskOperators = [];
 const LOW_PRIORITY = 500;
+const SERVICE_TASK_OPERATOR_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:serviceTaskOperator`;
+const SERVICE_TASK_PARAMETERS_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:parameters`;
+const SERVICE_TASK_PARAMETER_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:parameter`;
 
 /**
  * A generic properties' editor for text input.
@@ -46,7 +47,7 @@ function getServiceTaskOperatorModdleElement(shapeElement) {
   const { extensionElements } = shapeElement.businessObject;
   if (extensionElements) {
     for (const ee of extensionElements.values) {
-      if (ee.$type === 'spiffworkflow:serviceTaskOperator') {
+      if (ee.$type === SERVICE_TASK_OPERATOR_ELEMENT_NAME) {
         return ee;
       }
     }
@@ -78,16 +79,6 @@ export function ServiceTaskOperatorSelect(props) {
   if (serviceTaskOperators.length === 0) {
     requestServiceTaskOperators(eventBus, element, commandStack);
   }
-
-  const getPropertyObject = () => {
-    const bizObj = element.businessObject;
-    if (!bizObj.extensionElements) {
-      return null;
-    }
-    return bizObj.extensionElements.get('values').filter(function (e) {
-      return e.$instanceOf(SPIFF_PROP);
-    })[0];
-  };
 
   const getValue = () => {
     const serviceTaskOperatorModdleElement =
@@ -121,14 +112,16 @@ export function ServiceTaskOperatorSelect(props) {
     //   getServiceTaskOperatorModdleElement(element);
 
     const newServiceTaskOperatorModdleElement = moddle.create(
-      'spiffworkflow:serviceTaskOperator'
+      SERVICE_TASK_OPERATOR_ELEMENT_NAME
     );
     newServiceTaskOperatorModdleElement.id = value;
-    const newParameterList = moddle.create('spiffworkflow:parameters');
+    const newParameterList = moddle.create(
+      SERVICE_TASK_PARAMETERS_ELEMENT_NAME
+    );
     newParameterList.parameters = [];
     serviceTaskOperator.parameters.forEach((stoParameter) => {
       const newParameterModdleElement = moddle.create(
-        'spiffworkflow:parameter'
+        SERVICE_TASK_PARAMETER_ELEMENT_NAME
       );
       newParameterModdleElement.name = stoParameter.id;
       newParameterModdleElement.type = stoParameter.type;
@@ -137,7 +130,7 @@ export function ServiceTaskOperatorSelect(props) {
     newServiceTaskOperatorModdleElement.parameterList = newParameterList;
 
     const newExtensionValues = extensions.get('values').filter((extValue) => {
-      return extValue.$type !== 'spiffworkflow:serviceTaskOperator';
+      return extValue.$type !== SERVICE_TASK_OPERATOR_ELEMENT_NAME;
     });
     newExtensionValues.push(newServiceTaskOperatorModdleElement);
     extensions.values = newExtensionValues;
