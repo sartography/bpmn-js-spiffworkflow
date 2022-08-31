@@ -3,6 +3,14 @@ import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
 import { SPIFFWORKFLOW_XML_NAMESPACE } from '../../constants';
 
 let serviceTaskOperators = [];
+
+// This stores the parameters for a given service task operator
+//  so that we can remember the values when switching between them
+// the values should be the list of moddle elements that we push onto
+//  the parameterList of service task operator and the key should be
+//  the service task operator id
+const previouslyUsedServiceTaskParameterValuesHash = {};
+
 const LOW_PRIORITY = 500;
 const SERVICE_TASK_OPERATOR_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:serviceTaskOperator`;
 const SERVICE_TASK_PARAMETERS_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:parameters`;
@@ -102,31 +110,45 @@ export function ServiceTaskOperatorSelect(props) {
       return;
     }
 
+    const previouslyUsedServiceTaskParameterValues =
+      previouslyUsedServiceTaskParameterValuesHash[value];
+
     const { businessObject } = element;
     let extensions = businessObject.extensionElements;
     if (!extensions) {
       extensions = moddle.create('bpmn:ExtensionElements');
     }
 
-    // let serviceTaskOperatorModdleElement =
-    //   getServiceTaskOperatorModdleElement(element);
+    const oldServiceTaskOperatorModdleElement =
+      getServiceTaskOperatorModdleElement(element);
 
     const newServiceTaskOperatorModdleElement = moddle.create(
       SERVICE_TASK_OPERATOR_ELEMENT_NAME
     );
     newServiceTaskOperatorModdleElement.id = value;
-    const newParameterList = moddle.create(
-      SERVICE_TASK_PARAMETERS_ELEMENT_NAME
-    );
-    newParameterList.parameters = [];
-    serviceTaskOperator.parameters.forEach((stoParameter) => {
-      const newParameterModdleElement = moddle.create(
-        SERVICE_TASK_PARAMETER_ELEMENT_NAME
-      );
-      newParameterModdleElement.name = stoParameter.id;
-      newParameterModdleElement.type = stoParameter.type;
-      newParameterList.parameters.push(newParameterModdleElement);
-    });
+    let newParameterList;
+
+    if (previouslyUsedServiceTaskParameterValues) {
+      newParameterList = previouslyUsedServiceTaskParameterValues;
+    } else {
+      newParameterList = moddle.create(SERVICE_TASK_PARAMETERS_ELEMENT_NAME);
+      newParameterList.parameters = [];
+      serviceTaskOperator.parameters.forEach((stoParameter) => {
+        const newParameterModdleElement = moddle.create(
+          SERVICE_TASK_PARAMETER_ELEMENT_NAME
+        );
+        newParameterModdleElement.name = stoParameter.id;
+        newParameterModdleElement.type = stoParameter.type;
+        newParameterList.parameters.push(newParameterModdleElement);
+      });
+      previouslyUsedServiceTaskParameterValuesHash[value] = newParameterList;
+      if (oldServiceTaskOperatorModdleElement) {
+        previouslyUsedServiceTaskParameterValuesHash[
+          oldServiceTaskOperatorModdleElement.id
+        ] = oldServiceTaskOperatorModdleElement.parameterList;
+      }
+    }
+
     newServiceTaskOperatorModdleElement.parameterList = newParameterList;
 
     const newExtensionValues = extensions.get('values').filter((extValue) => {
