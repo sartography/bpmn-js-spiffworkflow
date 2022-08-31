@@ -141,6 +141,7 @@ export function ServiceTaskOperatorSelect(props) {
     });
     newExtensionValues.push(newServiceTaskOperatorModdleElement);
     extensions.values = newExtensionValues;
+    businessObject.extensionElements = extensions;
 
     commandStack.execute('element.updateModdleProperties', {
       element,
