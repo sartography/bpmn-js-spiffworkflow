@@ -55,10 +55,10 @@ function getServiceTaskOperatorModdleElement(shapeElement) {
 }
 
 function getServiceTaskParameterModdleElements(shapeElement) {
-  const serviceTaskModdleElement =
+  const serviceTaskOperatorModdleElement =
     getServiceTaskOperatorModdleElement(shapeElement);
-  if (serviceTaskModdleElement) {
-    const { parameterList } = serviceTaskModdleElement;
+  if (serviceTaskOperatorModdleElement) {
+    const { parameterList } = serviceTaskOperatorModdleElement;
     if (parameterList) {
       return parameterList.parameters;
     }
@@ -90,35 +90,63 @@ export function ServiceTaskOperatorSelect(props) {
   };
 
   const getValue = () => {
-    const serviceTaskModdleElement =
+    const serviceTaskOperatorModdleElement =
       getServiceTaskOperatorModdleElement(element);
-    if (serviceTaskModdleElement) {
-      return serviceTaskModdleElement.id;
+    if (serviceTaskOperatorModdleElement) {
+      return serviceTaskOperatorModdleElement.id;
     }
     return '';
   };
 
   const setValue = (value) => {
-    // let property = getPropertyObject()
-    // let businessObject = element.businessObject;
-    // let extensions = businessObject.extensionElements;
-    //
-    // if (!property) {
-    //   property = moddle.create(SPIFF_PROP);
-    //   if (!extensions) {
-    //     extensions = moddle.create('bpmn:ExtensionElements');
-    //   }
-    //   extensions.get('values').push(property);
-    // }
-    // property.decisionId = value;
-    //
-    // commandStack.execute('element.updateModdleProperties', {
-    //   element,
-    //   moddleElement: businessObject,
-    //   properties: {
-    //     "extensionElements": extensions
-    //   }
-    // });
+    if (!value) {
+      return;
+    }
+
+    const serviceTaskOperator = serviceTaskOperators.find(
+      (sto) => sto.id === value
+    );
+    if (!serviceTaskOperator) {
+      console.error(`Could not find service task operator with id: ${value}`);
+      return;
+    }
+
+    const { businessObject } = element;
+    let extensions = businessObject.extensionElements;
+    if (!extensions) {
+      extensions = moddle.create('bpmn:ExtensionElements');
+    }
+
+    // let serviceTaskOperatorModdleElement =
+    //   getServiceTaskOperatorModdleElement(element);
+
+    const newServiceTaskOperatorModdleElement = moddle.create(
+      'spiffworkflow:serviceTaskOperator'
+    );
+    newServiceTaskOperatorModdleElement.id = value;
+    const newParameterList = moddle.create('spiffworkflow:parameters');
+    newParameterList.parameters = [];
+    serviceTaskOperator.parameters.forEach((stoParameter) => {
+      const newParameterModdleElement = moddle.create(
+        'spiffworkflow:parameter'
+      );
+      newParameterModdleElement.name = stoParameter.id;
+      newParameterModdleElement.type = stoParameter.type;
+      newParameterList.parameters.push(newParameterModdleElement);
+    });
+    newServiceTaskOperatorModdleElement.parameterList = newParameterList;
+
+    const newExtensionValues = extensions.get('values').filter((extValue) => {
+      return extValue.$type !== 'spiffworkflow:serviceTaskOperator';
+    });
+    newExtensionValues.push(newServiceTaskOperatorModdleElement);
+    extensions.values = newExtensionValues;
+
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: businessObject,
+      properties: {},
+    });
   };
 
   const getOptions = () => {
