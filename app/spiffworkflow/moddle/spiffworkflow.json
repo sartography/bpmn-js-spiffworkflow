@@ -123,7 +123,7 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "name",
+          "name": "id",
           "isAttr": true,
           "type": "String"
         },

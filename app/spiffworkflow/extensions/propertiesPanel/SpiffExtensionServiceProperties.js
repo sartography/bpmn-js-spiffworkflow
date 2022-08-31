@@ -137,7 +137,7 @@ export function ServiceTaskOperatorSelect(props) {
         const newParameterModdleElement = moddle.create(
           SERVICE_TASK_PARAMETER_ELEMENT_NAME
         );
-        newParameterModdleElement.name = stoParameter.id;
+        newParameterModdleElement.id = stoParameter.id;
         newParameterModdleElement.type = stoParameter.type;
         newParameterList.parameters.push(newParameterModdleElement);
       });
@@ -199,7 +199,7 @@ export function ServiceTaskParameterArray(props) {
       const id = `serviceTaskParameter-${index}`;
       return {
         id,
-        label: serviceTaskParameterModdleElement.name,
+        label: serviceTaskParameterModdleElement.id,
         entries: serviceTaskParameterEntries({
           idPrefix: id,
           element,
