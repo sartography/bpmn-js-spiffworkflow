@@ -100,7 +100,7 @@
           "type": "String"
         },
         {
-          "name": "parameter_list",
+          "name": "parameterList",
           "type": "parameters"
         }
       ]

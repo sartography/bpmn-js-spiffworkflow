@@ -1,11 +1,10 @@
-import {useService } from 'bpmn-js-properties-panel';
-import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import { SelectEntry } from '@bpmn-io/properties-panel';
+import { useService } from 'bpmn-js-properties-panel';
+import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
 
-const SPIFF_PROP = "spiffworkflow:calledDecisionId"
+const SPIFF_PROP = 'spiffworkflow:calledDecisionId';
 // let optionList = [{label: 'hello1', value: "hello1"}, {label: 'hello2', value: "hello3"}]
 // let optionList = []
-let serviceTaskOperators = []
+let serviceTaskOperators = [];
 const LOW_PRIORITY = 500;
 
 /**
@@ -15,151 +14,91 @@ const LOW_PRIORITY = 500;
  * needed.
  *
  *
-    <bpmn:businessRuleTask id="Activity_0t218za">
+    <bpmn:serviceTask id="service_task_one" name="Service Task One">
       <bpmn:extensionElements>
-        <spiffworkflow:calledDecisionId>my_id</spiffworkflow:calledDecisionId>
+        <spiffworkflow:serviceTaskOperator id="SlackWebhookOperator">
+          <spiffworkflow:parameters>
+            <spiffworkflow:parameter name="webhook_token" type="string" value="token" />
+            <spiffworkflow:parameter name="message" type="string" value="ServiceTask testing" />
+            <spiffworkflow:parameter name="channel" type="string" value="#" />
+          </spiffworkflow:parameters>
+        </spiffworkflow:serviceTaskOperator>
       </bpmn:extensionElements>
-    </bpmn:businessRuleTask>
+    </bpmn:serviceTask>
  *
  * @returns {string|null|*}
  */
 
-function testFiring(eventBus, element, commandStack) {
+function requestServiceTaskOperators(eventBus, element, commandStack) {
   eventBus.fire('spiff.service_tasks.requested', { eventBus });
-  eventBus.on('spiff.service_tasks.returned', ( event ) => {
-    serviceTaskOperators = event.serviceTaskOperators;
-    commandStack.execute('element.updateProperties', {
-      element,
-      properties: {}
-    });
+  eventBus.on('spiff.service_tasks.returned', (event) => {
+    if (event.serviceTaskOperators.length > 0) {
+      serviceTaskOperators = event.serviceTaskOperators;
+      commandStack.execute('element.updateProperties', {
+        element,
+        properties: {},
+      });
+    }
   });
 }
-// export function SpiffExtensionServiceProperties(
-//   propertiesPanel,
-//   translate,
-//   moddle,
-//   commandStack,
-//   _elementRegistry
-// ) {
-//   this.getGroups = function getGroupsCallback(element) {
-//     return function pushGroup(groups) {
-//       if (is(element, 'bpmn:ServiceTask')) {
-//         groups.push(
-//           createServicesGroup(element, translate, moddle, commandStack)
-//         );
-//       }
-//       return groups;
-//     };
-//   };
-//   propertiesPanel.registerProvider(LOW_PRIORITY, this);
-// }
-//
-// SpiffExtensionServiceProperties.$inject = [
-//   'propertiesPanel',
-//   'translate',
-//   'moddle',
-//   'commandStack',
-//   'elementRegistry',
-// ];
 
-// // export function SpiffExtensionServiceProperties(element, translate, moddle, commandStack) {
-// export function SpiffExtensionServiceProperties(props) {
-//   const {element, translate, moddle, commandStack } = props
-//   return {
-//     id: 'conditions',
-//     label: translate('Conditions'),
-//     entries: serviceGroupEntries(
-//       element,
-//       moddle,
-//       'Condition Expression',
-//       'Expression to Execute',
-//       commandStack
-//     ),
-//   };
-// }
-//
-// function serviceGroupEntries(element, moddle, label, description, commandStack) {
-//   console.log("WE HERE1")
-//   return [
-//     {
-//       id: 'service_task_operator_select',
-//       element,
-//       component: ConditionExpressionTextField,
-//       moddle,
-//       label,
-//       description,
-//       commandStack,
-//     },
-//   ];
-// }
-// function ConditionExpressionTextField(props) {
-//   const { element } = props;
-//   const { moddle } = props;
-//   const { label } = props;
-//
-//   const debounce = useService('debounceInput');
-//   const getValue = () => {
-//     // const { conditionExpression } = element.businessObject;
-//     // if (conditionExpression) {
-//     //   return conditionExpression.body;
-//     // }
-//     return '';
-//   };
-//
-//   const setValue = (value) => {
-//     // let { conditionExpressionModdleElement } = element.businessObject;
-//     // if (!conditionExpressionModdleElement) {
-//     //   conditionExpressionModdleElement = moddle.create('bpmn:Expression');
-//     // }
-//     // conditionExpressionModdleElement.body = value;
-//     // element.businessObject.conditionExpression =
-//     //   conditionExpressionModdleElement;
-//   };
-//
-//   return TextFieldEntry({
-//     element,
-//     id: `the-id`,
-//     label,
-//     getValue,
-//     setValue,
-//     debounce,
-//   });
-// }
+function getServiceTaskOperatorModdleElement(shapeElement) {
+  const { extensionElements } = shapeElement.businessObject;
+  if (extensionElements) {
+    for (const ee of extensionElements.values) {
+      if (ee.$type === 'spiffworkflow:serviceTaskOperator') {
+        return ee;
+      }
+    }
+  }
+  return null;
+}
+
+function getServiceTaskParameterModdleElements(shapeElement) {
+  const serviceTaskModdleElement =
+    getServiceTaskOperatorModdleElement(shapeElement);
+  if (serviceTaskModdleElement) {
+    const { parameterList } = serviceTaskModdleElement;
+    if (parameterList) {
+      return parameterList.parameters;
+    }
+  }
+  return [];
+}
 
 export function ServiceTaskOperatorSelect(props) {
-  console.log("WE HERE")
-  const element = props.element;
-  const commandStack = props.commandStack, moddle = props.moddle;
-  const label = props.label, description = props.description;
+  const { element } = props;
+  const { commandStack } = props;
+  const { translate } = props;
+  const { moddle } = props;
 
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
 
   if (serviceTaskOperators.length === 0) {
-    testFiring(eventBus, element, commandStack)
+    requestServiceTaskOperators(eventBus, element, commandStack);
   }
 
   const getPropertyObject = () => {
     const bizObj = element.businessObject;
     if (!bizObj.extensionElements) {
       return null;
-    } else {
-      return bizObj.extensionElements.get("values").filter(function (e) {
-        return e.$instanceOf(SPIFF_PROP)
-      })[0];
     }
-  }
+    return bizObj.extensionElements.get('values').filter(function (e) {
+      return e.$instanceOf(SPIFF_PROP);
+    })[0];
+  };
 
   const getValue = () => {
-    // const property = getPropertyObject()
-    // if (property) {
-    //   return property.decisionId;
-    // }
-    // debugger
-    return ""
-  }
+    const serviceTaskModdleElement =
+      getServiceTaskOperatorModdleElement(element);
+    if (serviceTaskModdleElement) {
+      return serviceTaskModdleElement.id;
+    }
+    return '';
+  };
 
-  const setValue = value => {
+  const setValue = (value) => {
     // let property = getPropertyObject()
     // let businessObject = element.businessObject;
     // let extensions = businessObject.extensionElements;
@@ -187,32 +126,78 @@ export function ServiceTaskOperatorSelect(props) {
     if (serviceTaskOperators) {
       serviceTaskOperators.forEach((sto) => {
         optionList.push({
-          label: sto.name,
-          value: sto.name,
-        })
-      })
+          label: sto.id,
+          value: sto.id,
+        });
+      });
     }
-    return optionList
-  }
+    return optionList;
+  };
 
-  // return <TextFieldEntry
-  //   id='extension_service_task_property'
-  //   element={element}
-  //   description='descrition'
-  //   label='lable'
-  //   getValue={getValue}
-  //   setValue={setValue}
-  //   debounce={debounce}
-  // />;
   return SelectEntry({
-      id: "selectOperatorId",
-      element,
-      description: "Select the operator id.",
-      label: "Which one?",
-      getValue,
-      setValue,
-      getOptions,
-      debounce,
+    id: 'selectOperatorId',
+    element,
+    label: translate('Operator ID'),
+    getValue,
+    setValue,
+    getOptions,
+    debounce,
   });
+}
 
+export function ServiceTaskParameterArray(props) {
+  const { element, commandStack } = props;
+
+  const serviceTaskParameterModdleElements =
+    getServiceTaskParameterModdleElements(element);
+  const items = serviceTaskParameterModdleElements.map(
+    (serviceTaskParameterModdleElement, index) => {
+      const id = `serviceTaskParameter-${index}`;
+      return {
+        id,
+        label: serviceTaskParameterModdleElement.name,
+        entries: serviceTaskParameterEntries({
+          idPrefix: id,
+          element,
+          serviceTaskParameterModdleElement,
+          commandStack,
+        }),
+        autoFocusEntry: id,
+      };
+    }
+  );
+  return { items };
+}
+
+function serviceTaskParameterEntries(props) {
+  const { idPrefix, serviceTaskParameterModdleElement, commandStack } = props;
+  return [
+    {
+      idPrefix: `${idPrefix}-parameter`,
+      component: ServiceTaskParameterTextField,
+      serviceTaskParameterModdleElement,
+      commandStack,
+    },
+  ];
+}
+
+function ServiceTaskParameterTextField(props) {
+  const { idPrefix, element, serviceTaskParameterModdleElement } = props;
+
+  const debounce = useService('debounceInput');
+  const setValue = (value) => {
+    serviceTaskParameterModdleElement.value = value;
+  };
+
+  const getValue = () => {
+    return serviceTaskParameterModdleElement.value;
+  };
+
+  return TextFieldEntry({
+    element,
+    id: `${idPrefix}-textField`,
+    getValue,
+    setValue,
+    debounce,
+  });
 }
