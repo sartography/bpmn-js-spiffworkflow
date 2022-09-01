@@ -87,6 +87,57 @@
           "type": "String"
         }
       ]
+    },
+    {
+      "name": "serviceTaskOperator",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "id",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "parameterList",
+          "type": "parameters"
+        }
+      ]
+    },
+    {
+      "name": "parameters",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "parameters",
+          "type": "parameter",
+          "isMany": true
+        }
+      ]
+    },
+    {
+      "name": "parameter",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "type",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "value",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
     }
 
   ]
