@@ -1,7 +1,7 @@
 import {useService } from 'bpmn-js-properties-panel';
-import { TextFieldEntry } from '@bpmn-io/properties-panel';
+import { TextAreaEntry } from '@bpmn-io/properties-panel';
 
-const SPIFF_PROP = "spiffworkflow:calledDecisionId"
+const SPIFF_PROP = "spiffworkflow:instructionsForEndUser"
 
 /**
  * A generic properties' editor for text input.
@@ -10,15 +10,10 @@ const SPIFF_PROP = "spiffworkflow:calledDecisionId"
  * needed.
  *
  *
-    <bpmn:businessRuleTask id="Activity_0t218za">
-      <bpmn:extensionElements>
-        <spiffworkflow:calledDecisionId>my_id</spiffworkflow:calledDecisionId>
-      </bpmn:extensionElements>
-    </bpmn:businessRuleTask>
  *
  * @returns {string|null|*}
  */
-export function SpiffExtensionCalledDecision(props) {
+export function SpiffExtensionInstructionsForEndUser(props) {
   const element = props.element;
   const commandStack = props.commandStack, moddle = props.moddle;
   const label = props.label, description = props.description;
@@ -38,7 +33,7 @@ export function SpiffExtensionCalledDecision(props) {
   const getValue = () => {
     const property = getPropertyObject()
     if (property) {
-      return property.calledDecisionId;
+      return property.instructionsForEndUser;
     }
     return ""
   }
@@ -55,7 +50,7 @@ export function SpiffExtensionCalledDecision(props) {
       }
       extensions.get('values').push(property);
     }
-    property.calledDecisionId = value;
+    property.instructionsForEndUser = value;
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -66,14 +61,13 @@ export function SpiffExtensionCalledDecision(props) {
     });
   };
 
-  return <TextFieldEntry
-    id='extension_called_decision'
-    element={element}
-    description={description}
-    label={label}
-    getValue={getValue}
-    setValue={setValue}
-    debounce={debounce}
-  />;
-
+  return TextAreaEntry({
+    id: 'extension_instruction_for_end_user',
+    element: element,
+    description: description,
+    label: label,
+    getValue: getValue,
+    setValue: setValue,
+    debounce: debounce,
+  })
 }

@@ -3,6 +3,7 @@ import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
+import { SpiffExtensionInstructionsForEndUser } from './SpiffExtensionInstructionsForEndUser';
 import {
   ServiceTaskParameterArray,
   ServiceTaskOperatorSelect,
@@ -32,6 +33,11 @@ export default function ExtensionsPropertiesProvider(
       if (is(element, 'bpmn:BusinessRuleTask')) {
         groups.push(
           createBusinessRuleGroup(element, translate, moddle, commandStack)
+        );
+      }
+      if (is(element, 'bpmn:ManualTask')) {
+        groups.push(
+          createManualTaskPropertiesGroup(element, translate, moddle, commandStack)
         );
       }
       if (is(element, 'bpmn:ServiceTask')) {
@@ -158,6 +164,30 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
         component: SpiffExtensionCalledDecision,
         label: translate('Decision Id'),
         description: translate('Id of the decision'),
+      },
+    ],
+  };
+}
+
+/**
+ * Create a group on the main panel with a text box (for choosing the information to display to the user)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
+function createManualTaskPropertiesGroup(element, translate, moddle, commandStack) {
+  return {
+    id: 'manual_task_properties',
+    label: translate('Manual Task Properties'),
+    entries: [
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionInstructionsForEndUser,
+        label: translate('Instructions For End User'),
+        description: translate('The instructions to show the user(s) who are responsible for completing the task.'),
       },
     ],
   };

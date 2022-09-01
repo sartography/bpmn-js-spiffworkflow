@@ -53,7 +53,18 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "decisionId",
+          "name": "calledDecisionId",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "instructionsForEndUser",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "instructionsForEndUser",
           "isBody": true,
           "type": "String"
         }
