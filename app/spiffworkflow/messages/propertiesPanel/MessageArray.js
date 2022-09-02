@@ -51,10 +51,7 @@ export function MessageArray(props) {
       rootElements.push(newMessageElement);
       commandStack.execute('element.updateProperties', {
         element,
-        moddleElement: moddle,
-        properties: {
-          messages: rootElements,
-        },
+        properties: {}
       });
     }
   }
@@ -72,10 +69,7 @@ function removeFactory(props) {
     removeFirstInstanceOfItemFromArrayInPlace(rootElements, messageElement);
     commandStack.execute('element.updateProperties', {
       element,
-      moddleElement: moddle,
-      properties: {
-        messages: rootElements,
-      },
+      properties: {}
     });
   };
 }

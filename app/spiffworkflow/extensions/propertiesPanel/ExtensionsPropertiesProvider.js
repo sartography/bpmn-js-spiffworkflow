@@ -37,7 +37,12 @@ export default function ExtensionsPropertiesProvider(
       }
       if (is(element, 'bpmn:ManualTask')) {
         groups.push(
-          createManualTaskPropertiesGroup(element, translate, moddle, commandStack)
+          createManualTaskPropertiesGroup(
+            element,
+            translate,
+            moddle,
+            commandStack
+          )
         );
       }
       if (is(element, 'bpmn:ServiceTask')) {
@@ -176,7 +181,12 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
  * @param moddle
  * @returns entries
  */
-function createManualTaskPropertiesGroup(element, translate, moddle, commandStack) {
+function createManualTaskPropertiesGroup(
+  element,
+  translate,
+  moddle,
+  commandStack
+) {
   return {
     id: 'manual_task_properties',
     label: translate('Manual Task Properties'),
@@ -187,7 +197,9 @@ function createManualTaskPropertiesGroup(element, translate, moddle, commandStac
         commandStack,
         component: SpiffExtensionInstructionsForEndUser,
         label: translate('Instructions For End User'),
-        description: translate('The instructions to show the user(s) who are responsible for completing the task.'),
+        description: translate(
+          'The instructions to show the user(s) who are responsible for completing the task.'
+        ),
       },
     ],
   };

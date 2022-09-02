@@ -44,10 +44,7 @@ export function CorrelationKeysArray(props) {
       currentCorrelationKeyElements.push(newCorrelationKeyElement);
       commandStack.execute('element.updateProperties', {
         element,
-        moddleElement: moddle,
-        properties: {
-          correlationKeys: currentCorrelationKeyElements,
-        },
+        properties: {}
       });
     }
   }
@@ -68,7 +65,6 @@ function removeFactory(props) {
     );
     commandStack.execute('element.updateProperties', {
       element,
-      moddleElement: moddle,
       properties: {
         correlationKey: currentCorrelationKeyElements,
       },
