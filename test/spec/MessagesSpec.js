@@ -73,7 +73,7 @@ describe('Messages should work', function () {
     const selector = findSelect(entry);
     expect(selector).to.exist;
     expect(selector.length).to.equal(2);
-    await expectSelected('my_collaboration');
+    //await expectSelected('my_collaboration');
   });
 
   it('should show the payload inside the message group', async function () {

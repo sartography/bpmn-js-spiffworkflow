@@ -14,7 +14,7 @@ import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 import extensions from '../../app/spiffworkflow/extensions';
 
 describe('Business Rule Properties Panel', function() {
-  let xml = require('./bpmn/diagram.bpmn').default;
+  const xml = require('./bpmn/diagram.bpmn').default;
 
   beforeEach(bootstrapPropertiesPanel(xml, {
     debounceInput: false,
@@ -43,15 +43,15 @@ describe('Business Rule Properties Panel', function() {
 
     // IF - a script tag is selected, and you change the script in the properties panel
     const businessRuleTask = await expectSelected('business_rule_task');
-    let entry = findEntry('extension_called_decision', getPropertiesPanel());
+    const entry = findEntry('extension_called_decision', getPropertiesPanel());
     const textInput = domQuery('input', entry);
     changeInput(textInput, 'wonderful');
 
     // THEN - the script tag in the BPMN Business object / XML is updated as well.
-    let businessObject = getBusinessObject(businessRuleTask);
+    const businessObject = getBusinessObject(businessRuleTask);
     expect(businessObject.extensionElements).to.exist;
     let element = businessObject.extensionElements.values[0];
-    expect(element.decisionId).to.equal('wonderful');
+    expect(element.calledDecisionId).to.equal('wonderful');
   });
 
   it('should load up the xml and the value for the called decision should match the xml', async function() {
@@ -64,7 +64,7 @@ describe('Business Rule Properties Panel', function() {
     let businessObject = getBusinessObject(businessRuleTask);
     expect(businessObject.extensionElements).to.exist;
     let element = businessObject.extensionElements.values[0];
-    expect(element.decisionId).to.equal('test_decision');
+    expect(element.calledDecisionId).to.equal('test_decision');
   });
 
 });

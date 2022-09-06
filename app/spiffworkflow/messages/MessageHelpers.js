@@ -159,12 +159,14 @@ export function findCorrelationProperties(businessObject, moddle) {
 export function findCorrelationKeys(businessObject, moddle) {
   const root = getRoot(businessObject, moddle);
   const correlationKeys = [];
-  for (const rootElement of root.rootElements) {
-    if (rootElement.$type === 'bpmn:Collaboration') {
-      const currentKeys = rootElement.correlationKeys;
-      for (const correlationKey in currentKeys) {
-        const currentCorrelation = rootElement.correlationKeys[correlationKey];
-        correlationKeys.push(currentCorrelation);
+  if (root.rootElements) {
+    for (const rootElement of root.rootElements) {
+      if (rootElement.$type === 'bpmn:Collaboration') {
+        const currentKeys = rootElement.correlationKeys;
+        for (const correlationKey in currentKeys) {
+          const currentCorrelation = rootElement.correlationKeys[correlationKey];
+          correlationKeys.push(currentCorrelation);
+        }
       }
     }
   }
@@ -174,9 +176,11 @@ export function findCorrelationKeys(businessObject, moddle) {
 export function findMessageModdleElements(businessObject) {
   const messages = [];
   const root = getRoot(businessObject);
-  for (const rootElement of root.rootElements) {
-    if (rootElement.$type === 'bpmn:Message') {
-      messages.push(rootElement);
+  if (root.rootElements) {
+    for (const rootElement of root.rootElements) {
+      if (rootElement.$type === 'bpmn:Message') {
+        messages.push(rootElement);
+      }
     }
   }
   return messages;
