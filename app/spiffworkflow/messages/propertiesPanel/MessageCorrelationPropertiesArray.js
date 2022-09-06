@@ -99,7 +99,7 @@ export function MessageCorrelationPropertiesArray(props) {
         properties: {},
       });
     } else {
-      console.log(
+      console.error(
         'ERROR: There are not any more correlation properties this message can be added to'
       );
     }
