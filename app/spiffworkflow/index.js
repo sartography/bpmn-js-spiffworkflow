@@ -10,6 +10,7 @@ import ConditionsPropertiesProvider from './conditions/propertiesPanel/Condition
 import ExtensionsPropertiesProvider from './extensions/propertiesPanel/ExtensionsPropertiesProvider';
 import MessagesPropertiesProvider from './messages/propertiesPanel/MessagesPropertiesProvider';
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
+import SuperSimplePalette from './superSimplePalette';
 
 export default {
   __depends__: [RulesModule],
@@ -25,6 +26,7 @@ export default {
     'ioRules',
     'ioInterceptor',
     'dataObjectRenderer',
+    'superSimplePalette',
   ],
   dataObjectInterceptor: ['type', DataObjectInterceptor],
   dataObjectRules: ['type', DataObjectRules],
@@ -37,4 +39,5 @@ export default {
   ioPalette: ['type', IoPalette],
   ioRules: ['type', IoRules],
   ioInterceptor: ['type', IoInterceptor],
+  superSimplePalette: ['type', SuperSimplePalette],
 };

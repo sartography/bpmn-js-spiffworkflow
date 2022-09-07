@@ -16,8 +16,7 @@ IoPalette.$inject = [
   'elementFactory'
 ];
 
-IoPalette.prototype.getPaletteEntries = function() {
-
+IoPalette.prototype.getPaletteEntries = function(props) {
   let input_type = 'bpmn:DataInput';
   let output_type = 'bpmn:DataOutput';
   let elementFactory = this._elementFactory, create = this._create;
