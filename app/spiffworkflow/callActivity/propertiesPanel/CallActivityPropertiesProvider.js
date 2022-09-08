@@ -1,8 +1,5 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import {
-  isTextFieldEntryEdited,
-  TextFieldEntry,
-} from '@bpmn-io/properties-panel';
+import { TextFieldEntry } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
 const LOW_PRIORITY = 500;
@@ -54,7 +51,6 @@ function createCalledElementGroup(element, translate, moddle, commandStack) {
 
 function CalledElementTextField(props) {
   const { element } = props;
-  const { moddle } = props;
   const { translate } = props;
 
   const debounce = useService('debounceInput');
