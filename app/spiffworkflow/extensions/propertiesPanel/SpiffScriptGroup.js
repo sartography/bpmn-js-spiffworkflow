@@ -123,7 +123,8 @@ export default function getEntries(
   scriptType,
   label,
   description,
-  translate
+  translate,
+  commandStack
 ) {
   return [
     {
@@ -152,6 +153,7 @@ export default function getEntries(
         element,
         moddle,
         translate,
+        commandStack,
       }),
     },
   ];

@@ -21,7 +21,9 @@ export default function ExtensionsPropertiesProvider(
   this.getGroups = function (element) {
     return function (groups) {
       if (is(element, 'bpmn:ScriptTask')) {
-        groups.push(createScriptGroup(element, translate, moddle));
+        groups.push(
+          createScriptGroup(element, translate, moddle, commandStack)
+        );
       } else if (
         isAny(element, ['bpmn:Task', 'bpmn:CallActivity', 'bpmn:SubProcess'])
       ) {
@@ -81,7 +83,8 @@ function createScriptGroup(element, translate, moddle, commandStack) {
       SCRIPT_TYPE.bpmn,
       'Script',
       'Code to execute.',
-      translate
+      translate,
+      commandStack
     ),
   };
 }
