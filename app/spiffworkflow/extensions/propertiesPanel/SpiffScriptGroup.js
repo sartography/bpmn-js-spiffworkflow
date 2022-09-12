@@ -2,8 +2,10 @@ import {
   HeaderButton,
   TextAreaEntry,
   isTextFieldEntryEdited,
+  ListGroup,
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
+import { ScriptUnitTestArray } from './ScriptUnitTestArray';
 
 export const SCRIPT_TYPE = {
   bpmn: 'bpmn:script',
@@ -120,7 +122,8 @@ export default function getEntries(
   moddle,
   scriptType,
   label,
-  description
+  description,
+  translate
 ) {
   return [
     {
@@ -140,6 +143,16 @@ export default function getEntries(
       component: LaunchEditorButton,
       isEdited: isTextFieldEntryEdited,
       moddle,
+    },
+    {
+      id: `scriptUnitTests${scriptType}`,
+      label: translate('Unit Tests'),
+      component: ListGroup,
+      ...ScriptUnitTestArray({
+        element,
+        moddle,
+        translate,
+      }),
     },
   ];
 }

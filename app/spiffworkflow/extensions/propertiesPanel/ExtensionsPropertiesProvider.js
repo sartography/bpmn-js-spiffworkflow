@@ -80,7 +80,8 @@ function createScriptGroup(element, translate, moddle, commandStack) {
       moddle,
       SCRIPT_TYPE.bpmn,
       'Script',
-      'Code to execute.'
+      'Code to execute.',
+      translate
     ),
   };
 }
