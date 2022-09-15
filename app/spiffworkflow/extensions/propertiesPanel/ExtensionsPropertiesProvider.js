@@ -77,15 +77,15 @@ function createScriptGroup(element, translate, moddle, commandStack) {
   return {
     id: 'spiff_script',
     label: translate('Script'),
-    entries: scriptGroup(
+    entries: scriptGroup({
       element,
       moddle,
-      SCRIPT_TYPE.bpmn,
-      'Script',
-      'Code to execute.',
+      scriptType: SCRIPT_TYPE.bpmn,
+      label: 'Script',
+      description: 'Code to execute.',
       translate,
-      commandStack
-    ),
+      commandStack,
+    }),
   };
 }
 
@@ -102,20 +102,22 @@ function preScriptPostScriptGroup(element, translate, moddle) {
     id: 'spiff_pre_post_scripts',
     label: translate('SpiffWorkflow Scripts'),
     entries: [
-      ...scriptGroup(
+      ...scriptGroup({
         element,
         moddle,
-        SCRIPT_TYPE.pre,
-        'Pre-Script',
-        'code to execute prior to this task.'
-      ),
-      ...scriptGroup(
+        translate,
+        scriptType: SCRIPT_TYPE.pre,
+        label: 'Pre-Script',
+        description: 'code to execute prior to this task.',
+      }),
+      ...scriptGroup({
         element,
         moddle,
-        SCRIPT_TYPE.post,
-        'Post-Script',
-        'code to execute after this task.'
-      ),
+        translate,
+        scriptType: SCRIPT_TYPE.post,
+        label: 'Post-Script',
+        description: 'code to execute after this task.',
+      }),
     ],
   };
 }
