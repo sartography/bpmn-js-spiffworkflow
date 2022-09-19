@@ -65,9 +65,7 @@ function removeFactory(props) {
     );
     commandStack.execute('element.updateProperties', {
       element,
-      properties: {
-        correlationKey: currentCorrelationKeyElements,
-      },
+      properties: {},
     });
   };
 }
