@@ -31,6 +31,7 @@ export function CorrelationPropertiesArray(props) {
         idPrefix: id,
         correlationPropertyModdleElement,
         translate,
+        element,
         commandStack,
         moddle,
       });
@@ -125,6 +126,7 @@ function MessageCorrelationPropertyGroup(props) {
     idPrefix,
     correlationPropertyModdleElement,
     translate,
+    element,
     commandStack,
     moddle,
   } = props;
@@ -134,15 +136,18 @@ function MessageCorrelationPropertyGroup(props) {
       component: MessageCorrelationKeySelect,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
+      element,
       correlationPropertyModdleElement,
       translate,
       moddle,
+      commandStack,
     },
     {
       id: `${idPrefix}-correlation-property-id`,
       component: CorrelationPropertyIdTextField,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
+      element,
       correlationPropertyModdleElement,
       translate,
       commandStack,
@@ -152,6 +157,7 @@ function MessageCorrelationPropertyGroup(props) {
       component: CorrelationPropertyNameTextField,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
+      element,
       correlationPropertyModdleElement,
       translate,
       commandStack,
@@ -164,12 +170,18 @@ function MessageCorrelationKeySelect(props) {
     idPrefix,
     correlationPropertyModdleElement,
     translate,
-    parameter,
+    element,
     moddle,
+    commandStack,
   } = props;
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
+    if (
+      value === 'placeholder-never-should-be-used-as-an-actual-correlation-key'
+    ) {
+      return;
+    }
     const correlationKeyElements = findCorrelationKeys(
       correlationPropertyModdleElement,
       moddle
@@ -201,6 +213,12 @@ function MessageCorrelationKeySelect(props) {
         correlationPropertyModdleElement
       );
     }
+
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: correlationPropertyModdleElement,
+      properties: {},
+    });
   };
 
   const getValue = () => {
@@ -220,6 +238,13 @@ function MessageCorrelationKeySelect(props) {
       moddle
     );
     const options = [];
+    if (correlationKeyElements.length === 0) {
+      options.push({
+        label: 'Please Create a Correlation Key',
+        value: 'placeholder-never-should-be-used-as-an-actual-correlation-key',
+        disabled: true,
+      });
+    }
     for (const correlationKeyElement of correlationKeyElements) {
       options.push({
         label: correlationKeyElement.name,
@@ -231,7 +256,7 @@ function MessageCorrelationKeySelect(props) {
 
   return SelectEntry({
     id: `${idPrefix}-select`,
-    element: parameter,
+    element,
     label: translate('Correlation Key'),
     getValue,
     setValue,
