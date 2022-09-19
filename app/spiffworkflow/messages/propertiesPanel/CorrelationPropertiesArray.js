@@ -177,6 +177,11 @@ function MessageCorrelationKeySelect(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
+    if (
+      value === 'placeholder-never-should-be-used-as-an-actual-correlation-key'
+    ) {
+      return;
+    }
     const correlationKeyElements = findCorrelationKeys(
       correlationPropertyModdleElement,
       moddle
@@ -233,6 +238,13 @@ function MessageCorrelationKeySelect(props) {
       moddle
     );
     const options = [];
+    if (correlationKeyElements.length === 0) {
+      options.push({
+        label: 'Please Create a Correlation Key',
+        value: 'placeholder-never-should-be-used-as-an-actual-correlation-key',
+        disabled: true,
+      });
+    }
     for (const correlationKeyElement of correlationKeyElements) {
       options.push({
         label: correlationKeyElement.name,
