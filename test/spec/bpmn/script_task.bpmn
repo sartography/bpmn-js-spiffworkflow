@@ -8,21 +8,28 @@
     <bpmn:endEvent id="Event_1qb1u6a">
       <bpmn:incoming>Flow_0htxke7</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0htxke7" sourceRef="Activity_0pxf6g1" targetRef="Event_1qb1u6a" />
-    <bpmn:scriptTask id="Activity_0pxf6g1" name="Script with unit test">
+    <bpmn:sequenceFlow id="Flow_0htxke7" sourceRef="script_with_unit_test_id" targetRef="Event_1qb1u6a" />
+    <bpmn:scriptTask id="script_with_unit_test_id" name="Script with unit test">
       <bpmn:extensionElements>
         <spiffworkflow:unitTests>
-          <spiffworkflow:unitTest id="test1">
+          <spiffworkflow:unitTest id="sets_hey_to_true_if_hey_is_false">
             <spiffworkflow:inputJson>{"hey": false}</spiffworkflow:inputJson>
             <spiffworkflow:expectedOutputJson>{"hey": true}</spiffworkflow:expectedOutputJson>
+          </spiffworkflow:unitTest>
+          <spiffworkflow:unitTest id="sets_something_else_if_no_hey">
+            <spiffworkflow:inputJson>{}</spiffworkflow:inputJson>
+            <spiffworkflow:expectedOutputJson>{"something_else": true}</spiffworkflow:expectedOutputJson>
           </spiffworkflow:unitTest>
         </spiffworkflow:unitTests>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0niwe1y</bpmn:incoming>
       <bpmn:outgoing>Flow_0htxke7</bpmn:outgoing>
-      <bpmn:script>hey = True</bpmn:script>
+      <bpmn:script>if 'hey' in locals():
+  hey = True
+else:
+  something_else = True</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_0niwe1y" sourceRef="Activity_03fldr6" targetRef="Activity_0pxf6g1" />
+    <bpmn:sequenceFlow id="Flow_0niwe1y" sourceRef="Activity_03fldr6" targetRef="script_with_unit_test_id" />
     <bpmn:scriptTask id="Activity_03fldr6" name="Set var">
       <bpmn:incoming>Flow_10jwwqy</bpmn:incoming>
       <bpmn:outgoing>Flow_0niwe1y</bpmn:outgoing>
@@ -34,16 +41,16 @@
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="132" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_17ohe7r_di" bpmnElement="Activity_0pxf6g1">
+      <bpmndi:BPMNShape id="Event_1qb1u6a_di" bpmnElement="Event_1qb1u6a">
+        <dc:Bounds x="642" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_17ohe7r_di" bpmnElement="script_with_unit_test_id">
         <dc:Bounds x="440" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1fab1y2_di" bpmnElement="Activity_03fldr6">
         <dc:Bounds x="250" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1qb1u6a_di" bpmnElement="Event_1qb1u6a">
-        <dc:Bounds x="642" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_10jwwqy_di" bpmnElement="Flow_10jwwqy">
         <di:waypoint x="168" y="120" />
