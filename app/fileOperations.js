@@ -7,7 +7,6 @@ import FileSaver from 'file-saver';
  * easily from the editor for testing purposes.
  * -----------------------------------------
  */
-
 export default function setupFileOperations(bpmnModeler) {
   /**
    * Just a quick bit of code so we can save the XML that is output.
@@ -15,7 +14,6 @@ export default function setupFileOperations(bpmnModeler) {
    */
   const btn = document.getElementById('downloadButton');
   btn.addEventListener('click', (_event) => {
-    console.log("Button clicked!")
     saveXML();
   });
 
