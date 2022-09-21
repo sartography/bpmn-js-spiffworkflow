@@ -62,15 +62,6 @@ bpmnModeler.on('spiff.service_tasks.requested', (event) => {
           },
         ],
       },
-      {
-        id: 'Fact about a Number',
-        parameters: [
-          {
-            id: 'number',
-            type: 'integer',
-          },
-        ],
-      },
     ],
   });
 });
