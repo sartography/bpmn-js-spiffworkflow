@@ -52,7 +52,12 @@ module.exports = [
     },
     output: {
       path: `${__dirname}/dist`,
-      filename: 'bpmn_spiffworkflow.js',
+      filename: 'index.js',
+      library: {
+        name: 'SpiffWorkflow',
+        type: 'umd',
+        export: 'default',
+      },
     },
     module: myModule,
     mode: 'development',

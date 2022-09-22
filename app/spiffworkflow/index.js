@@ -11,7 +11,8 @@ import ExtensionsPropertiesProvider from './extensions/propertiesPanel/Extension
 import MessagesPropertiesProvider from './messages/propertiesPanel/MessagesPropertiesProvider';
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
 
-export default {
+export const SpiffWorkflowModdle = import('./moddle/spiffworkflow.json');
+export const SpiffWorkflowModule = {
   __depends__: [RulesModule],
   __init__: [
     'dataObjectInterceptor',

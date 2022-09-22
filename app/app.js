@@ -3,16 +3,14 @@ import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
+import { SpiffWorkflowModule, SpiffWorkflowModdle } from './spiffworkflow';
 import diagramXML from '../test/spec/bpmn/basic_message.bpmn';
-import spiffworkflow from './spiffworkflow';
 import setupFileOperations from './fileOperations';
 
 const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
-const spiffModdleExtension = require('./spiffworkflow/moddle/spiffworkflow.json');
 
 let bpmnModeler;
-
 /**
  * This provides an example of how to instantiate a BPMN Modeler configured with
  * all the extensions and modifications in this application.
@@ -24,12 +22,12 @@ try {
       parent: panelEl,
     },
     additionalModules: [
-      spiffworkflow,
+      SpiffWorkflowModule,
       BpmnPropertiesPanelModule,
       BpmnPropertiesProviderModule,
     ],
     moddleExtensions: {
-      spiffworkflowModdle: spiffModdleExtension,
+      spiffworkflowModdle: SpiffWorkflowModdle,
     },
   });
 } catch (error) {

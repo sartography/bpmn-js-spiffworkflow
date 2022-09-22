@@ -2,8 +2,8 @@
   "name": "bpmn-js-spiffworkflow",
   "version": "0.0.10",
   "description": "Extensions and modifications of BPMN.js to improve BPMN development for SpiffWorkflow",
-  "main": "dist/bpmn_spiffworkflow.js",
   "files": ["dist"],
+  "main": "dist/index.js",
   "scripts": {
     "all": "run-s lint test build",
     "build": "webpack --mode production",
@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "bpmn-js": "^9.4.1",
-    "bpmn-js-properties-panel": "^1.7.0",
+    "bpmn-js-properties-panel": "1.5.0",
     "diagram-js": "^8.9.0",
     "inherits": "^2.0.4",
     "inherits-browser": "^0.0.1",
