@@ -1,6 +1,6 @@
 {
   "name": "bpmn-js-spiffworkflow",
-  "version": "0.0.10",
+  "version": "0.0.9",
   "description": "Extensions and modifications of BPMN.js to improve BPMN development for SpiffWorkflow",
   "main": "dist/bpmn_spiffworkflow.js",
   "files": ["dist"],
