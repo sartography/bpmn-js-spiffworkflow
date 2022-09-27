@@ -1,11 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import { without } from 'min-dash';
-import {
-  findCorrelationKeys,
-  getRoot,
-  findMessageModdleElements,
-} from '../MessageHelpers';
+import { getRoot, findMessageModdleElements } from '../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
 
 /**
@@ -51,7 +46,7 @@ export function MessageArray(props) {
       rootElements.push(newMessageElement);
       commandStack.execute('element.updateProperties', {
         element,
-        properties: {}
+        properties: {},
       });
     }
   }
@@ -59,17 +54,41 @@ export function MessageArray(props) {
   return { items, add };
 }
 
+function removeMessageRefs(messageElement, moddleElement) {
+  if (
+    moddleElement.messageRef &&
+    moddleElement.messageRef.id === messageElement.id
+  ) {
+    moddleElement.messageRef = null;
+  } else if (moddleElement.correlationPropertyRetrievalExpression) {
+    moddleElement.correlationPropertyRetrievalExpression.forEach((cpre) => {
+      removeMessageRefs(messageElement, cpre);
+    });
+  } else if (moddleElement.flowElements) {
+    moddleElement.flowElements.forEach((fe) => {
+      removeMessageRefs(messageElement, fe);
+    });
+  } else if (moddleElement.eventDefinitions) {
+    moddleElement.eventDefinitions.forEach((ed) => {
+      removeMessageRefs(messageElement, ed);
+    });
+  }
+}
+
 function removeFactory(props) {
-  const { element, messageElement, moddle, commandStack } = props;
+  const { element, messageElement, commandStack } = props;
 
   return function (event) {
     event.stopPropagation();
     const rootElement = getRoot(element.businessObject);
     const { rootElements } = rootElement;
     removeFirstInstanceOfItemFromArrayInPlace(rootElements, messageElement);
+    rootElements.forEach((moddleElement) => {
+      removeMessageRefs(messageElement, moddleElement);
+    });
     commandStack.execute('element.updateProperties', {
       element,
-      properties: {}
+      properties: {},
     });
   };
 }
