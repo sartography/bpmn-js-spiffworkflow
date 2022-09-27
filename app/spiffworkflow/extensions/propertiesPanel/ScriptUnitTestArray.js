@@ -1,6 +1,9 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry, TextAreaEntry } from '@bpmn-io/properties-panel';
-import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+import {
+  removeFirstInstanceOfItemFromArrayInPlace,
+  removeExtensionElementsIfEmpty,
+} from '../../helpers';
 
 const getScriptUnitTestsModdleElement = (shapeElement) => {
   const bizObj = shapeElement.businessObject;
@@ -21,7 +24,7 @@ const getScriptUnitTestModdleElements = (shapeElement) => {
   const scriptUnitTestsModdleElement =
     getScriptUnitTestsModdleElement(shapeElement);
   if (scriptUnitTestsModdleElement) {
-    return scriptUnitTestsModdleElement.unitTests;
+    return scriptUnitTestsModdleElement.unitTests || [];
   }
   return [];
 };
@@ -89,6 +92,10 @@ export function ScriptUnitTestArray(props) {
     scriptUnitTestModdleElement.inputJson = scriptUnitTestInputModdleElement;
     scriptUnitTestModdleElement.expectedOutputJson =
       scriptUnitTestOutputModdleElement;
+
+    if (!scriptUnitTestsModdleElement.unitTests) {
+      scriptUnitTestsModdleElement.unitTests = [];
+    }
     scriptUnitTestsModdleElement.unitTests.push(scriptUnitTestModdleElement);
     commandStack.execute('element.updateProperties', {
       element,
@@ -100,7 +107,7 @@ export function ScriptUnitTestArray(props) {
 }
 
 function removeFactory(props) {
-  const { element, scriptUnitTestModdleElement, moddle, commandStack } = props;
+  const { element, scriptUnitTestModdleElement, commandStack } = props;
 
   return function (event) {
     event.stopPropagation();
@@ -110,6 +117,14 @@ function removeFactory(props) {
       scriptUnitTestsModdleElement.unitTests,
       scriptUnitTestModdleElement
     );
+    if (scriptUnitTestsModdleElement.unitTests.length < 1) {
+      const scriptTaskModdleElement = element.businessObject;
+      removeFirstInstanceOfItemFromArrayInPlace(
+        scriptTaskModdleElement.extensionElements.values,
+        scriptUnitTestsModdleElement
+      );
+      removeExtensionElementsIfEmpty(scriptTaskModdleElement);
+    }
     commandStack.execute('element.updateProperties', {
       element,
       properties: {},
