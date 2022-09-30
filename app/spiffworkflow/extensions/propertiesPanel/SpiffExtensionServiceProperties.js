@@ -249,15 +249,13 @@ function ServiceTaskParameterTextField(props) {
 }
 
 export function ServiceTaskResultTextInput(props) {
-  const {element, translate, commandStack} = props;
+  const { element, translate, commandStack } = props;
 
   const debounce = useService('debounceInput');
   const serviceTaskOperatorModdleElement =
     getServiceTaskOperatorModdleElement(element);
 
-  console.log("Service Task Operator:", serviceTaskOperatorModdleElement)
   const setValue = (value) => {
-    console.log("Setting the result variable.");
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: serviceTaskOperatorModdleElement,

@@ -41,7 +41,7 @@ describe('Properties Panel for Service Tasks', function () {
 
   function addServicesToModeler(bpmnModeler) {
     /**
-     * This will inject available services into the modler which should be
+     * This will inject available services into the modeler which should be
      * available as a dropdown list when selecting which service you want to call.
      *
      */
