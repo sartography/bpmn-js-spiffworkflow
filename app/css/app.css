@@ -43,7 +43,7 @@ html, body {
 }
 
 /* Style buttons */
-.btn {
+.bpmn-js-spiffworkflow-btn {
   background-color: DodgerBlue;
   border: none;
   color: white;
@@ -54,6 +54,6 @@ html, body {
 }
 
 /* Darker background on mouse-over */
-.btn:hover {
+.bpmn-js-spiffworkflow-btn:hover {
   background-color: RoyalBlue;
 }
