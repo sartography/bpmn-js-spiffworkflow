@@ -1,7 +1,7 @@
-import {useService } from 'bpmn-js-properties-panel';
+import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
 
-const SPIFF_PROP = "spiffworkflow:calledDecisionId"
+const SPIFF_PROP = 'spiffworkflow:calledDecisionId';
 
 /**
  * A generic properties' editor for text input.
@@ -19,33 +19,34 @@ const SPIFF_PROP = "spiffworkflow:calledDecisionId"
  * @returns {string|null|*}
  */
 export function SpiffExtensionCalledDecision(props) {
-  const element = props.element;
-  const commandStack = props.commandStack, moddle = props.moddle;
-  const label = props.label, description = props.description;
+  const { element } = props;
+  const { commandStack } = props;
+  const { moddle } = props;
+  const { label } = props;
+  const { description } = props;
   const debounce = useService('debounceInput');
 
   const getPropertyObject = () => {
     const bizObj = element.businessObject;
     if (!bizObj.extensionElements) {
       return null;
-    } else {
-      return bizObj.extensionElements.get("values").filter(function (e) {
-        return e.$instanceOf(SPIFF_PROP)
-      })[0];
     }
-  }
+    return bizObj.extensionElements.get('values').filter(function (e) {
+      return e.$instanceOf(SPIFF_PROP);
+    })[0];
+  };
 
   const getValue = () => {
-    const property = getPropertyObject()
+    const property = getPropertyObject();
     if (property) {
       return property.calledDecisionId;
     }
-    return ""
-  }
+    return '';
+  };
 
-  const setValue = value => {
-    let property = getPropertyObject()
-    let businessObject = element.businessObject;
+  const setValue = (value) => {
+    let property = getPropertyObject();
+    const { businessObject } = element;
     let extensions = businessObject.extensionElements;
 
     if (!property) {
@@ -61,19 +62,20 @@ export function SpiffExtensionCalledDecision(props) {
       element,
       moddleElement: businessObject,
       properties: {
-        "extensionElements": extensions
-      }
+        extensionElements: extensions,
+      },
     });
   };
 
-  return <TextFieldEntry
-    id='extension_called_decision'
-    element={element}
-    description={description}
-    label={label}
-    getValue={getValue}
-    setValue={setValue}
-    debounce={debounce}
-  />;
-
+  return (
+    <TextFieldEntry
+      id="extension_called_decision"
+      element={element}
+      description={description}
+      label={label}
+      getValue={getValue}
+      setValue={setValue}
+      debounce={debounce}
+    />
+  );
 }

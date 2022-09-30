@@ -25,7 +25,7 @@ const SERVICE_TASK_PARAMETER_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:para
  *
     <bpmn:serviceTask id="service_task_one" name="Service Task One">
       <bpmn:extensionElements>
-        <spiffworkflow:serviceTaskOperator id="SlackWebhookOperator">
+        <spiffworkflow:serviceTaskOperator id="SlackWebhookOperator" resultVariable="result">
           <spiffworkflow:parameters>
             <spiffworkflow:parameter name="webhook_token" type="string" value="token" />
             <spiffworkflow:parameter name="message" type="string" value="ServiceTask testing" />
@@ -246,4 +246,46 @@ function ServiceTaskParameterTextField(props) {
     setValue,
     debounce,
   });
+}
+
+export function ServiceTaskResultTextInput(props) {
+  const {element, translate, commandStack} = props;
+
+  const debounce = useService('debounceInput');
+  const serviceTaskOperatorModdleElement =
+    getServiceTaskOperatorModdleElement(element);
+
+  console.log("Service Task Operator:", serviceTaskOperatorModdleElement)
+  const setValue = (value) => {
+    console.log("Setting the result variable.");
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: serviceTaskOperatorModdleElement,
+      properties: {
+        resultVariable: value,
+      },
+    });
+  };
+
+  const getValue = () => {
+    if (serviceTaskOperatorModdleElement) {
+      return serviceTaskOperatorModdleElement.resultVariable;
+    }
+    return '';
+  };
+
+  if (serviceTaskOperatorModdleElement) {
+    return TextFieldEntry({
+      element,
+      label: translate('Response Variable'),
+      description: translate(
+        'response will be saved to this variable.  Leave empty to discard the response.'
+      ),
+      id: `result-textField`,
+      getValue,
+      setValue,
+      debounce,
+    });
+  }
+  return null;
 }

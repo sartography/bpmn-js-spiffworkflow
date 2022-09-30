@@ -111,6 +111,11 @@
           "type": "String"
         },
         {
+          "name": "resultVariable",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
           "name": "parameterList",
           "type": "parameters"
         }
