@@ -5,6 +5,7 @@ module.exports = {
   },
   extends: [
     'airbnb',
+    'plugin:bpmn-io/es6',
     'plugin:prettier/recommended',
     'plugin:sonarjs/recommended',
     'plugin:import/errors',
