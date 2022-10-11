@@ -6,7 +6,7 @@ import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 import { SpiffExtensionInstructionsForEndUser } from './SpiffExtensionInstructionsForEndUser';
 import {
   ServiceTaskParameterArray,
-  ServiceTaskOperatorSelect,
+  ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
 
 const LOW_PRIORITY = 500;
@@ -228,6 +228,13 @@ function createServiceGroup(element, translate, moddle, commandStack) {
         moddle,
         commandStack,
         component: ServiceTaskOperatorSelect,
+        translate,
+      },
+      {
+        element,
+        moddle,
+        commandStack,
+        component: ServiceTaskResultTextInput,
         translate,
       },
       {
