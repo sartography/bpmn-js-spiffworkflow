@@ -6,3 +6,9 @@ export function removeFirstInstanceOfItemFromArrayInPlace(arr, value) {
   }
   return arr;
 }
+
+export function removeExtensionElementsIfEmpty(moddleElement) {
+  if (moddleElement.extensionElements.values.length < 1) {
+    moddleElement.extensionElements = null;
+  }
+}

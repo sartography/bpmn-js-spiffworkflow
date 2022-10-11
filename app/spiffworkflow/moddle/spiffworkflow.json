@@ -149,7 +149,60 @@
           "type": "String"
         }
       ]
+    },
+    {
+      "name": "unitTests",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "unitTests",
+          "type": "unitTest",
+          "isMany": true
+        }
+      ]
+    },
+    {
+      "name": "unitTest",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "inputJson",
+          "type": "inputJson"
+        },
+        {
+          "name": "expectedOutputJson",
+          "type": "expectedOutputJson"
+        }
+      ]
+    },
+    {
+      "name": "inputJson",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "value",
+          "isBody": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "expectedOutputJson",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "value",
+          "isBody": true,
+          "type": "string"
+        }
+      ]
     }
-
   ]
 }

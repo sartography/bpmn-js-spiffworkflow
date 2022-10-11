@@ -2,8 +2,10 @@ import {
   HeaderButton,
   TextAreaEntry,
   isTextFieldEntryEdited,
+  ListGroup,
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
+import { ScriptUnitTestArray } from './ScriptUnitTestArray';
 
 export const SCRIPT_TYPE = {
   bpmn: 'bpmn:script',
@@ -79,33 +81,28 @@ function PythonScript(props) {
     scriptObj.script = value;
   };
 
-  return (
-    <TextAreaEntry
-      id={id}
-      element={element}
-      description={translate(description)}
-      label={translate(label)}
-      getValue={getValue}
-      setValue={setValue}
-      debounce={debounce}
-    />
-  );
+  return TextAreaEntry({
+    id,
+    element,
+    description: translate(description),
+    label: translate(label),
+    getValue,
+    setValue,
+    debounce,
+  });
 }
 
 function LaunchEditorButton(props) {
   const { element, type } = props;
   const eventBus = useService('eventBus');
   // fixme: add a call up date as a property
-  return (
-    <HeaderButton
-      className="spiffworkflow-properties-panel-button"
-      onClick={() => {
-        eventBus.fire('launch.script.editor', { element, type });
-      }}
-    >
-      Launch Editor
-    </HeaderButton>
-  );
+  return HeaderButton({
+    className: 'spiffworkflow-properties-panel-button',
+    onClick: () => {
+      eventBus.fire('launch.script.editor', { element, type });
+    },
+    children: 'Launch Editor',
+  });
 }
 
 /**
@@ -115,14 +112,18 @@ function LaunchEditorButton(props) {
  * @param moddle For updating the underlying xml document when needed.
  * @returns {[{component: (function(*)), isEdited: *, id: string, element},{component: (function(*)), isEdited: *, id: string, element}]}
  */
-export default function getEntries(
-  element,
-  moddle,
-  scriptType,
-  label,
-  description
-) {
-  return [
+export default function getEntries(props) {
+  const {
+    element,
+    moddle,
+    scriptType,
+    label,
+    description,
+    translate,
+    commandStack,
+  } = props;
+
+  const entries = [
     {
       id: `pythonScript_${scriptType}`,
       element,
@@ -142,4 +143,21 @@ export default function getEntries(
       moddle,
     },
   ];
+
+  // do not support testing pre and post scripts at the moment
+  if (scriptType === SCRIPT_TYPE.bpmn) {
+    entries.push({
+      id: `scriptUnitTests${scriptType}`,
+      label: translate('Unit Tests'),
+      component: ListGroup,
+      ...ScriptUnitTestArray({
+        element,
+        moddle,
+        translate,
+        commandStack,
+      }),
+    });
+  }
+
+  return entries;
 }
