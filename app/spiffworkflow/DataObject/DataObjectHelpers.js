@@ -5,10 +5,20 @@
  */
 
 
-export function findDataObjects(process) {
+export function findDataObjects(parent) {
   let dataObjects = [];
-  if (!process || !process.flowElements) {
-    return dataObjects;
+  let process;
+  if (!parent) {
+    return [];
+  }
+  if (parent.processRef) {
+    process = parent.processRef;
+  } else {
+    process = parent;
+  }
+  if (!process.flowElements) {
+    console.log("Process has no flow elements!", process)
+    return [];
   }
   for (const element of process.flowElements) {
     if (element.$type === 'bpmn:DataObject') {
