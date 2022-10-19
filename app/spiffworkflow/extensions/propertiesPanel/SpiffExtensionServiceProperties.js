@@ -120,7 +120,7 @@ export function ServiceTaskOperatorSelect(props) {
     const { businessObject } = element;
     let extensions = businessObject.extensionElements;
     if (!extensions) {
-      extensions = moddle.create('bpmn:ExtensionElements');1
+      extensions = moddle.create('bpmn:ExtensionElements');
     }
 
     const oldServiceTaskOperatorModdleElement =

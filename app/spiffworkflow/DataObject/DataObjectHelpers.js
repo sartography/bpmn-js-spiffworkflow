@@ -17,7 +17,6 @@ export function findDataObjects(parent) {
     process = parent;
   }
   if (!process.flowElements) {
-    console.log("Process has no flow elements!", process)
     return [];
   }
   for (const element of process.flowElements) {
