@@ -53,7 +53,7 @@ html, body {
 }
 
 /* Code Editor -- provided as a div overlay */
-#code_overlay {
+.overlay {
   position: fixed; /* Sit on top of the page content */
   display: none; /* Hidden by default */
   width: 100%; /* Full width (cover the whole page) */
@@ -66,12 +66,13 @@ html, body {
   z-index: 200; /* BPMN Canvas has some huge z-indexes, pop-up tools are 100 for ex.*/
 }
 
-#code_editor {
+#code_editor, #markdown_editor {
+  background-color: #ccc;
   margin: 50px auto 10px auto;
   max-width: 800px;
 }
 
-#code_buttons {
+#code_buttons, #markdown_buttons {
   margin: 50px auto 10px auto;
   max-width: 800px;
   right: 10px;

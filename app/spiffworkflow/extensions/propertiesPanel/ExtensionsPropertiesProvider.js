@@ -3,7 +3,7 @@ import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
-import { SpiffExtensionInstructionsForEndUser } from './SpiffExtensionInstructionsForEndUser';
+import instructionsGroup from './SpiffExtensionInstructionsForEndUser';
 import {
   ServiceTaskParameterArray,
   ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
@@ -199,16 +199,14 @@ function createUserInstructionsGroup (
     id: 'instructions',
     label: translate('Instructions'),
     entries: [
-      {
+      ...instructionsGroup({
         element,
         moddle,
         commandStack,
-        component: SpiffExtensionInstructionsForEndUser,
-        label: translate('Instructions For End User'),
-        description: translate(
-          'The instructions to show the user(s) who are responsible for completing the task.'
-        ),
-      },
+        translate,
+        label: 'Instructions',
+        description: 'The instructions to display when completing this task.',
+      }),
     ],
   };
 }

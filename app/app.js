@@ -86,12 +86,12 @@ const myCodeMirror = CodeMirror(document.getElementById('code_editor'), {
   mode: 'python',
 });
 
-const btn = document.getElementById('saveCode');
-let event = null;
+const saveCodeBtn = document.getElementById('saveCode');
+let launchCodeEvent = null;
 
 bpmnModeler.on('script.editor.launch', (newEvent) => {
-  event = newEvent;
-  myCodeMirror.setValue(event.script);
+  launchCodeEvent = newEvent;
+  myCodeMirror.setValue(launchCodeEvent.script);
   setTimeout(function() {
     myCodeMirror.refresh();
   },1);  // We have to wait a moment before calling refresh.
@@ -99,10 +99,31 @@ bpmnModeler.on('script.editor.launch', (newEvent) => {
   document.getElementById('code_editor').focus();
 });
 
-btn.addEventListener('click', (_event) => {
-  const { scriptType, element } = event;
-  event.eventBus.fire('script.editor.update', { element, scriptType, script: myCodeMirror.getValue()} )
+saveCodeBtn.addEventListener('click', (_event) => {
+  const { scriptType, element } = launchCodeEvent;
+  launchCodeEvent.eventBus.fire('script.editor.update', { element, scriptType, script: myCodeMirror.getValue()} )
   document.getElementById('code_overlay').style.display = 'none';
+});
+
+
+/**
+ * Like Python Script Editing, it can be nice to edit your Markdown in a
+ * good editor as well.
+ */
+var simplemde = new SimpleMDE({ element: document.getElementById("markdown_textarea") });
+let launchMarkdownEvent = null;
+bpmnModeler.on('markdown.editor.launch', (newEvent) => {
+  launchMarkdownEvent = newEvent;
+  simplemde.value(launchMarkdownEvent.markdown);
+  document.getElementById('markdown_overlay').style.display = 'block';
+  document.getElementById('markdown_editor').focus();
+});
+
+const saveMarkdownBtn = document.getElementById('saveMarkdown');
+saveMarkdownBtn.addEventListener('click', (_event) => {
+  const { element } = launchMarkdownEvent;
+  launchMarkdownEvent.eventBus.fire('markdown.editor.update', { element, markdown:simplemde.value() });
+  document.getElementById('markdown_overlay').style.display = 'none';
 });
 
 // This handles the download and upload buttons - it isn't specific to
