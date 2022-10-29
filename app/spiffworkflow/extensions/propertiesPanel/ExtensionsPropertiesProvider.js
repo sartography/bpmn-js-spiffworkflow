@@ -37,9 +37,9 @@ export default function ExtensionsPropertiesProvider(
           createBusinessRuleGroup(element, translate, moddle, commandStack)
         );
       }
-      if (is(element, 'bpmn:ManualTask')) {
+      if (isAny(element, ['bpmn:ManualTask', 'bpmn:UserTask', 'bpmn:EndEvent'])) {
         groups.push(
-          createManualTaskPropertiesGroup(
+          createUserInstructionsGroup (
             element,
             translate,
             moddle,
@@ -189,15 +189,15 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
  * @param moddle
  * @returns entries
  */
-function createManualTaskPropertiesGroup(
+function createUserInstructionsGroup (
   element,
   translate,
   moddle,
   commandStack
 ) {
   return {
-    id: 'manual_task_properties',
-    label: translate('Manual Task Properties'),
+    id: 'instructions',
+    label: translate('Instructions'),
     entries: [
       {
         element,
