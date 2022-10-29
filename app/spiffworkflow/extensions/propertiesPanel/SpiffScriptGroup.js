@@ -136,7 +136,7 @@ function updateScript(commandStack, moddle, element, scriptType, newValue) {
 
 function getScriptString(element, scriptType) {
   const scriptObj = getScriptObject(element, scriptType);
-  if (scriptObj) {
+  if (scriptObj && scriptObj.script) {
     return scriptObj.script;
   }
   return '';
