@@ -16,7 +16,7 @@ export default function ExtensionsPropertiesProvider(
   translate,
   moddle,
   commandStack,
-  elementRegistry
+  elementRegistry,
 ) {
   this.getGroups = function (element) {
     return function (groups) {
@@ -27,7 +27,7 @@ export default function ExtensionsPropertiesProvider(
       } else if (
         isAny(element, ['bpmn:Task', 'bpmn:CallActivity', 'bpmn:SubProcess'])
       ) {
-        groups.push(preScriptPostScriptGroup(element, translate, moddle));
+        groups.push(preScriptPostScriptGroup(element, translate, moddle, commandStack));
       }
       if (is(element, 'bpmn:UserTask')) {
         groups.push(createUserGroup(element, translate, moddle, commandStack));
@@ -97,14 +97,15 @@ function createScriptGroup(element, translate, moddle, commandStack) {
  * @param moddle  For altering the underlying XML File.
  * @returns The components to add to the properties panel.
  */
-function preScriptPostScriptGroup(element, translate, moddle) {
+function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
   return {
     id: 'spiff_pre_post_scripts',
-    label: translate('SpiffWorkflow Scripts'),
+    label: translate('Pre/Post Scripts'),
     entries: [
       ...scriptGroup({
         element,
         moddle,
+        commandStack,
         translate,
         scriptType: SCRIPT_TYPE.pre,
         label: 'Pre-Script',
@@ -113,6 +114,7 @@ function preScriptPostScriptGroup(element, translate, moddle) {
       ...scriptGroup({
         element,
         moddle,
+        commandStack,
         translate,
         scriptType: SCRIPT_TYPE.post,
         label: 'Post-Script',
@@ -132,7 +134,7 @@ function preScriptPostScriptGroup(element, translate, moddle) {
 function createUserGroup(element, translate, moddle, commandStack) {
   return {
     id: 'user_task_properties',
-    label: translate('SpiffWorkflow Web Form'),
+    label: translate('Web Form (with Json Schemas)'),
     entries: [
       {
         element,

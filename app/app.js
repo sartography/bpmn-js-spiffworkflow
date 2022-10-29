@@ -3,7 +3,7 @@ import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
-import diagramXML from '../test/spec/bpmn/script_task.bpmn';
+import diagramXML from '../test/spec/bpmn/user_form.bpmn';
 import spiffworkflow from './spiffworkflow';
 import setupFileOperations from './fileOperations';
 
@@ -45,7 +45,7 @@ try {
 bpmnModeler.importXML(diagramXML).then(() => {});
 
 /**
- * It is possible to poplulate certain components using API calls to
+ * It is possible to populate certain components using API calls to
  * a backend.  Here we mock out the API call, but this gives you
  * a sense of how things might work.
  *
@@ -75,7 +75,37 @@ bpmnModeler.on('spiff.service_tasks.requested', (event) => {
   });
 });
 
+/**
+ * Python Script authoring is best done in some sort of editor
+ * here is an example that will connect a large CodeMirror editor
+ * to the "Launch Editor" buttons (Script Tasks, and the Pre and Post
+ * scripts on all other tasks.
+ */
+const myCodeMirror = CodeMirror(document.getElementById('code_editor'), {
+  lineNumbers: true,
+  mode: 'python',
+});
+
+const btn = document.getElementById('saveCode');
+let event = null;
+
+bpmnModeler.on('script.editor.launch', (newEvent) => {
+  event = newEvent;
+  myCodeMirror.setValue(event.script);
+  setTimeout(function() {
+    myCodeMirror.refresh();
+  },1);  // We have to wait a moment before calling refresh.
+  document.getElementById('code_overlay').style.display = 'block';
+  document.getElementById('code_editor').focus();
+});
+
+btn.addEventListener('click', (_event) => {
+  const { scriptType, element } = event;
+  event.eventBus.fire('script.editor.update', { element, scriptType, script: myCodeMirror.getValue()} )
+  document.getElementById('code_overlay').style.display = 'none';
+});
+
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
-// create and save files.
+// create and save files, so keeping it outside the example.
 setupFileOperations(bpmnModeler);
