@@ -8,6 +8,7 @@ import {
   ServiceTaskParameterArray,
   ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
+import {OPTION_TYPE, SpiffExtensionSelect} from './SpiffExtensionSelect';
 
 const LOW_PRIORITY = 500;
 
@@ -140,7 +141,8 @@ function createUserGroup(element, translate, moddle, commandStack) {
         element,
         moddle,
         commandStack,
-        component: SpiffExtensionTextInput,
+        component: SpiffExtensionSelect,
+        optionType: OPTION_TYPE.json,
         label: translate('JSON Schema Filename'),
         description: translate('RJSF Json Data Structure Filename'),
         name: 'formJsonSchemaFilename',
@@ -149,7 +151,8 @@ function createUserGroup(element, translate, moddle, commandStack) {
         element,
         moddle,
         commandStack,
-        component: SpiffExtensionTextInput,
+        component: SpiffExtensionSelect,
+        optionType: OPTION_TYPE.json,
         label: translate('UI Schema Filename'),
         description: translate('RJSF User Interface Filename'),
         name: 'formUiSchemaFilename',

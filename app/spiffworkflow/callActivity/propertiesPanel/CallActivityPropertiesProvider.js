@@ -1,5 +1,5 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { TextFieldEntry } from '@bpmn-io/properties-panel';
+import { HeaderButton, TextFieldEntry } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
 const LOW_PRIORITY = 500;
@@ -45,8 +45,24 @@ function createCalledElementGroup(element, translate, moddle, commandStack) {
         commandStack,
         translate,
       },
+      {
+        id: `called_element_launch_button`,
+        element,
+        component: LaunchEditorButton,
+        moddle,
+        commandStack,
+        translate,
+      },
     ],
   };
+}
+
+function getCalledElementValue(element) {
+  const { calledElement } = element.businessObject;
+  if (calledElement) {
+    return calledElement;
+  }
+  return '';
 }
 
 function CalledElementTextField(props) {
@@ -55,11 +71,7 @@ function CalledElementTextField(props) {
 
   const debounce = useService('debounceInput');
   const getValue = () => {
-    const { calledElement } = element.businessObject;
-    if (calledElement) {
-      return calledElement;
-    }
-    return '';
+    return getCalledElementValue(element);
   };
 
   const setValue = (value) => {
@@ -73,5 +85,22 @@ function CalledElementTextField(props) {
     getValue,
     setValue,
     debounce,
+  });
+}
+
+function LaunchEditorButton(props) {
+  const { element } = props;
+  const eventBus = useService('eventBus');
+  return HeaderButton({
+    id: 'spiffworkflow-open-call-activity-button',
+    class: 'spiffworkflow-properties-panel-button',
+    onClick: () => {
+      const processId = getCalledElementValue(element);
+      eventBus.fire('callactivity.editor.launch', {
+        element,
+        processId,
+      });
+    },
+    children: 'Launch Editor',
   });
 }

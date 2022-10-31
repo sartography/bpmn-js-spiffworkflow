@@ -126,6 +126,44 @@ saveMarkdownBtn.addEventListener('click', (_event) => {
   document.getElementById('markdown_overlay').style.display = 'none';
 });
 
+/**
+ * Also can be good to launch an editor for a call activity.
+ * Not implemented here but imagine opening up a new browser tab
+ * and showing a different process.
+ */
+bpmnModeler.on('callactivity.editor.launch', (newEvent) => {
+  console.log(
+    'Open new window with editor for call activity: ',
+    newEvent.processId
+  );
+});
+
+/**
+ * Also handy to get a list of available files that can be used in a given
+ * context, say json files for a form, or a DMN file for a BusinessRuleTask
+ */
+bpmnModeler.on('spiff.options.requested', (event) => {
+  console.log('Requested!', event);
+  if (event.optionType === 'json') {
+    console.log("Firing the json")
+    event.eventBus.fire('spiff.options.returned.json', {
+      options: [
+        { label: 'pizza_form.json', value: 'pizza_form.json' },
+        { label: 'credit_card_form.json', value: 'credit_card_form.json' },
+      ],
+    });
+  } else if (event.optionType === 'dmn') {
+    console.log("Firing the dmn")
+    event.eventBus.fire('spiff.options.returned.dmn', {
+      options: [
+        { label: 'Pizza Special Prices', value: 'pizza_prices' },
+        { label: 'Topping Prices', value: 'topping_prices' },
+      ],
+    });
+  }
+});
+
+
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
 // create and save files, so keeping it outside the example.
