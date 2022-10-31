@@ -60,7 +60,7 @@ function LaunchEditorButton(props) {
         updateScript(
           commandStack,
           moddle,
-          event.element,
+          element,
           event.scriptType,
           event.script
         );
