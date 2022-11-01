@@ -1,10 +1,7 @@
 import {useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
 import {
-  addOrUpdateExtensionProperty,
-  getExtensionProperties,
-  getExtensionPropertiesObject,
-  getExtensionProperty, setExtensionProperty
+  getExtensionValue, setExtensionProperty
 } from '../extensionHelpers';
 
 
@@ -30,11 +27,7 @@ export function SpiffExtensionTextInput(props) {
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    const property = getExtensionProperty(element, name)
-    if (property) {
-      return property.value;
-    }
-    return ""
+    return getExtensionValue(element, name)
   }
 
   const setValue = value => {

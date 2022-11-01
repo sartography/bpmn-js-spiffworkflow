@@ -1,7 +1,7 @@
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 import {
-  getExtensionProperty,
+  getExtensionValue,
   setExtensionProperty,
 } from '../extensionHelpers';
 
@@ -40,11 +40,7 @@ export function SpiffExtensionSelect(props) {
   const eventBus = useService('eventBus');
 
   const getValue = () => {
-    const property = getExtensionProperty(element, name);
-    if (property) {
-      return property.value;
-    }
-    return '';
+    return getExtensionValue(element, name);
   };
 
   const setValue = (value) => {

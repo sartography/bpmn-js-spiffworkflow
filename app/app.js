@@ -127,9 +127,9 @@ saveMarkdownBtn.addEventListener('click', (_event) => {
 });
 
 /**
- * Also can be good to launch an editor for a call activity.
+ * Also can be good to launch an editor for a call activity, or file
  * Not implemented here but imagine opening up a new browser tab
- * and showing a different process.
+ * and showing a different process or completly different file editor.
  */
 bpmnModeler.on('callactivity.editor.launch', (newEvent) => {
   console.log(
@@ -137,6 +137,19 @@ bpmnModeler.on('callactivity.editor.launch', (newEvent) => {
     newEvent.processId
   );
 });
+
+/**
+ * Also can be good to launch an editor for a call activity.
+ * Not implemented here but imagine opening up a new browser tab
+ * and showing a different process.
+ */
+bpmnModeler.on('file.editor.launch', (newEvent) => {
+  console.log(
+    'Open new window to edit file: ',
+    newEvent.fileName
+  );
+});
+
 
 /**
  * Also handy to get a list of available files that can be used in a given

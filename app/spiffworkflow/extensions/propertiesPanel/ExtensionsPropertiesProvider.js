@@ -9,6 +9,7 @@ import {
   ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
 import {OPTION_TYPE, SpiffExtensionSelect} from './SpiffExtensionSelect';
+import {SpiffExtensionLaunchFileEditor} from './SpiffExtensionLaunchFileEditor';
 
 const LOW_PRIORITY = 500;
 
@@ -144,8 +145,15 @@ function createUserGroup(element, translate, moddle, commandStack) {
         component: SpiffExtensionSelect,
         optionType: OPTION_TYPE.json,
         label: translate('JSON Schema Filename'),
-        description: translate('RJSF Json Data Structure Filename'),
+        description: translate('Form Description (RSJF)'),
         name: 'formJsonSchemaFilename',
+      },
+      {
+        component: SpiffExtensionLaunchFileEditor,
+        element,
+        name: 'formJsonSchemaFilename',
+        label: translate('Launch Editor'),
+        description: translate('Edit the form description'),
       },
       {
         element,
@@ -154,8 +162,15 @@ function createUserGroup(element, translate, moddle, commandStack) {
         component: SpiffExtensionSelect,
         optionType: OPTION_TYPE.json,
         label: translate('UI Schema Filename'),
-        description: translate('RJSF User Interface Filename'),
+        description: translate('Rules for displaying the form. (RSJF Schema)'),
         name: 'formUiSchemaFilename',
+      },
+      {
+        component: SpiffExtensionLaunchFileEditor,
+        element,
+        name: 'formUiSchemaFilename',
+        label: translate('Launch Editor'),
+        description: translate('Edit the form schema'),
       },
     ],
   };

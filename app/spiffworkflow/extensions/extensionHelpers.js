@@ -27,6 +27,19 @@ export function getExtensionProperty(element, name) {
   return null;
 }
 
+/**
+ * Returns the string value of the extension properties value attribute, or ""
+ * @param element
+ * @param name
+ */
+export function getExtensionValue(element, name) {
+  const property = getExtensionProperty(element, name);
+  if (property) {
+    return property.value;
+  }
+  return '';
+}
+
 export function setExtensionProperty(element, name, value, moddle, commandStack) {
   let properties = getExtensionProperties(element);
   let property = getExtensionProperty(element, name);
