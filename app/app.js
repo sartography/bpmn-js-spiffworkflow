@@ -3,7 +3,7 @@ import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
-import diagramXML from '../test/spec/bpmn/user_form.bpmn';
+import diagramXML from '../test/spec/bpmn/diagram.bpmn';
 import spiffworkflow from './spiffworkflow';
 import setupFileOperations from './fileOperations';
 
@@ -139,14 +139,20 @@ bpmnModeler.on('callactivity.editor.launch', (newEvent) => {
 });
 
 /**
- * Also can be good to launch an editor for a call activity.
+ * Also can be good to launch an editor for a call activity, or DMN
  * Not implemented here but imagine opening up a new browser tab
  * and showing a different process.
  */
 bpmnModeler.on('file.editor.launch', (newEvent) => {
   console.log(
     'Open new window to edit file: ',
-    newEvent.fileName
+    newEvent.value
+  );
+});
+bpmnModeler.on('dmn.editor.launch', (newEvent) => {
+  console.log(
+    'Open new window to edit DMN table: ',
+    newEvent.value
   );
 });
 
@@ -171,6 +177,7 @@ bpmnModeler.on('spiff.options.requested', (event) => {
       options: [
         { label: 'Pizza Special Prices', value: 'pizza_prices' },
         { label: 'Topping Prices', value: 'topping_prices' },
+        { label: 'Test Decision', value: 'test_decision' },
       ],
     });
   }

@@ -7,15 +7,15 @@ import { getExtensionValue } from '../extensionHelpers';
  * would like to edit an external file.  Hosting application
  * would need to handle saving the file.
  */
-export function SpiffExtensionLaunchFileEditor(props) {
-  const { element, name } = props;
+export function SpiffExtensionLaunchButton(props) {
+  const { element, name, event } = props;
   const eventBus = useService('eventBus');
   return HeaderButton({
     className: 'spiffworkflow-properties-panel-button',
     onClick: () => {
-      const fileName = getExtensionValue(element, name);
-      eventBus.fire('file.editor.launch', {
-        fileName,
+      const value = getExtensionValue(element, name);
+      eventBus.fire(event, {
+        value,
       });
     },
     children: 'Launch Editor',

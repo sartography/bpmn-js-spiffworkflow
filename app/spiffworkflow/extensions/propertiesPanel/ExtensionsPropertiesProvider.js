@@ -1,7 +1,6 @@
 import { ListGroup } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
-import { SpiffExtensionCalledDecision } from './SpiffExtensionCalledDecision';
 import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 import instructionsGroup from './SpiffExtensionInstructionsForEndUser';
 import {
@@ -9,7 +8,8 @@ import {
   ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
 import {OPTION_TYPE, SpiffExtensionSelect} from './SpiffExtensionSelect';
-import {SpiffExtensionLaunchFileEditor} from './SpiffExtensionLaunchFileEditor';
+import {SpiffExtensionLaunchButton} from './SpiffExtensionLaunchButton';
+import {SiffExtensionCalledDecision} from './SpiffExtensionCalledDecision';
 
 const LOW_PRIORITY = 500;
 
@@ -149,10 +149,11 @@ function createUserGroup(element, translate, moddle, commandStack) {
         name: 'formJsonSchemaFilename',
       },
       {
-        component: SpiffExtensionLaunchFileEditor,
+        component: SpiffExtensionLaunchButton,
         element,
         name: 'formJsonSchemaFilename',
         label: translate('Launch Editor'),
+        event: 'file.editor.launch',
         description: translate('Edit the form description'),
       },
       {
@@ -162,14 +163,16 @@ function createUserGroup(element, translate, moddle, commandStack) {
         component: SpiffExtensionSelect,
         optionType: OPTION_TYPE.json,
         label: translate('UI Schema Filename'),
+        event: 'file.editor.launch',
         description: translate('Rules for displaying the form. (RSJF Schema)'),
         name: 'formUiSchemaFilename',
       },
       {
-        component: SpiffExtensionLaunchFileEditor,
+        component: SpiffExtensionLaunchButton,
         element,
         name: 'formUiSchemaFilename',
         label: translate('Launch Editor'),
+        event: 'file.editor.launch',
         description: translate('Edit the form schema'),
       },
     ],
@@ -192,9 +195,21 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
         element,
         moddle,
         commandStack,
-        component: SpiffExtensionCalledDecision,
-        label: translate('Decision Id'),
-        description: translate('Id of the decision'),
+        name: 'calledDecisionId',
+        optionType: OPTION_TYPE.dmn,
+        component: SiffExtensionCalledDecision,
+        label: translate('Select Decision Table'),
+        description: translate(
+          'Select an existing decision table from the list'
+        ),
+      },
+      {
+        component: SpiffExtensionLaunchButton,
+        element,
+        name: 'calledDecisionId',
+        label: translate('Launch Editor'),
+        event: 'dmn.editor.launch',
+        description: translate('Modify the Decision Table'),
       },
     ],
   };
