@@ -103,10 +103,8 @@ function getScriptObject(element, scriptType) {
 }
 
 function updateScript(commandStack, moddle, element, scriptType, newValue) {
-  console.log(`Update ${scriptType} to ${newValue}`);
   const { businessObject } = element;
   let scriptObj = getScriptObject(element, scriptType);
-  console.log("Script Object", scriptObj)
   // Create the script object if needed.
   if (!scriptObj) {
     scriptObj = moddle.create(scriptType);
@@ -126,12 +124,14 @@ function updateScript(commandStack, moddle, element, scriptType, newValue) {
       });
     }
   } else {
+    let newProps = { value: newValue };
+    if (scriptType === SCRIPT_TYPE.bpmn) {
+      newProps = { script: newValue };
+    }
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: scriptObj,
-      properties: {
-        value: newValue,
-      },
+      properties: newProps,
     });
   }
 }
@@ -140,6 +140,9 @@ function getScriptString(element, scriptType) {
   const scriptObj = getScriptObject(element, scriptType);
   if (scriptObj && scriptObj.value) {
     return scriptObj.value;
+  }
+  if (scriptObj && scriptObj.script) {
+    return scriptObj.script;
   }
   return '';
 }
