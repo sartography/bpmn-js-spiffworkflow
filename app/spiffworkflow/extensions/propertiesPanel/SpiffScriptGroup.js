@@ -103,8 +103,10 @@ function getScriptObject(element, scriptType) {
 }
 
 function updateScript(commandStack, moddle, element, scriptType, newValue) {
+  console.log(`Update ${scriptType} to ${newValue}`);
   const { businessObject } = element;
   let scriptObj = getScriptObject(element, scriptType);
+  console.log("Script Object", scriptObj)
   // Create the script object if needed.
   if (!scriptObj) {
     scriptObj = moddle.create(scriptType);
@@ -113,7 +115,7 @@ function updateScript(commandStack, moddle, element, scriptType, newValue) {
       if (!extensionElements) {
         extensionElements = moddle.create('bpmn:ExtensionElements');
       }
-      scriptObj.script = newValue;
+      scriptObj.value = newValue;
       extensionElements.get('values').push(scriptObj);
       commandStack.execute('element.updateModdleProperties', {
         element,
@@ -128,7 +130,7 @@ function updateScript(commandStack, moddle, element, scriptType, newValue) {
       element,
       moddleElement: scriptObj,
       properties: {
-        script: newValue,
+        value: newValue,
       },
     });
   }
