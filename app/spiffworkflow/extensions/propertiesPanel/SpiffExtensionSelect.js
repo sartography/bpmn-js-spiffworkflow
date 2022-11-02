@@ -8,8 +8,8 @@ import {
 const spiffExtensionOptions = {};
 
 export const OPTION_TYPE = {
-  json: 'json',
-  dmn: 'dmn',
+  json_files: 'json_files',
+  dmn_files: 'dmn_files',
 };
 
 /**
@@ -18,12 +18,8 @@ export const OPTION_TYPE = {
  * dropdown list.
  * The list of options must be provided by the containing library - by responding
  * to a request passed to the eventBus.
- * When needed, the event "spiff.options.requested" will be fired. The event will include
- * a 'type' attribute that will be one of the following:
- *   * jsonFiles
- *   * dmnFiles
- * The response should be sent to "spiff.options.returned.___"  where the final
- * section is the name requested, ie "spiff.options.returned.jsonFiles" The response
+ * When needed, the event "spiff.${optionType}.requested" will be fired.
+ * The response should be sent to "spiff.${optionType}.returned". The response
  * event should include an 'options' attribute that is list of labels and values:
  * [ { label: 'Product Prices DMN', value: 'Process_16xfaqc' } ]
  */
@@ -83,12 +79,12 @@ export function SpiffExtensionSelect(props) {
 function requestOptions(eventBus, element, commandStack, optionType) {
   // Little backwards, but you want to assure you are ready to catch, before you throw
   // or you risk a race condition.
-  eventBus.once(`spiff.${optionType}_files.returned`, (event) => {
+  eventBus.once(`spiff.${optionType}.returned`, (event) => {
     spiffExtensionOptions[optionType] = event.options;
     commandStack.execute('element.updateProperties', {
       element,
       properties: {},
     });
   });
-  eventBus.fire(`spiff.${optionType}_files.requested`, { eventBus });
+  eventBus.fire(`spiff.${optionType}.requested`, { eventBus });
 }
