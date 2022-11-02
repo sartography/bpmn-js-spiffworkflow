@@ -6,16 +6,19 @@ import { getBpmnJS } from 'bpmn-js/test/helper';
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 import TestContainer from 'mocha-test-container-support';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
+import {getExtensionProperty, getExtensionValue} from '../../app/spiffworkflow/extensions/extensionHelpers';
 import {
   bootstrapPropertiesPanel,
   changeInput,
-  expectSelected,
+  expectSelected, findButton,
   findEntry,
   findGroupEntry,
   findInput,
-  findSelect,
+  findSelect, pressButton,
 } from './helpers';
 import extensions from '../../app/spiffworkflow/extensions';
+import {query as domQuery} from 'min-dom';
+import {default as diagram_xml} from './bpmn/diagram.bpmn';
 
 describe('Properties Panel for User Tasks', function () {
   const user_form_xml = require('./bpmn/user_form.bpmn').default;
@@ -27,18 +30,15 @@ describe('Properties Panel for User Tasks', function () {
   });
 
   function addOptionsToEventBus(bpmnModeler) {
-    bpmnModeler.on('spiff.options.requested', (event) => {
-      if (event.optionType === 'json') {
-        event.eventBus.fire('spiff.options.returned.json', {
-          options: [
-            { label: 'pizza_form.json', value: 'pizza_form.json' },
-            { label: 'credit_card_form.json', value: 'credit_card_form.json' },
-            { label: 'give_me_a_number_form.json', value: 'give_me_a_number_form.json' },
-            { label: 'number_form_schema.json', value: 'number_form_schema.json' },
-
-          ],
-        });
-      }
+    bpmnModeler.on('spiff.json_files.requested', (event) => {
+      event.eventBus.fire('spiff.json_files.returned', {
+        options: [
+          { label: 'pizza_form.json', value: 'pizza_form.json' },
+          { label: 'credit_card_form.json', value: 'credit_card_form.json' },
+          { label: 'give_me_a_number_form.json', value: 'give_me_a_number_form.json' },
+          { label: 'number_form_schema.json', value: 'number_form_schema.json' },
+        ],
+      });
     });
   }
 
@@ -100,7 +100,7 @@ describe('Properties Panel for User Tasks', function () {
     const modeler = getBpmnJS();
     addOptionsToEventBus(modeler);
 
-    // IF - a script tag is selected, and you change the script in the properties panel
+    // IF - a user tag is selected, and you change the script in the properties panel
     await expectSelected('task_confirm');
     const group = findGroupEntry('user_task_properties', container);
     const formJsonSchemaFilenameEntry = findEntry('extension_formJsonSchemaFilename', group);
@@ -109,5 +109,28 @@ describe('Properties Panel for User Tasks', function () {
     const formUiSchemaFilenameEntry = findEntry('extension_formUiSchemaFilename', group);
     const formUiSchemaFilenameInput = findSelect(formUiSchemaFilenameEntry);
     expect(formUiSchemaFilenameInput.value).to.equal('number_form_schema.json');
+  });
+
+  it('should allow you to change the instructions to the end user', async function () {
+    // If a user task is selected
+    await preparePropertiesPanelWithXml(diagram_xml)();
+    const modeler = getBpmnJS();
+    addOptionsToEventBus(modeler);
+
+    // AND the value of the instructions is changed
+    const userElement = await expectSelected('task_confirm');
+    const group = findGroupEntry('instructions', container);
+
+    const input = domQuery('textarea', group);
+    changeInput(input, '#Hello!');
+
+    // THEN - the script tag in the BPMN Business object / XML is updated as well.
+    const businessObject = getBusinessObject(userElement);
+    // The change is reflected in the business object
+    let instructions = getExtensionValue(
+      userElement,
+      'spiffworkflow:instructionsForEndUser'
+    );
+    expect(instructions).to.equal('#Hello!');
   });
 });

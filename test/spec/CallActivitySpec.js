@@ -72,7 +72,7 @@ describe('Call Activities should work', function () {
     expect(button).to.exist;
 
     let launchEvent;
-    eventBus.on('callactivity.editor.launch', function (event) {
+    eventBus.on('spiff.callactivity.edit', function (event) {
       launchEvent = event;
     });
     await pressButton(button);

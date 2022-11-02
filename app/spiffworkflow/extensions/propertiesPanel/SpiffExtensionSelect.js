@@ -2,7 +2,7 @@ import { SelectEntry } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 import {
   getExtensionValue,
-  setExtensionProperty,
+  setExtensionValue,
 } from '../extensionHelpers';
 
 const spiffExtensionOptions = {};
@@ -45,7 +45,7 @@ export function SpiffExtensionSelect(props) {
 
   const setValue = (value) => {
     console.log(`Set Value called with ${ value}`);
-    setExtensionProperty(element, name, value, moddle, commandStack);
+    setExtensionValue(element, name, value, moddle, commandStack);
   };
 
   if (
@@ -83,12 +83,12 @@ export function SpiffExtensionSelect(props) {
 function requestOptions(eventBus, element, commandStack, optionType) {
   // Little backwards, but you want to assure you are ready to catch, before you throw
   // or you risk a race condition.
-  eventBus.once(`spiff.options.returned.${optionType}`, (event) => {
+  eventBus.once(`spiff.${optionType}_files.returned`, (event) => {
     spiffExtensionOptions[optionType] = event.options;
     commandStack.execute('element.updateProperties', {
       element,
       properties: {},
     });
   });
-  eventBus.fire('spiff.options.requested', { eventBus, optionType });
+  eventBus.fire(`spiff.${optionType}_files.requested`, { eventBus });
 }

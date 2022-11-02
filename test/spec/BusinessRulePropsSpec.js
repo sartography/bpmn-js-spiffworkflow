@@ -1,4 +1,3 @@
-import { query as domQuery } from 'min-dom';
 import { getBpmnJS } from 'bpmn-js/test/helper';
 
 import {
@@ -24,9 +23,9 @@ describe('Business Rule Properties Panel', function () {
     bootstrapPropertiesPanel(xml, {
       debounceInput: false,
       additionalModules: [
-        extensions,
         BpmnPropertiesPanelModule,
         BpmnPropertiesProviderModule,
+        extensions,
       ],
       moddleExtensions: {
         spiffworkflow: spiffModdleExtension,
@@ -35,16 +34,14 @@ describe('Business Rule Properties Panel', function () {
   );
 
   function addOptionsToEventBus(bpmnModeler) {
-    bpmnModeler.on('spiff.options.requested', (event) => {
-      if (event.optionType === 'dmn') {
-        event.eventBus.fire('spiff.options.returned.dmn', {
-          options: [
-            { label: 'Calculate Pizza Price', value: 'Decision_Pizza_Price' },
-            { label: 'Viking Availability', value: 'Decision_Vikings' },
-            { label: 'Test Decision', value: 'test_decision' },
-          ],
-        });
-      }
+    bpmnModeler.on('spiff.dmn_files.requested', (event) => {
+      event.eventBus.fire('spiff.dmn_files.returned', {
+        options: [
+          { label: 'Calculate Pizza Price', value: 'Decision_Pizza_Price' },
+          { label: 'Viking Availability', value: 'Decision_Vikings' },
+          { label: 'Test Decision', value: 'test_decision' },
+        ],
+      });
     });
   }
 
@@ -54,10 +51,10 @@ describe('Business Rule Properties Panel', function () {
     expectSelected('business_rule_task');
 
     // THEN - a properties panel exists with a section for editing that script
-    const entry = findEntry('extension_calledDecisionId', getPropertiesPanel());
-    expect(entry).to.exist;
+    const entry = findEntry('extension_spiffworkflow:calledDecisionId', getPropertiesPanel());
+    expect(entry, 'No Entry').to.exist;
     const selectList = findSelect(entry);
-    expect(selectList).to.exist;
+    expect(selectList, 'No Select').to.exist;
   });
 
   it('should update the spiffworkflow:calledDecisionId tag when you modify the called decision select box', async function () {
@@ -73,19 +70,19 @@ describe('Business Rule Properties Panel', function () {
     const businessObject = getBusinessObject(businessRuleTask);
     expect(businessObject.extensionElements).to.exist;
     const element = businessObject.extensionElements.values[0];
-    expect(element.calledDecisionId).to.equal('Decision_Pizza_Price');
+    expect(element.value).to.equal('Decision_Pizza_Price');
   });
 
   it('should load up the xml and the value for the called decision should match the xml', async function () {
     const businessRuleTask = await expectSelected('business_rule_task');
     const entry = findEntry('extension_calledDecisionId', getPropertiesPanel());
     const selectList = findSelect(entry);
-    expect(selectList.value).to.equal('test_decision');
+    expect(selectList.value, "initial value is wrong").to.equal('test_decision');
 
     // THEN - the script tag in the BPMN Business object / XML is updated as well.
     const businessObject = getBusinessObject(businessRuleTask);
     expect(businessObject.extensionElements).to.exist;
     const element = businessObject.extensionElements.values[0];
-    expect(element.calledDecisionId).to.equal('test_decision');
+    expect(element.value).to.equal('test_decision');
   });
 });

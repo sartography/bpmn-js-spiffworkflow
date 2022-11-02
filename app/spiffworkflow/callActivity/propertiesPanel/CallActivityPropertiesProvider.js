@@ -96,7 +96,7 @@ function LaunchEditorButton(props) {
     class: 'spiffworkflow-properties-panel-button',
     onClick: () => {
       const processId = getCalledElementValue(element);
-      eventBus.fire('callactivity.editor.launch', {
+      eventBus.fire('spiff.callactivity.edit', {
         element,
         processId,
       });
