@@ -60,6 +60,7 @@ describe('Call Activities should work', function () {
     expect(businessObject.get('calledElement')).to.equal('newProcessId');
   });
 
+  /** fixme: Reenable this when we add this button back in.
   it('should issue an event to the event bus if user clicks the edit button', inject(
       async function(eventBus) {
     const shapeElement = await expectSelected('the_call_activity');
@@ -78,4 +79,5 @@ describe('Call Activities should work', function () {
     await pressButton(button);
     expect(launchEvent.processId).to.exist;
   }));
+  */
 });
