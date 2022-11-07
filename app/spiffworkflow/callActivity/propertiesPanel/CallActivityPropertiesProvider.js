@@ -45,6 +45,8 @@ function createCalledElementGroup(element, translate, moddle, commandStack) {
         commandStack,
         translate,
       },
+      /* Commented out until such time as we can effectively calculate the list of available processes by process id */
+      /*
       {
         id: `called_element_launch_button`,
         element,
@@ -53,6 +55,7 @@ function createCalledElementGroup(element, translate, moddle, commandStack) {
         commandStack,
         translate,
       },
+      */
     ],
   };
 }
