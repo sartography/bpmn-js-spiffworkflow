@@ -29,20 +29,27 @@ export default class DataObjectInterceptor extends CommandInterceptor {
      * If a data object already has a parent, don't change it.
      */
     bpmnUpdater.updateSemanticParent = (businessObject, parentBusinessObject) => {
+      // Special case for participant - which is a valid place to drop a data object, but it needs to be added
+      // to the particpant's Process (which isn't directly accessible in BPMN.io
+      let realParent = parentBusinessObject;
+      if (is(realParent, 'bpmn:Participant')) {
+        realParent = realParent.processRef;
+      }
+
       if (is(businessObject, 'bpmn:DataObjectReference')) {
         // For data object references, always update the flowElements when a parent is provided
         // The parent could be null if it's being deleted, and I could probably handle that here instead of
         // when the shape is deleted, but not interested in refactoring at the moment.
-        if (parentBusinessObject != null) {
-            let flowElements = parentBusinessObject.get('flowElements');
-            flowElements.push(businessObject);
+        if (realParent != null) {
+          const flowElements = realParent.get('flowElements');
+          flowElements.push(businessObject);
         }
       } else if (is(businessObject, 'bpmn:DataObject')) {
         // For data objects, only update the flowElements for new data objects, and set the parent so it doesn't get moved.
         if (typeof(businessObject.$parent) === 'undefined') {
-          let flowElements = parentBusinessObject.get('flowElements');
+          const flowElements = realParent.get('flowElements');
           flowElements.push(businessObject);
-          businessObject.$parent = parentBusinessObject;
+          businessObject.$parent = realParent;
         }
       } else
         bpmnUpdater.__proto__.updateSemanticParent.call(this, businessObject, parentBusinessObject);
