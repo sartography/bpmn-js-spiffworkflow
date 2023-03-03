@@ -7,7 +7,6 @@ import { without } from 'min-dash';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
   findDataObjects,
-  findDataObjectReferences,
   findDataObjectReferenceShapes,
   idToHumanReadableName,
 } from '../DataObjectHelpers';
