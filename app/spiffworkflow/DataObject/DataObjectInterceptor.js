@@ -46,11 +46,13 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         }
       } else if (is(businessObject, 'bpmn:DataObject')) {
         // For data objects, only update the flowElements for new data objects, and set the parent so it doesn't get moved.
-        if (typeof(businessObject.$parent) === 'undefined') {
+        if (typeof (businessObject.$parent) === 'undefined') {
           const flowElements = realParent.get('flowElements');
           flowElements.push(businessObject);
           businessObject.$parent = realParent;
         }
+      } else {
+        bpmnUpdater.__proto__.updateSemanticParent.call(bpmnUpdater, businessObject, parentBusinessObject);
       }
     };
 
