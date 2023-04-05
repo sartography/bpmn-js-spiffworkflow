@@ -51,8 +51,7 @@ export default class DataObjectInterceptor extends CommandInterceptor {
           flowElements.push(businessObject);
           businessObject.$parent = realParent;
         }
-      } else
-        bpmnUpdater.__proto__.updateSemanticParent.call(this, businessObject, parentBusinessObject);
+      }
     };
 
     /**
