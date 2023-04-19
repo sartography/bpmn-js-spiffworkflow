@@ -43,6 +43,7 @@ export default function ExtensionsPropertiesProvider(
           'bpmn:UserTask',
           'bpmn:ServiceTask',
           'bpmn:EndEvent',
+          'bpmn:ScriptTask',
           'bpmn:IntermediateCatchEvent',
         ])
       ) {
@@ -240,7 +241,7 @@ function createUserInstructionsGroup (
         component: SpiffExtensionTextArea,
         name: 'spiffworkflow:instructionsForEndUser',
         label: 'Instructions',
-        description: 'Displayed above user forms and while this task is executing.',
+        description: 'Displayed above user forms or when this task is executing.',
       },
       {
         element,
