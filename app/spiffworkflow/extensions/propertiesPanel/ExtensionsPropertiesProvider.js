@@ -46,6 +46,7 @@ export default function ExtensionsPropertiesProvider(
           'bpmn:ScriptTask',
           'bpmn:IntermediateCatchEvent',
           'bpmn:CallActivity',
+          'bpmn:SubProcess',
         ])
       ) {
         groups.push(
