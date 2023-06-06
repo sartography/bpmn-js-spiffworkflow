@@ -10,6 +10,8 @@ import ConditionsPropertiesProvider from './conditions/propertiesPanel/Condition
 import ExtensionsPropertiesProvider from './extensions/propertiesPanel/ExtensionsPropertiesProvider';
 import MessagesPropertiesProvider from './messages/propertiesPanel/MessagesPropertiesProvider';
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
+import StandardLoopPropertiesProvider from './loops/propertiesPanel/StandardLoopPropertiesProvider';
+import MultiInstancePropertiesProvider from './loops/propertiesPanel/MultiInstancePropertiesProvider';
 
 export default {
   __depends__: [RulesModule],
@@ -25,6 +27,8 @@ export default {
     'ioRules',
     'ioInterceptor',
     'dataObjectRenderer',
+    'multiInstancePropertiesProvider',
+    'standardLoopPropertiesProvider',
   ],
   dataObjectInterceptor: ['type', DataObjectInterceptor],
   dataObjectRules: ['type', DataObjectRules],
@@ -37,4 +41,6 @@ export default {
   ioPalette: ['type', IoPalette],
   ioRules: ['type', IoRules],
   ioInterceptor: ['type', IoInterceptor],
+  multiInstancePropertiesProvider: ['type', MultiInstancePropertiesProvider],
+  standardLoopPropertiesProvider: ['type', StandardLoopPropertiesProvider],
 };
