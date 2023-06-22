@@ -8,7 +8,7 @@ const LOW_PRIORITY = 500;
 export default function MultiInstancePropertiesProvider(propertiesPanel) {
   this.getGroups = function getGroupsCallback(element) {
     return function pushGroup(groups) {
-      if (is(element, 'bpmn:Task') || is(element, 'bpmn:CallActivity')) {
+      if (is(element, 'bpmn:Task') || is(element, 'bpmn:CallActivity') || is(element, 'bpmn:SubProcess')) {
         let group = groups.filter(g => g.id == 'multiInstance');
         if (group.length == 1)
           updateMultiInstanceGroup(element, group[0]);
