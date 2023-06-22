@@ -16,7 +16,7 @@ export default function StandardLoopPropertiesProvider(propertiesPanel) {
   this.getGroups = function getGroupsCallback(element) {
     return function pushGroup(groups) {
       if (
-        (is(element, 'bpmn:Task') || is(element, 'bpmn:CallActivity')) && 
+        (is(element, 'bpmn:Task') || is(element, 'bpmn:CallActivity') || is(element, 'bpmn:SubProcess')) && 
         typeof(element.businessObject.loopCharacteristics) !== 'undefined' &&
         element.businessObject.loopCharacteristics.$type === 'bpmn:StandardLoopCharacteristics'
       ) {
