@@ -7,7 +7,7 @@ import FileSaver from 'file-saver';
  * easily from the editor for testing purposes.
  * -----------------------------------------
  */
-export default function setupFileOperations(bpmnModeler, importWithUnresolvedRefs) {
+export default function setupFileOperations(bpmnModeler) {
   /**
    * Just a quick bit of code so we can save the XML that is output.
    * Helps for debugging against other libraries (like SpiffWorkflow)
@@ -30,7 +30,7 @@ export default function setupFileOperations(bpmnModeler, importWithUnresolvedRef
    */
   const uploadBtn = document.getElementById('uploadButton');
   uploadBtn.addEventListener('click', (_event) => {
-    openFile(bpmnModeler, importWithUnresolvedRefs);
+    openFile(bpmnModeler);
   });
 }
 
@@ -56,7 +56,7 @@ function clickElem(elem) {
   elem.dispatchEvent(eventMouse);
 }
 
-export function openFile(bpmnModeler, importWithUnresolvedRefs) {
+export function openFile(bpmnModeler) {
   const readFile = function readFileCallback(e) {
     const file = e.target.files[0];
     if (!file) {
@@ -65,7 +65,7 @@ export function openFile(bpmnModeler, importWithUnresolvedRefs) {
     const reader = new FileReader();
     reader.onload = function onloadCallback(onloadEvent) {
       const contents = onloadEvent.target.result;
-      importWithUnresolvedRefs(bpmnModeler, contents);
+      bpmnModeler.importXML(contents);
       document.body.removeChild(fileInput);
     };
     reader.readAsText(file);
