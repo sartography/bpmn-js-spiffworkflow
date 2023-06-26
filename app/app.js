@@ -41,34 +41,6 @@ try {
   throw error;
 }
 
-/* The default importer drops the loop data inputs and outputs on multi instance tasks.
- * They don't reference anything in our diagrams (which is a problem we should tackle, but not essential right now).
- * This is probably a terrible solution, but given that the modifications happen every time a diagram is parsed,
- * ia a locally defined function inside the parser, I don't see any other way of dealing with it than to just
- * intercept the parsed results and patch them up again.
- */
-
-function importWithUnresolvedRefs(bpmnModeler, xml) {
-  bpmnModeler._moddle.fromXML(xml).then((result) => {
-    const refs = result.references.filter(r => r.property === 'bpmn:loopDataInputRef' || r.property === 'bpmn:loopDataOutputRef');
-    const desc = bpmnModeler._moddle.registry.getEffectiveDescriptor('bpmn:ItemAwareElement');
-    refs.forEach(ref => {
-      const props = {
-        id: ref.id,
-        name: ref.id ? typeof(ref.name) === 'undefined': ref.name,
-      };
-      let elem = bpmnModeler._moddle.create(desc, props);
-      elem.$parent = ref.element;
-      ref.element.set(ref.property, elem);
-    });
-    bpmnModeler.importDefinitions(result.rootElement);
-    bpmnModeler.open();
-  });
-};
-
-// import XML
-importWithUnresolvedRefs(bpmnModeler, diagramXML);
-
 /**
  * It is possible to populate certain components using API calls to
  * a backend.  Here we mock out the API call, but this gives you
@@ -216,8 +188,25 @@ bpmnModeler.on('spiff.callactivity.search', (event) => {
   });
 });
 
+/* This restores unresolved references that camunda removes */
+
+bpmnModeler.on('import.parse.complete', event => {
+  const refs = event.references.filter(r => r.property === 'bpmn:loopDataInputRef' || r.property === 'bpmn:loopDataOutputRef');
+  const desc = bpmnModeler._moddle.registry.getEffectiveDescriptor('bpmn:ItemAwareElement');
+  refs.forEach(ref => {
+    const props = {
+      id: ref.id,
+      name: ref.id ? typeof(ref.name) === 'undefined': ref.name,
+    };
+    let elem = bpmnModeler._moddle.create(desc, props);
+    elem.$parent = ref.element;
+    ref.element.set(ref.property, elem);
+  });
+});
+
+bpmnModeler.importXML(diagramXML).then(() => {});
 
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
 // create and save files, so keeping it outside the example.
-setupFileOperations(bpmnModeler, importWithUnresolvedRefs);
+setupFileOperations(bpmnModeler);
