@@ -15,7 +15,7 @@ import { getRoot } from './helpers';
  * const signalGroup = createGroupForType('signals', 'Signals', getArray);
  */
 
-function createGroupForType(groupId, label, getArray) {
+function getListGroupForType(groupId, label, getArray) {
 
   return  function (props) {
     const { element, translate, moddle, commandStack } = props;
@@ -160,4 +160,4 @@ function ItemTextField(props) {
   });
 }
 
-export { getArrayForType, createGroupForType };
+export { getArrayForType, getListGroupForType };
