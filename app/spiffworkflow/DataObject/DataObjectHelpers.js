@@ -36,6 +36,9 @@ export function findDataObject(process, id) {
 }
 
 export function findDataObjectReferences(children, dataObjectId) {
+  if (children == null) {
+    return [];
+  }
   return children.flatMap((child) => {
     if (child.$type == 'bpmn:DataObjectReference' && child.dataObjectRef.id == dataObjectId)
       return [child];

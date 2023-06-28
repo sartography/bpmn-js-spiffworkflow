@@ -41,8 +41,12 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         // The parent could be null if it's being deleted, and I could probably handle that here instead of
         // when the shape is deleted, but not interested in refactoring at the moment.
         if (realParent != null) {
+          console.log('Pushing', businessObject);
           const flowElements = realParent.get('flowElements');
-          flowElements.push(businessObject);
+          const existingElement = flowElements.find(i => i.id === 1);
+          if (!existingElement) {
+            flowElements.push(businessObject);
+          }
         }
       } else if (is(businessObject, 'bpmn:DataObject')) {
         // For data objects, only update the flowElements for new data objects, and set the parent so it doesn't get moved.
