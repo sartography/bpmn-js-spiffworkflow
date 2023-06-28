@@ -28,7 +28,7 @@ function isCatchingEvent(element) {
 }
 
 function isThrowingEvent(element) {
-  return isAny(element, ['bpmn:EndEvent', 'bpmn:IntermediateThroEvent']);
+  return isAny(element, ['bpmn:EndEvent', 'bpmn:IntermediateThrowEvent']);
 }
 
 function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
@@ -157,6 +157,11 @@ function getTextFieldForExtension(eventDetails, label, description, catching) {
     };
 
     const getValue = () => {
+      // I've put the variable name (and payload) on the event for consistency with messages.
+      // However, when I think about this, I wonder if it shouldn't be on the event definition.
+      // I think that's something we should address in the future.
+      // Creating a payload and defining access to it are both process-specific, and that's an argument for leaving
+      // it in the event definition
       const bpmnEvent = getEvent();
       if (bpmnEvent && bpmnEvent.extensionElements) {
         const extension = bpmnEvent.extensionElements.get('values').find(ext => ext.$instanceOf(extensionName));
