@@ -31,7 +31,7 @@ function isThrowingEvent(element) {
   return isAny(element, ['bpmn:EndEvent', 'bpmn:IntermediateThroEvent']);
 }
 
-function getConfigureGroupForType(eventDetails, label, getSelect) {
+function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
 
   const { eventType, eventDefType, referenceType, idPrefix } = eventDetails;
 
@@ -51,6 +51,19 @@ function getConfigureGroupForType(eventDetails, label, getSelect) {
         commandStack,
       },
     ];
+
+    if (includeCode) {
+      const codeField = getCodeTextField(eventDetails, `${label} Code`);
+      entries.push({
+        id: `${idPrefix}-code`,
+        element,
+        component: codeField,
+        isEdited: isTextFieldEntryEdited,
+        moddle,
+        commandStack,
+      });
+    }
+
 
     if (isCatchingEvent(element)) {
       entries.push({
@@ -188,6 +201,45 @@ function getTextFieldForExtension(eventDetails, label, description, catching) {
         debounce,
       });
     }
+  }
+}
+
+function getCodeTextField(eventDetails, label) {
+
+  const { eventType, eventDefType, referenceType, idPrefix } = eventDetails;
+
+  return function (props) {
+
+    const { element, moddle, commandStack } = props;
+    const translate = useService('translate');
+    const debounce = useService('debounceInput');
+    const attrName = `${idPrefix}Code`;
+
+    const getEvent = () => {
+      const eventDef = element.businessObject.eventDefinitions.find(v => v.$type == eventDefType);
+      const bpmnEvent = eventDef.get(referenceType);
+      return bpmnEvent;
+    };
+
+    const getValue = () => {
+      const bpmnEvent = getEvent();
+      return (bpmnEvent) ? bpmnEvent.get(attrName) : null;
+    };
+
+    const setValue = (value) => {
+      const bpmnEvent = getEvent();
+      if (bpmnEvent)
+        bpmnEvent.set(attrName, value);
+    };
+
+    return TextFieldEntry({
+      element,
+      id: `${idPrefix}-code-value`,
+      label: translate(label),
+      getValue,
+      setValue,
+      debounce,
+    });
   }
 }
 
