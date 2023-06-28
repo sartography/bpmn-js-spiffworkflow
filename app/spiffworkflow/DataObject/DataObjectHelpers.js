@@ -58,7 +58,7 @@ export function findDataObjectReferenceShapes(children, dataObjectId) {
 }
 
 export function idToHumanReadableName(id) {
-  const words = id.match(/[A-Za-z][a-z]*/g) || [id];
+  const words = id.match(/[A-Za-z][a-z]*|[0-9]+/g) || [id];
   return words.map(capitalize).join(' ');
 
   function capitalize(word) {
