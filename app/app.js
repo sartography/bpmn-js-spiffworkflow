@@ -20,6 +20,7 @@ let bpmnModeler;
 try {
   bpmnModeler = new BpmnModeler({
     container: modelerEl,
+    keyboard: { bindTo: document },
     propertiesPanel: {
       parent: panelEl,
     },
