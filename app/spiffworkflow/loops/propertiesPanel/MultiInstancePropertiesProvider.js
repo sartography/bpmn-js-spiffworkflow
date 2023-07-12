@@ -71,9 +71,6 @@ function LoopCardinality(props) {
   const setValue = value => {
     const loopCardinality = bpmnFactory.create('bpmn:FormalExpression', {body: value})
     setLoopProperty(element, 'loopCardinality', loopCardinality, commandStack);
-    let inputCollection = getLoopProperty(element, 'loopDataInputRef');
-    if (typeof(value) !== 'undefined' && typeof(inputCollection) !== 'undefined')
-      setLoopProperty(element, 'loopDataInputRef', undefined, commandStack);
   };
 
   return TextFieldEntry({
@@ -101,9 +98,6 @@ function InputCollection(props) {
   const setValue = value => {
     const collection = bpmnFactory.create('bpmn:ItemAwareElement', {id: value});
     setLoopProperty(element, 'loopDataInputRef', collection, commandStack);
-    let cardinality = getLoopProperty(element, 'loopCardinality');
-    if (typeof(value) !== 'undefined' && typeof(cardinality) !== 'undefined')
-      setLoopProperty(element, 'loopCardinality', undefined, commandStack);
   };
 
   return TextFieldEntry({
@@ -129,7 +123,7 @@ function InputItem(props) {
   };
 
   const setValue = value => {
-    const item = bpmnFactory.create('bpmn:DataInput', {id: value, name: value});
+    const item = (typeof(value) !== 'undefined') ? bpmnFactory.create('bpmn:DataInput', {id: value, name: value}) : undefined;
     setLoopProperty(element, 'inputDataItem', item, commandStack);
   };
 
@@ -183,7 +177,7 @@ function OutputItem(props) {
   };
 
   const setValue = value => {
-    const item = bpmnFactory.create('bpmn:DataOutput', {id: value, name: value});
+    const item = (typeof(value) !== 'undefined') ? bpmnFactory.create('bpmn:DataOutput', {id: value, name: value}) : undefined;
     setLoopProperty(element, 'outputDataItem', item, commandStack);
   };
 

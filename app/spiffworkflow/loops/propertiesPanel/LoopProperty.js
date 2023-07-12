@@ -19,11 +19,12 @@ export function setLoopProperty(element, propertyName, value, commandStack) {
   const loopCharacteristics = element.businessObject.loopCharacteristics;
   if (typeof(value) === 'object')
     value.$parent = loopCharacteristics;
+  let properties = { [propertyName]: value };
+  if (propertyName === 'loopCardinality') properties['loopDataInputRef'] = undefined;
+  if (propertyName === 'loopDataInputRef') properties['loopCardinality'] = undefined;
   commandStack.execute('element.updateModdleProperties', {
     element,
     moddleElement: loopCharacteristics,
-    properties: {
-      [propertyName]: value
-    }
+    properties: properties,
   });
 }

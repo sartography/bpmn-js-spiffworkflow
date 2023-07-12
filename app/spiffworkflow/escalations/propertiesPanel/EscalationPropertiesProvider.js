@@ -12,8 +12,8 @@ const LOW_PRIORITY = 500;
 const eventDetails = {
   'eventType': 'bpmn:Escalation',
   'eventDefType': 'bpmn:EscalationEventDefinition',
-  'referenceType': 'errorRef',
-  'idPrefix': 'error',
+  'referenceType': 'escalationRef',
+  'idPrefix': 'escalation',
 };
 
 export default function EscalationPropertiesProvider(
@@ -26,14 +26,14 @@ export default function EscalationPropertiesProvider(
   this.getGroups = function (element) {
     return function (groups) {
       if (is(element, 'bpmn:Process') || is(element, 'bpmn:Collaboration')) {
-        const getEscalationArray = getArrayForType('bpmn:Escalation', 'errorRef', 'Escalation');
-        const errorGroup = getListGroupForType('escalations', 'Escalations', getEscalationArray);
-        groups.push(errorGroup({ element, translate, moddle, commandStack }));
+        const getEscalationArray = getArrayForType('bpmn:Escalation', 'escalationRef', 'Escalation');
+        const escalationGroup = getListGroupForType('escalations', 'Escalations', getEscalationArray);
+        groups.push(escalationGroup({ element, translate, moddle, commandStack }));
       } else if (hasEventType(element, 'bpmn:EscalationEventDefinition')) {
         const getEscalationSelector = getSelectorForType(eventDetails);
-        const errorGroup = getConfigureGroupForType(eventDetails, 'Escalation', true, getEscalationSelector);
-        const group = errorGroup({ element, translate, moddle, commandStack });
-        replaceGroup('error', groups, group);
+        const escalationGroup = getConfigureGroupForType(eventDetails, 'Escalation', true, getEscalationSelector);
+        const group = escalationGroup({ element, translate, moddle, commandStack });
+        replaceGroup('escalation', groups, group);
       }
       return groups;
     };
