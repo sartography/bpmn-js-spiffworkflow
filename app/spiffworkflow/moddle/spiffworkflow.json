@@ -241,6 +241,20 @@
           "type": "String"
         }
       ]
+    },
+    {
+      "name": "scriptsOnInstances",
+      "extends": [
+        "bpmn:MultiInstanceLoopCharacteristics",
+        "bpmn:StandardLoopCharacteristics"
+      ],
+      "properties": [
+        {
+          "name": "scriptsOnInstances",
+          "isAttr": true,
+          "type": "Boolean"
+        }
+      ]
     }
   ]
 }
