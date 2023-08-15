@@ -1,4 +1,8 @@
-import { ListGroup } from '@bpmn-io/properties-panel';
+import {
+  ListGroup,
+  CheckboxEntry,
+  isCheckboxEntryEdited,
+} from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import {
@@ -117,30 +121,67 @@ function createScriptGroup(element, translate, moddle, commandStack) {
  * @returns The components to add to the properties panel.
  */
 function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
+  const entries = [
+    ...scriptGroup({
+      element,
+      moddle,
+      commandStack,
+      translate,
+      scriptType: SCRIPT_TYPE.pre,
+      label: 'Pre-Script',
+      description: 'code to execute prior to this task.',
+    }),
+    ...scriptGroup({
+      element,
+      moddle,
+      commandStack,
+      translate,
+      scriptType: SCRIPT_TYPE.post,
+      label: 'Post-Script',
+      description: 'code to execute after this task.',
+    }),
+  ];
+  const loopCharacteristics = element.businessObject.loopCharacteristics;
+  if (typeof(loopCharacteristics) !== 'undefined') {
+    entries.push({
+      id: 'scriptValence',
+      component: ScriptValenceCheckbox,
+      isEdited: isCheckboxEntryEdited,
+      commandStack,
+    });
+  }
   return {
     id: 'spiff_pre_post_scripts',
     label: translate('Pre/Post Scripts'),
-    entries: [
-      ...scriptGroup({
-        element,
-        moddle,
-        commandStack,
-        translate,
-        scriptType: SCRIPT_TYPE.pre,
-        label: 'Pre-Script',
-        description: 'code to execute prior to this task.',
-      }),
-      ...scriptGroup({
-        element,
-        moddle,
-        commandStack,
-        translate,
-        scriptType: SCRIPT_TYPE.post,
-        label: 'Post-Script',
-        description: 'code to execute after this task.',
-      }),
-    ],
+    entries: entries,
   };
+}
+
+function ScriptValenceCheckbox(props) {
+
+  const { element, commandStack } = props;
+
+  const getValue = () => {
+    return element.businessObject.loopCharacteristics.scriptsOnInstances;
+  };
+
+  const setValue = (value) => {
+    const loopCharacteristics = element.businessObject.loopCharacteristics;
+    loopCharacteristics.scriptsOnInstances = value || undefined;
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: loopCharacteristics,
+    });
+  };
+
+  return CheckboxEntry({
+    element,
+    id: 'selectScriptValence',
+    label: 'Run scripts on instances',
+    description: 'By default, scripts will attach to the multiinstance task',
+    getValue,
+    setValue,
+  });
 }
 
 /**
