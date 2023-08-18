@@ -13,6 +13,7 @@ import {OPTION_TYPE, SpiffExtensionSelect} from './SpiffExtensionSelect';
 import {SpiffExtensionLaunchButton} from './SpiffExtensionLaunchButton';
 import {SpiffExtensionTextArea} from './SpiffExtensionTextArea';
 import {SpiffExtensionTextInput} from './SpiffExtensionTextInput';
+import {SpiffExtensionCheckboxEntry} from './SpiffExtensionCheckboxEntry';
 import {hasEventDefinition} from 'bpmn-js/lib/util/DiUtil';
 import { PropertyDescription } from 'bpmn-js-properties-panel/';
 
@@ -59,6 +60,16 @@ export default function ExtensionsPropertiesProvider(
       ) {
         groups.push(
           createUserInstructionsGroup(element, translate, moddle, commandStack)
+        );
+      }
+      if (
+        isAny(element, [
+          'bpmn:ManualTask',
+          'bpmn:UserTask',
+        ])
+      ) {
+        groups.push(
+          createAllowGuestGroup(element, translate, moddle, commandStack)
         );
       }
       if (
@@ -309,6 +320,55 @@ function createUserInstructionsGroup (
         event: 'spiff.markdown.edit',
         listenEvent: 'spiff.markdown.update',
         description: translate('Edit the form schema'),
+      }
+    ],
+  };
+}
+
+/**
+ * Create a group on the main panel with a text box (for choosing the information to display to the user)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
+function createAllowGuestGroup (
+  element,
+  translate,
+  moddle,
+  commandStack
+) {
+  return {
+    id: 'allow_guest_user',
+    label: translate('Guest options'),
+    entries: [
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionCheckboxEntry,
+        name: 'spiffworkflow:allowGuest',
+        label: 'Guest can complete this task',
+        description: 'Allow a guest user to complete this task without logging in. They will not be allowed to do anything but submit this task. If another task directly follows it that allows guest access, they could also complete that task.',
+      },
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionTextArea,
+        name: 'spiffworkflow:guestConfirmation',
+        label: 'Guest confirmation',
+        description: 'This is markdown that is displayed to the user after they complete the task. If this is filled out then the user will not be able to complete additional tasks without a new link to the next task.',
+      },
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionLaunchButton,
+        name: 'spiffworkflow:guestConfirmation',
+        label: translate('Launch Editor'),
+        event: 'spiff.markdown.edit',
+        listenEvent: 'spiff.markdown.update',
       }
     ],
   };

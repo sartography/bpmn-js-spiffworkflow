@@ -71,6 +71,28 @@
       ]
     },
     {
+      "name": "allowGuest",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "value",
+          "isBody": true,
+          "type": "Boolean"
+        }
+      ]
+    },
+    {
+      "name": "guestConfirmation",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "value",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
       "name": "signalButtonLabel",
       "superClass": [ "Element" ],
       "properties": [
