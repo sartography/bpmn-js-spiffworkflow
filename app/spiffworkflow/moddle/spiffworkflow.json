@@ -3,6 +3,7 @@
   "uri": "http://spiffworkflow.org/bpmn/schema/1.0/core",
   "prefix": "spiffworkflow",
   "associations": [],
+  "xml": { "tagAlias": "lowerCase" },
   "types": [
     {
       "name": "preScript",
