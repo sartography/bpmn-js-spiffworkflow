@@ -129,7 +129,7 @@ describe('Properties Panel for User Tasks', function () {
     // The change is reflected in the business object
     let instructions = getExtensionValue(
       userElement,
-      'spiffworkflow:instructionsForEndUser'
+      'spiffworkflow:InstructionsForEndUser'
     );
     expect(instructions).to.equal('#Hello!');
   });
