@@ -81,7 +81,7 @@ export function SpiffExtensionSelect(props) {
 function requestOptions(eventBus, element, commandStack, optionType) {
   // Little backwards, but you want to assure you are ready to catch, before you throw
   // or you risk a race condition.
-  eventBus.once(`spiff.${optionType}.returned`, (event) => {
+  eventBus.on(`spiff.${optionType}.returned`, (event) => {
     spiffExtensionOptions[optionType] = event.options;
   });
   eventBus.fire(`spiff.${optionType}.requested`, { eventBus });
