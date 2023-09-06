@@ -18,7 +18,7 @@ import {
 } from './helpers';
 import extensions from '../../app/spiffworkflow/extensions';
 import {query as domQuery} from 'min-dom';
-import {default as diagram_xml} from './bpmn/diagram.bpmn';
+
 
 describe('Properties Panel for User Tasks', function () {
   const user_form_xml = require('./bpmn/user_form.bpmn').default;
@@ -30,8 +30,8 @@ describe('Properties Panel for User Tasks', function () {
   });
 
   function addOptionsToEventBus(bpmnModeler) {
-    bpmnModeler.on('spiff.json_files.requested', (event) => {
-      event.eventBus.fire('spiff.json_files.returned', {
+    bpmnModeler.on('spiff.json_schema_files.requested', (event) => {
+      event.eventBus.fire('spiff.json_schema_files.returned', {
         options: [
           { label: 'pizza_form.json', value: 'pizza_form.json' },
           { label: 'credit_card_form.json', value: 'credit_card_form.json' },
@@ -106,9 +106,35 @@ describe('Properties Panel for User Tasks', function () {
     const formJsonSchemaFilenameEntry = findEntry('extension_formJsonSchemaFilename', group);
     const formJsonSchemaFilenameInput = findSelect(formJsonSchemaFilenameEntry);
     expect(formJsonSchemaFilenameInput.value).to.equal('give_me_a_number_form.json');
-    const formUiSchemaFilenameEntry = findEntry('extension_formUiSchemaFilename', group);
-    const formUiSchemaFilenameInput = findSelect(formUiSchemaFilenameEntry);
-    expect(formUiSchemaFilenameInput.value).to.equal('number_form_schema.json');
+  });
+
+  it('should update both the json and ui extensions if the json file is set', async function () {
+    await preparePropertiesPanelWithXml(diagram_xml)();
+    const modeler = getBpmnJS();
+
+    addOptionsToEventBus(modeler);
+    const userElement = await expectSelected('task_confirm');
+    const group = findGroupEntry('user_task_properties', container);
+    const button = findButton(
+      'launch_editor_button_formJsonSchemaFilename',
+      group
+    );
+    expect(button).to.exist;
+    let launchEvent;
+    let eventBus = modeler.get('eventBus');
+    eventBus.on('spiff.file.edit', function (event) {
+      launchEvent = event;
+    });
+    await pressButton(button);
+    expect(launchEvent.value).to.exist;
+    eventBus.fire('spiff.jsonSchema.update', {
+      value: 'new-schema.json',
+    });
+    const jsonFile = getExtensionValue(userElement, 'formJsonSchemaFilename');
+    const uiFile = getExtensionValue(userElement, 'formUiSchemaFilename');
+    expect(jsonFile).to.equal('new-schema.json');
+    expect(uiFile).to.equal('new-uischema.json');
+
   });
 
   it('should allow you to change the instructions to the end user', async function () {
