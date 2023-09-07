@@ -9,13 +9,14 @@ import {
   ServiceTaskParameterArray,
   ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
-import {OPTION_TYPE, SpiffExtensionSelect} from './SpiffExtensionSelect';
+import {OPTION_TYPE, spiffExtensionOptions, SpiffExtensionSelect} from './SpiffExtensionSelect';
 import {SpiffExtensionLaunchButton} from './SpiffExtensionLaunchButton';
 import {SpiffExtensionTextArea} from './SpiffExtensionTextArea';
 import {SpiffExtensionTextInput} from './SpiffExtensionTextInput';
 import {SpiffExtensionCheckboxEntry} from './SpiffExtensionCheckboxEntry';
 import {hasEventDefinition} from 'bpmn-js/lib/util/DiUtil';
 import { PropertyDescription } from 'bpmn-js-properties-panel/';
+import {setExtensionValue} from "../extensionHelpers";
 
 const LOW_PRIORITY = 500;
 
@@ -203,6 +204,17 @@ function ScriptValenceCheckbox(props) {
  * @returns entries
  */
 function createUserGroup(element, translate, moddle, commandStack) {
+
+  const updateExtensionProperties = (element, name, value, moddle, commandStack) => {
+    const uiName = value.replace('schema\.json', 'uischema\.json')
+    setExtensionValue(element, 'formJsonSchemaFilename', value, moddle, commandStack);
+    setExtensionValue(element, 'formUiSchemaFilename', uiName, moddle, commandStack);
+    const matches = spiffExtensionOptions[OPTION_TYPE.json_schema_files].filter((opt) => opt.value === value);
+    if (matches.length === 0) {
+      spiffExtensionOptions[OPTION_TYPE.json_schema_files].push({label: value, value: value});
+    }
+  }
+
   return {
     id: 'user_task_properties',
     label: translate('Web Form (with Json Schemas)'),
@@ -212,7 +224,7 @@ function createUserGroup(element, translate, moddle, commandStack) {
         moddle,
         commandStack,
         component: SpiffExtensionSelect,
-        optionType: OPTION_TYPE.json_files,
+        optionType: OPTION_TYPE.json_schema_files,
         name: 'formJsonSchemaFilename',
         label: translate('JSON Schema Filename'),
         description: translate('Form Description (RSJF)'),
@@ -220,29 +232,14 @@ function createUserGroup(element, translate, moddle, commandStack) {
       {
         component: SpiffExtensionLaunchButton,
         element,
+        moddle,
+        commandStack,
         name: 'formJsonSchemaFilename',
         label: translate('Launch Editor'),
         event: 'spiff.file.edit',
-        description: translate('Edit the form description'),
-      },
-      {
-        element,
-        moddle,
-        commandStack,
-        component: SpiffExtensionSelect,
-        optionType: OPTION_TYPE.json_files,
-        label: translate('UI Schema Filename'),
-        event: 'spiff.file.edit',
-        description: translate('Rules for displaying the form. (RSJF Schema)'),
-        name: 'formUiSchemaFilename',
-      },
-      {
-        component: SpiffExtensionLaunchButton,
-        element,
-        name: 'formUiSchemaFilename',
-        label: translate('Launch Editor'),
-        event: 'spiff.file.edit',
-        description: translate('Edit the form schema'),
+        listenEvent: 'spiff.jsonSchema.update',
+        listenFunction: updateExtensionProperties,
+        description: translate('Edit the form schema')
       },
     ],
   };
