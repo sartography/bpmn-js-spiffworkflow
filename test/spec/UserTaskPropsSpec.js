@@ -79,9 +79,10 @@ describe('Properties Panel for User Tasks', function () {
     const entry = findEntry('extension_formJsonSchemaFilename', group);
     const selectList = findSelect(entry);
     expect(selectList).to.exist;
-    expect(selectList.options.length).to.equal(4);
-    expect(selectList.options[0].label).to.equal('pizza_form.json');
-    expect(selectList.options[1].label).to.equal('credit_card_form.json');
+    expect(selectList.options.length).to.equal(5); // including the empty option
+    expect(selectList.options[0].label).to.equal('');
+    expect(selectList.options[1].label).to.equal('pizza_form.json');
+    expect(selectList.options[2].label).to.equal('credit_card_form.json');
 
     changeInput(selectList, 'pizza_form.json');
 
