@@ -255,7 +255,7 @@
       ]
     },
     {
-      "name": "PariableName",
+      "name": "VariableName",
       "superClass": [ "Element" ],
       "properties": [
         {
