@@ -69,7 +69,7 @@ function getServiceTaskParameterModdleElements(shapeElement) {
   if (serviceTaskOperatorModdleElement) {
     const { parameterList } = serviceTaskOperatorModdleElement;
     if (parameterList) {
-      return parameterList.parameters.sort((a, b) => a.id.localeCompare(b.id));
+      return parameterList.parameters;
     }
   }
   return [];
