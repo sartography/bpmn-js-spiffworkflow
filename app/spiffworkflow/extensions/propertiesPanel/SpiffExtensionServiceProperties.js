@@ -43,10 +43,9 @@ const SERVICE_TASK_PARAMETER_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:Para
 function requestServiceTaskOperators(eventBus, element, commandStack) {
   eventBus.fire('spiff.service_tasks.requested', { eventBus });
   eventBus.on('spiff.service_tasks.returned', (event) => {
-    if (event.serviceTaskOperators.length > 0) {
-      serviceTaskOperators = event.serviceTaskOperators.sort((a, b) =>
-        a.id.localeCompare(b.id)
-      );
+      if (event.serviceTaskOperators.length > 0) {
+	  console.log("requestServiceTaskOperators:"); console.log(event.serviceTaskOperators);
+      serviceTaskOperators = event.serviceTaskOperators;
     }
   });
 }
@@ -68,7 +67,8 @@ function getServiceTaskParameterModdleElements(shapeElement) {
     getServiceTaskOperatorModdleElement(shapeElement);
   if (serviceTaskOperatorModdleElement) {
     const { parameterList } = serviceTaskOperatorModdleElement;
-    if (parameterList) {
+      if (parameterList) {
+	  console.log("getServiceTaskParameterModdleElements"); console.log(parameterList.parameters);
       return parameterList.parameters;
     }
   }
@@ -154,6 +154,7 @@ export function ServiceTaskOperatorSelect(props) {
       }
     }
 
+      console.log("setValue:"); console.log(newParameterList);
     newServiceTaskOperatorModdleElement.parameterList = newParameterList;
 
     const newExtensionValues = extensions.get('values').filter((extValue) => {
@@ -215,6 +216,7 @@ export function ServiceTaskParameterArray(props) {
       };
     }
   );
+    console.log("ServiceTaskParameterArray:"); console.log(items);
   return { items };
 }
 

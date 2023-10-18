@@ -1,5 +1,6 @@
 import {
-  ListGroup,
+    ListGroup,
+    Group,
   CheckboxEntry,
   isCheckboxEntryEdited,
 } from '@bpmn-io/properties-panel';
@@ -88,6 +89,7 @@ export default function ExtensionsPropertiesProvider(
         );
       }
 
+	console.log("groups:"); console.log(groups);
       return groups;
     };
   };
@@ -435,7 +437,8 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       {
         id: 'serviceTaskParameters',
         label: translate('Parameters'),
-        component: ListGroup,
+          component: ListGroup,
+	  shouldSort: false,
         ...ServiceTaskParameterArray({
           element,
           moddle,
