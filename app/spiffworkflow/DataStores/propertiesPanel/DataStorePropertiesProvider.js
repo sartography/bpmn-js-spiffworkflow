@@ -1,11 +1,11 @@
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
-import { DataObjectSelect } from './DataObjectSelect';
-import { DataObjectArray } from './DataObjectArray';
+import { DataStoreSelect } from './DataStoreSelect';
+import { DataStoreArray } from './DataStoreArray';
 
 const LOW_PRIORITY = 500;
 
-export default function DataObjectPropertiesProvider(
+export default function DataStorePropertiesProvider(
   propertiesPanel,
   translate,
   moddle,
@@ -14,9 +14,9 @@ export default function DataObjectPropertiesProvider(
 ) {
   this.getGroups = function (element) {
     return function (groups) {
-      if (is(element, 'bpmn:DataObjectReference')) {
+      if (is(element, 'bpmn:DataStoreReference')) {
         groups.push(
-          createDataObjectSelector(element, translate, moddle, commandStack)
+          createDataStoreSelector(element, translate, moddle, commandStack)
         );
       }
       if (
@@ -24,7 +24,7 @@ export default function DataObjectPropertiesProvider(
         (is(element, 'bpmn:SubProcess') && !element.collapsed)
       ) {
         groups.push(
-          createDataObjectEditor(
+          createDataStoreEditor(
             element,
             translate,
             moddle,
@@ -39,7 +39,7 @@ export default function DataObjectPropertiesProvider(
   propertiesPanel.registerProvider(LOW_PRIORITY, this);
 }
 
-DataObjectPropertiesProvider.$inject = [
+DataStorePropertiesProvider.$inject = [
   'propertiesPanel',
   'translate',
   'moddle',
@@ -54,15 +54,15 @@ DataObjectPropertiesProvider.$inject = [
  * @param moddle
  * @returns entries
  */
-function createDataObjectSelector(element, translate, moddle, commandStack) {
+function createDataStoreSelector(element, translate, moddle, commandStack) {
   return {
     id: 'data_object_properties',
     label: translate('Data Object Properties'),
     entries: [
       {
-        id: 'selectDataObject',
+        id: 'selectDataStore',
         element,
-        component: DataObjectSelect,
+        component: DataStoreSelect,
         isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
@@ -79,22 +79,22 @@ function createDataObjectSelector(element, translate, moddle, commandStack) {
  * @param moddle
  * @returns entries
  */
-function createDataObjectEditor(
+function createDataStoreEditor(
   element,
   translate,
   moddle,
   commandStack,
   elementRegistry
 ) {
-  const dataObjectArray = {
-    id: 'editDataObjects',
+  const dataStoreArray = {
+    id: 'editDataStores',
     element,
     label: 'Data Objects',
     component: ListGroup,
-    ...DataObjectArray({ element, moddle, commandStack, elementRegistry }),
+    ...DataStoreArray({ element, moddle, commandStack, elementRegistry }),
   };
 
-  if (dataObjectArray.items) {
-    return dataObjectArray;
+  if (dataStoreArray.items) {
+    return dataStoreArray;
   }
 }

@@ -4,9 +4,9 @@
  * @param container
  */
 
-export function findDataObjects(parent, dataObjects) {
-  if (typeof(dataObjects) === 'undefined')
-    dataObjects = [];
+export function findDataStores(parent, dataStores) {
+  if (typeof(dataStores) === 'undefined')
+    dataStores = [];
   let process;
   if (!parent) {
     return [];
@@ -16,45 +16,45 @@ export function findDataObjects(parent, dataObjects) {
   } else {
     process = parent;
     if (process.$type === 'bpmn:SubProcess')
-      findDataObjects(process.$parent, dataObjects);
+      findDataStores(process.$parent, dataStores);
   }
   if (typeof(process.flowElements) !== 'undefined') {
     for (const element of process.flowElements) {
-      if (element.$type === 'bpmn:DataObject')
-        dataObjects.push(element);
+      if (element.$type === 'bpmn:DataStore')
+        dataStores.push(element);
     }
   }
-  return dataObjects;
+  return dataStores;
 }
 
-export function findDataObject(process, id) {
-  for (const dataObj of findDataObjects(process)) {
+export function findDataStore(process, id) {
+  for (const dataObj of findDataStores(process)) {
     if (dataObj.id === id) {
       return dataObj;
     }
   }
 }
 
-export function findDataObjectReferences(children, dataObjectId) {
+export function findDataStoreReferences(children, dataStoreId) {
   if (children == null) {
     return [];
   }
   return children.flatMap((child) => {
-    if (child.$type == 'bpmn:DataObjectReference' && child.dataObjectRef.id == dataObjectId)
+    if (child.$type == 'bpmn:DataStoreReference' && child.dataStoreRef.id == dataStoreId)
       return [child];
     else if (child.$type == 'bpmn:SubProcess')
-      return findDataObjectReferences(child.get('flowElements'), dataObjectId);
+      return findDataStoreReferences(child.get('flowElements'), dataStoreId);
     else
       return [];
   });
 }
 
-export function findDataObjectReferenceShapes(children, dataObjectId) {
+export function findDataStoreReferenceShapes(children, dataStoreId) {
   return children.flatMap((child) => {
-    if (child.type == 'bpmn:DataObjectReference' && child.businessObject.dataObjectRef.id == dataObjectId)
+    if (child.type == 'bpmn:DataStoreReference' && child.businessObject.dataStoreRef.id == dataStoreId)
       return [child];
     else if (child.type == 'bpmn:SubProcess')
-      return findDataObjectReferenceShapes(child.children, dataObjectId);
+      return findDataStoreReferenceShapes(child.children, dataStoreId);
     else
       return [];
   });

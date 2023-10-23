@@ -6,7 +6,7 @@ import {
 
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
 import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil';
-import { findDataObject } from './DataObjectHelpers';
+import { findDataStore } from './DataStoreHelpers';
 
 const HIGH_PRIORITY = 1500;
 
@@ -14,26 +14,26 @@ const HIGH_PRIORITY = 1500;
  * Work in progress -- render data object references in red if they are
  * not valid.
  */
-export default class DataObjectRenderer extends BaseRenderer {
+export default class DataStoreRenderer extends BaseRenderer {
   constructor(eventBus, bpmnRenderer) {
     super(eventBus, HIGH_PRIORITY);
     this.bpmnRenderer = bpmnRenderer;
   }
 
   canRender(element) {
-    return isAny(element, [ 'bpmn:DataObjectReference' ]) && !element.labelTarget;
+    return isAny(element, [ 'bpmn:DataStoreReference' ]) && !element.labelTarget;
   }
 
   drawShape(parentNode, element) {
     const shape = this.bpmnRenderer.drawShape(parentNode, element);
-    if (is(element, 'bpmn:DataObjectReference')) {
+    if (is(element, 'bpmn:DataStoreReference')) {
       let businessObject = getBusinessObject(element);
-      let dataObject = businessObject.dataObjectRef;
-      if (dataObject && dataObject.id) {
+      let dataStore = businessObject.dataStoreRef;
+      if (dataStore && dataStore.id) {
         let parentObject = businessObject.$parent;
-        dataObject = findDataObject(parentObject, dataObject.id);
+        dataStore = findDataStore(parentObject, dataStore.id);
       }
-      if (!dataObject) {
+      if (!dataStore) {
         svgAttr(shape, 'stroke', 'red');
       }
       return shape;
@@ -41,4 +41,4 @@ export default class DataObjectRenderer extends BaseRenderer {
   }
 }
 
-DataObjectRenderer.$inject = [ 'eventBus', 'bpmnRenderer' ];
+DataStoreRenderer.$inject = [ 'eventBus', 'bpmnRenderer' ];

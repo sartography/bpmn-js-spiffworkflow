@@ -1,5 +1,5 @@
 /**
- * Custom Rules for the DataObject - Rules allow you to prevent an
+ * Custom Rules for the DataStore - Rules allow you to prevent an
  * action from happening in the diagram, such as dropping an element
  * where it doesn't belong.
  *
@@ -12,13 +12,13 @@ import RuleProvider from 'diagram-js/lib/features/rules/RuleProvider';
 import inherits from 'inherits-browser';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-export default function DataObjectRules(eventBus) {
+export default function DataStoreRules(eventBus) {
   RuleProvider.call(this, eventBus);
 }
-inherits(DataObjectRules, RuleProvider);
+inherits(DataStoreRules, RuleProvider);
 const HIGH_PRIORITY = 1500;
 
-DataObjectRules.prototype.init = function() {
+DataStoreRules.prototype.init = function() {
   this.addRule('elements.move', HIGH_PRIORITY,function(context) {
     let elements = context.shapes;
     let target = context.target;
@@ -28,12 +28,12 @@ DataObjectRules.prototype.init = function() {
 
 function canDrop(elements, target) {
   for (let element of elements) {
-    if (is(element, 'bpmn:DataObjectReference') && element.parent && target) {
+    if (is(element, 'bpmn:DataStoreReference') && element.parent && target) {
       return target === element.parent;
     }
     // Intentionally returning null here to allow other rules to fire.
   }
 }
 
-DataObjectRules.prototype.canDrop = canDrop;
-DataObjectRules.$inject = [ 'eventBus' ];
+DataStoreRules.prototype.canDrop = canDrop;
+DataStoreRules.$inject = [ 'eventBus' ];

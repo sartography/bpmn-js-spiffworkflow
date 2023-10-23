@@ -2,10 +2,10 @@ import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import { getDi, is } from 'bpmn-js/lib/util/ModelUtil';
 import { remove as collectionRemove } from 'diagram-js/lib/util/Collections';
 import {
-  findDataObjects,
-  findDataObjectReferences,
+  findDataStores,
+  findDataStoreReferences,
   idToHumanReadableName,
-} from './DataObjectHelpers';
+} from './DataStoreHelpers';
 
 const HIGH_PRIORITY = 1500;
 
@@ -13,14 +13,11 @@ const HIGH_PRIORITY = 1500;
  * This Command Interceptor functions like the BpmnUpdator in BPMN.js - It hooks into events
  * from Diagram.js and updates the underlying BPMN model accordingly.
  *
- * This handles some special cases we want to handle for DataObjects and DataObjectReferences,
+ * This handles some special cases we want to handle for DataStores and DataStoreReferences,
  * for instance:
- * 1) Use existing data objects if possible when creating a new reference (don't create new objects each time)
- * 2) Don't automatically delete a data object when you delete the reference - unless all references are removed.
- * 3) Update the name of the DataObjectReference to match the id of the DataObject.
- * 4) Don't allow someone to move a DataObjectReference from one process to another process.
+ * 1) TODO: add the special cases
  */
-export default class DataObjectInterceptor extends CommandInterceptor {
+export default class DataStoreInterceptor extends CommandInterceptor {
 
   constructor(eventBus, bpmnFactory, commandStack, bpmnUpdater) {
     super(eventBus);
@@ -36,7 +33,7 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         realParent = realParent.processRef;
       }
 
-      if (is(businessObject, 'bpmn:DataObjectReference')) {
+      if (is(businessObject, 'bpmn:DataStoreReference')) {
         // For data object references, always update the flowElements when a parent is provided
         // The parent could be null if it's being deleted, and I could probably handle that here instead of
         // when the shape is deleted, but not interested in refactoring at the moment.
@@ -47,7 +44,7 @@ export default class DataObjectInterceptor extends CommandInterceptor {
             flowElements.push(businessObject);
           }
         }
-      } else if (is(businessObject, 'bpmn:DataObject')) {
+      } else if (is(businessObject, 'bpmn:DataStore')) {
         // For data objects, only update the flowElements for new data objects, and set the parent so it doesn't get moved.
         if (typeof (businessObject.$parent) === 'undefined') {
           const flowElements = realParent.get('flowElements');
@@ -60,15 +57,15 @@ export default class DataObjectInterceptor extends CommandInterceptor {
     };
 
     /**
-     * For DataObjectReferences only ...
-     * Prevent this from calling the CreateDataObjectBehavior in BPMN-js, as it will
-     * attempt to crete a dataObject immediately.  We can't create the dataObject until
+     * For DataStoreReferences only ...
+     * Prevent this from calling the CreateDataStoreBehavior in BPMN-js, as it will
+     * attempt to crete a dataStore immediately.  We can't create the dataStore until
      * we know where it is placed - as we want to reuse data objects of the parent when
      * possible */
     this.preExecute(['shape.create'], HIGH_PRIORITY, function (event) {
       const { context } = event;
       const { shape } = context;
-      if (is(shape, 'bpmn:DataObjectReference') && shape.type !== 'label') {
+      if (is(shape, 'bpmn:DataStoreReference') && shape.type !== 'label') {
         event.stopPropagation();
       }
     });
@@ -79,17 +76,17 @@ export default class DataObjectInterceptor extends CommandInterceptor {
     this.executed(['shape.create'], HIGH_PRIORITY, function (event) {
       const { context } = event;
       const { shape } = context;
-      if (is(shape, 'bpmn:DataObjectReference') && shape.type !== 'label') {
+      if (is(shape, 'bpmn:DataStoreReference') && shape.type !== 'label') {
         const process = shape.parent.businessObject;
-        const existingDataObjects = findDataObjects(process);
-        let dataObject;
-        if (existingDataObjects.length > 0) {
-          dataObject = existingDataObjects[0];
+        const existingDataStores = findDataStores(process);
+        let dataStore;
+        if (existingDataStores.length > 0) {
+          dataStore = existingDataStores[0];
         } else {
-          dataObject = bpmnFactory.create('bpmn:DataObject');
+          dataStore = bpmnFactory.create('bpmn:DataStore');
         }
-        // set the reference to the DataObject
-        shape.businessObject.dataObjectRef = dataObject;
+        // set the reference to the DataStore
+        shape.businessObject.dataStoreRef = dataStore;
         shape.businessObject.$parent = process;
       }
     });
@@ -100,29 +97,29 @@ export default class DataObjectInterceptor extends CommandInterceptor {
     this.postExecuted(['shape.create'], HIGH_PRIORITY, function (event) {
       const { context } = event;
       const { shape } = context;
-      // set the reference to the DataObject
+      // set the reference to the DataStore
       // Update the name of the reference to match the data object's id.
-      if (is(shape, 'bpmn:DataObjectReference') && shape.type !== 'label') {
+      if (is(shape, 'bpmn:DataStoreReference') && shape.type !== 'label') {
         commandStack.execute('element.updateProperties', {
           element: shape,
           moddleElement: shape.businessObject,
           properties: {
-            name: idToHumanReadableName(shape.businessObject.dataObjectRef.id),
+            name: idToHumanReadableName(shape.businessObject.dataStoreRef.id),
           },
         });
       }
     });
 
     /**
-     * Don't remove the associated DataObject, unless all references to that data object
+     * Don't remove the associated DataStore, unless all references to that data object
      * Difficult to do given placement of this logic in the BPMN Updater, so we have
      * to manually handle the removal.
      */
     this.executed(['shape.delete'], HIGH_PRIORITY, function (event) {
       const { context } = event;
       const { shape } = context;
-      if (is(shape, 'bpmn:DataObjectReference') && shape.type !== 'label') {
-        const dataObject = shape.businessObject.dataObjectRef;
+      if (is(shape, 'bpmn:DataStoreReference') && shape.type !== 'label') {
+        const dataStore = shape.businessObject.dataStoreRef;
         let parent = shape.businessObject.$parent;
         if (parent.processRef) {
           // Our immediate parent may be a pool, so we need to get the process
@@ -130,14 +127,14 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         }
         const flowElements = parent.get('flowElements');
         collectionRemove(flowElements, shape.businessObject);
-        const references = findDataObjectReferences(flowElements, dataObject.id);
+        const references = findDataStoreReferences(flowElements, dataStore.id);
         if (references.length === 0) {
-          const dataFlowElements = dataObject.$parent.get('flowElements');
-          collectionRemove(dataFlowElements, dataObject);
+          const dataFlowElements = dataStore.$parent.get('flowElements');
+          collectionRemove(dataFlowElements, dataStore);
         }
       }
     });
   }
 }
 
-DataObjectInterceptor.$inject = ['eventBus', 'bpmnFactory', 'commandStack', 'bpmnUpdater'];
+DataStoreInterceptor.$inject = ['eventBus', 'bpmnFactory', 'commandStack', 'bpmnUpdater'];

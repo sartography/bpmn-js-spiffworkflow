@@ -6,17 +6,17 @@ import {
 import { without } from 'min-dash';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
-  findDataObjects,
-  findDataObjectReferenceShapes,
+  findDataStores,
+  findDataStoreReferenceShapes,
   idToHumanReadableName,
-} from '../DataObjectHelpers';
+} from '../DataStoreHelpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
  * @param props
  * @constructor
  */
-export function DataObjectArray(props) {
+export function DataStoreArray(props) {
   const { moddle } = props;
   const { element } = props;
   const { commandStack } = props;
@@ -30,21 +30,21 @@ export function DataObjectArray(props) {
     process = element.businessObject.processRef;
   }
 
-  const dataObjects = findDataObjects(process);
-  const items = dataObjects.map((dataObject, index) => {
+  const dataStores = findDataStores(process);
+  const items = dataStores.map((dataStore, index) => {
     const id = `${process.id}-dataObj-${index}`;
     return {
       id,
-      label: dataObject.id,
-      entries: DataObjectGroup({
+      label: dataStore.id,
+      entries: DataStoreGroup({
         idPrefix: id,
         element,
-        dataObject,
+        dataStore,
       }),
-      autoFocusEntry: `${id}-dataObject`,
+      autoFocusEntry: `${id}-dataStore`,
       remove: removeFactory({
         element,
-        dataObject,
+        dataStore,
         process,
         commandStack,
         elementRegistry,
@@ -54,11 +54,11 @@ export function DataObjectArray(props) {
 
   function add(event) {
     event.stopPropagation();
-    const newDataObject = moddle.create('bpmn:DataObject');
+    const newDataStore = moddle.create('bpmn:DataStore');
     const newElements = process.get('flowElements');
-    newDataObject.id = moddle.ids.nextPrefixed('DataObject_');
-    newDataObject.$parent = process;
-    newElements.push(newDataObject);
+    newDataStore.id = moddle.ids.nextPrefixed('DataStore_');
+    newDataStore.$parent = process;
+    newElements.push(newDataStore);
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: process,
@@ -72,7 +72,7 @@ export function DataObjectArray(props) {
 }
 
 function removeFactory(props) {
-  const { element, dataObject, process, commandStack } = props;
+  const { element, dataStore, process, commandStack } = props;
 
   return function (event) {
     event.stopPropagation();
@@ -80,33 +80,33 @@ function removeFactory(props) {
       element,
       moddleElement: process,
       properties: {
-        flowElements: without(process.get('flowElements'), dataObject),
+        flowElements: without(process.get('flowElements'), dataStore),
       },
     });
     // When a data object is removed, remove all references as well.
-    const references = findDataObjectReferenceShapes(element.children, dataObject.id);
+    const references = findDataStoreReferenceShapes(element.children, dataStore.id);
     for (const ref of references) {
       commandStack.execute('shape.delete', { shape: ref });
     }
   };
 }
 
-function DataObjectGroup(props) {
-  const { idPrefix, dataObject } = props;
+function DataStoreGroup(props) {
+  const { idPrefix, dataStore } = props;
 
   return [
     {
-      id: `${idPrefix}-dataObject`,
-      component: DataObjectTextField,
+      id: `${idPrefix}-dataStore`,
+      component: DataStoreTextField,
       isEdited: isTextFieldEntryEdited,
       idPrefix,
-      dataObject,
+      dataStore,
     },
   ];
 }
 
-function DataObjectTextField(props) {
-  const { idPrefix, element, parameter, dataObject } = props;
+function DataStoreTextField(props) {
+  const { idPrefix, element, parameter, dataStore } = props;
 
   const commandStack = useService('commandStack');
   const debounce = useService('debounceInput');
@@ -114,14 +114,14 @@ function DataObjectTextField(props) {
   const setValue = (value) => {
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: dataObject,
+      moddleElement: dataStore,
       properties: {
         id: value,
       },
     });
 
     // Also update the label of all the references
-    const references = findDataObjectReferenceShapes(element.children, dataObject.id);
+    const references = findDataStoreReferenceShapes(element.children, dataStore.id);
     for (const ref of references) {
       commandStack.execute('element.updateProperties', {
         element: ref,
@@ -135,7 +135,7 @@ function DataObjectTextField(props) {
   };
 
   const getValue = () => {
-    return dataObject.id;
+    return dataStore.id;
   };
 
   return TextFieldEntry({

@@ -1,19 +1,19 @@
-import DataObjectInterceptor from './DataObjectInterceptor';
-import DataObjectRules from './DataObjectRules';
+import DataStoreInterceptor from './DataStoreInterceptor';
+import DataStoreRules from './DataStoreRules';
 import RulesModule from 'diagram-js/lib/features/rules';
-import DataObjectRenderer from './DataObjectRenderer';
-import DataObjectPropertiesProvider from './propertiesPanel/DataObjectPropertiesProvider';
+import DataStoreRenderer from './DataStoreRenderer';
+import DataStorePropertiesProvider from './propertiesPanel/DataStorePropertiesProvider';
 
 
 export default {
   __depends__: [
     RulesModule
   ],
-  __init__: [ 'dataInterceptor', 'dataObjectRules', 'dataObjectRenderer', 'dataObjectPropertiesProvider' ],
-  dataInterceptor: [ 'type', DataObjectInterceptor ],
-  dataObjectRules: [ 'type', DataObjectRules ],
-  dataObjectRenderer: [ 'type', DataObjectRenderer ],
-  dataObjectPropertiesProvider: [ 'type', DataObjectPropertiesProvider ]
+  __init__: [ 'dataInterceptor', 'dataStoreRules', 'dataStoreRenderer', 'dataStorePropertiesProvider' ],
+  dataInterceptor: [ 'type', DataStoreInterceptor ],
+  dataStoreRules: [ 'type', DataStoreRules ],
+  dataStoreRenderer: [ 'type', DataStoreRenderer ],
+  dataStorePropertiesProvider: [ 'type', DataStorePropertiesProvider ]
 };
 
 

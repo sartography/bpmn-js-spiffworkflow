@@ -1,6 +1,6 @@
 import {useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
-import {findDataObjects, idToHumanReadableName} from '../DataObjectHelpers';
+import {findDataStores, idToHumanReadableName} from '../DataStoreHelpers';
 
 /**
  * Finds the value of the given type within the extensionElements
@@ -19,26 +19,26 @@ import {findDataObjects, idToHumanReadableName} from '../DataObjectHelpers';
  *
  * @returns {string|null|*}
  */
-export function DataObjectSelect(props) {
+export function DataStoreSelect(props) {
   const element = props.element;
   const commandStack = props.commandStack;
   const debounce = useService('debounceInput');
 
 
   const getValue = () => {
-    return element.businessObject.dataObjectRef.id
+    return element.businessObject.dataStoreRef.id
   }
 
   const setValue = value => {
     const businessObject = element.businessObject;
-    const dataObjects = findDataObjects(businessObject.$parent)
-    for (const flowElem of dataObjects) {
-      if (flowElem.$type === 'bpmn:DataObject' && flowElem.id === value) {
+    const dataStores = findDataStores(businessObject.$parent)
+    for (const flowElem of dataStores) {
+      if (flowElem.$type === 'bpmn:DataStore' && flowElem.id === value) {
         commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: businessObject,
           properties: {
-            dataObjectRef: flowElem
+            dataStoreRef: flowElem
           }
         });
         commandStack.execute('element.updateProperties', {
@@ -55,16 +55,16 @@ export function DataObjectSelect(props) {
   const getOptions = value => {
     const businessObject = element.businessObject;
     const parent = businessObject.$parent;
-    let dataObjects = findDataObjects(parent);
+    let dataStores = findDataStores(parent);
     let options = [];
-    dataObjects.forEach(dataObj => {
+    dataStores.forEach(dataObj => {
       options.push({label: dataObj.id, value: dataObj.id})
     });
     return options;
   }
 
   return <SelectEntry
-    id={'selectDataObject'}
+    id={'selectDataStore'}
     element={element}
     description={"Select the Data Object this represents."}
     label={"Which Data Object does this reference?"}
