@@ -22,11 +22,11 @@ export default class DataStoreInterceptor extends CommandInterceptor {
   constructor(eventBus, bpmnFactory, commandStack, bpmnUpdater) {
     super(eventBus);
 
-    /* The default behavior is to move the data object into whatever object the reference is being created in.
-     * If a data object already has a parent, don't change it.
+    /* The default behavior is to move the data store into whatever object the reference is being created in.
+     * If a data store already has a parent, don't change it.
      */
     bpmnUpdater.updateSemanticParent = (businessObject, parentBusinessObject) => {
-      // Special case for participant - which is a valid place to drop a data object, but it needs to be added
+      // Special case for participant - which is a valid place to drop a data store, but it needs to be added
       // to the particpant's Process (which isn't directly accessible in BPMN.io
       let realParent = parentBusinessObject;
       if (is(realParent, 'bpmn:Participant')) {
@@ -34,7 +34,7 @@ export default class DataStoreInterceptor extends CommandInterceptor {
       }
 
       if (is(businessObject, 'bpmn:DataStoreReference')) {
-        // For data object references, always update the flowElements when a parent is provided
+        // For data store references, always update the flowElements when a parent is provided
         // The parent could be null if it's being deleted, and I could probably handle that here instead of
         // when the shape is deleted, but not interested in refactoring at the moment.
         if (realParent != null) {
@@ -45,7 +45,7 @@ export default class DataStoreInterceptor extends CommandInterceptor {
           }
         }
       } else if (is(businessObject, 'bpmn:DataStore')) {
-        // For data objects, only update the flowElements for new data objects, and set the parent so it doesn't get moved.
+        // For data stores, only update the flowElements for new data stores, and set the parent so it doesn't get moved.
         if (typeof (businessObject.$parent) === 'undefined') {
           const flowElements = realParent.get('flowElements');
           flowElements.push(businessObject);
@@ -60,7 +60,7 @@ export default class DataStoreInterceptor extends CommandInterceptor {
      * For DataStoreReferences only ...
      * Prevent this from calling the CreateDataStoreBehavior in BPMN-js, as it will
      * attempt to crete a dataStore immediately.  We can't create the dataStore until
-     * we know where it is placed - as we want to reuse data objects of the parent when
+     * we know where it is placed - as we want to reuse data stores of the parent when
      * possible */
     this.preExecute(['shape.create'], HIGH_PRIORITY, function (event) {
       const { context } = event;
@@ -71,7 +71,7 @@ export default class DataStoreInterceptor extends CommandInterceptor {
     });
 
     /**
-     * Don't just create a new data object, use the first existing one if it already exists
+     * Don't just create a new data store, use the first existing one if it already exists
      */
     this.executed(['shape.create'], HIGH_PRIORITY, function (event) {
       const { context } = event;
@@ -98,7 +98,7 @@ export default class DataStoreInterceptor extends CommandInterceptor {
       const { context } = event;
       const { shape } = context;
       // set the reference to the DataStore
-      // Update the name of the reference to match the data object's id.
+      // Update the name of the reference to match the data store's id.
       if (is(shape, 'bpmn:DataStoreReference') && shape.type !== 'label') {
         commandStack.execute('element.updateProperties', {
           element: shape,
@@ -111,7 +111,7 @@ export default class DataStoreInterceptor extends CommandInterceptor {
     });
 
     /**
-     * Don't remove the associated DataStore, unless all references to that data object
+     * Don't remove the associated DataStore, unless all references to that data store
      * Difficult to do given placement of this logic in the BPMN Updater, so we have
      * to manually handle the removal.
      */

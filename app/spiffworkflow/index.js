@@ -6,6 +6,10 @@ import DataObjectInterceptor from './DataObject/DataObjectInterceptor';
 import DataObjectRules from './DataObject/DataObjectRules';
 import DataObjectRenderer from './DataObject/DataObjectRenderer';
 import DataObjectPropertiesProvider from './DataObject/propertiesPanel/DataObjectPropertiesProvider';
+import DataStoreInterceptor from './DataStore/DataStoreInterceptor';
+import DataStoreRules from './DataStore/DataStoreRules';
+import DataStoreRenderer from './DataStore/DataStoreRenderer';
+import DataStorePropertiesProvider from './DataStore/propertiesPanel/DataStorePropertiesProvider';
 import ConditionsPropertiesProvider from './conditions/propertiesPanel/ConditionsPropertiesProvider';
 import ExtensionsPropertiesProvider from './extensions/propertiesPanel/ExtensionsPropertiesProvider';
 import MessagesPropertiesProvider from './messages/propertiesPanel/MessagesPropertiesProvider';
@@ -22,6 +26,11 @@ export default {
     'dataObjectInterceptor',
     'dataObjectRules',
     'dataObjectPropertiesProvider',
+    'dataObjectRenderer',
+    'dataStoreInterceptor',
+    'dataStoreRules',
+    'dataStorePropertiesProvider',
+    'dataStoreRenderer',
     'conditionsPropertiesProvider',
     'extensionsPropertiesProvider',
     'messagesPropertiesProvider',
@@ -32,7 +41,6 @@ export default {
     'ioPalette',
     'ioRules',
     'ioInterceptor',
-    'dataObjectRenderer',
     'multiInstancePropertiesProvider',
     'standardLoopPropertiesProvider',
   ],
@@ -40,6 +48,10 @@ export default {
   dataObjectRules: ['type', DataObjectRules],
   dataObjectRenderer: ['type', DataObjectRenderer],
   dataObjectPropertiesProvider: ['type', DataObjectPropertiesProvider],
+  dataStoreInterceptor: ['type', DataStoreInterceptor],
+  dataStoreRules: ['type', DataStoreRules],
+  dataStoreRenderer: ['type', DataStoreRenderer],
+  dataStorePropertiesProvider: ['type', DataStorePropertiesProvider],
   conditionsPropertiesProvider: ['type', ConditionsPropertiesProvider],
   extensionsPropertiesProvider: ['type', ExtensionsPropertiesProvider],
   signalPropertiesProvider: ['type', SignalPropertiesProvider],
