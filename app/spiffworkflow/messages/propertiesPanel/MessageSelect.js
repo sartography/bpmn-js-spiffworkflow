@@ -5,6 +5,14 @@ import {
   getMessageRefElement,
   isMessageEvent,
 } from '../MessageHelpers';
+import {spiffExtensionOptions} from "../../extensions/propertiesPanel/SpiffExtensionSelect";
+
+
+export const availableMessages = {
+  messages: null,
+  correlationKeys: null,
+  correlationProperties: null,
+};
 
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
@@ -13,6 +21,7 @@ export function MessageSelect(props) {
   const shapeElement = props.element;
   const { commandStack } = props;
   const debounce = useService('debounceInput');
+  const eventBus = useService('eventBus');
 
   const getValue = () => {
     const messageRefElement = getMessageRefElement(shapeElement);
@@ -62,11 +71,15 @@ export function MessageSelect(props) {
     }
   };
 
+  if (spiffExtensionOptions.messages === null || spiffExtensionOptions.messages === undefined) {
+    requestMessageOptions(eventBus);
+  }
   const getOptions = (_value) => {
-    const messages = findMessageModdleElements(shapeElement.businessObject);
     const options = [];
-    for (const message of messages) {
-      options.push({ label: message.name, value: message.id });
+    if (availableMessages.messages !== null) {
+      availableMessages.messages.forEach((message) => {
+        options.push({label: message.id, value: message.id});
+      });
     }
     return options;
   };
@@ -83,4 +96,16 @@ export function MessageSelect(props) {
       debounce={debounce}
     />
   );
+}
+
+
+function requestMessageOptions(eventBus) {
+  // Little backwards, but you want to assure you are ready to catch, before you throw
+  // or you risk a race condition.
+  eventBus.on(`spiff.messages.returned`, (event) => {
+    availableMessages.messages = event.messages;
+    availableMessages.correlationKeys = event.correlation_keys;
+    availableMessages.correlationProperties = event.correlation_properties;
+  });
+  eventBus.fire(`spiff.messages.requested`, { eventBus });
 }

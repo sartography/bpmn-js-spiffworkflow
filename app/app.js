@@ -3,7 +3,7 @@ import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
-import diagramXML from '../test/spec/bpmn/user_form.bpmn';
+import diagramXML from '../test/spec/bpmn/collaboration.bpmn';
 import spiffworkflow from './spiffworkflow';
 import setupFileOperations from './fileOperations';
 
@@ -179,10 +179,50 @@ bpmnModeler.on('spiff.dmn_files.requested', (event) => {
   });
 });
 
+bpmnModeler.on('spiff.messages.requested', (event) => {
+  event.eventBus.fire('spiff.messages.returned', {
+    messages: [
+      { id: 'table_seated' },
+      { id: 'order_ready' },
+      { id: 'end_of_day_receipts' },
+    ],
+    correlation_keys: [
+      {
+        id: 'order',
+        correlation_properties: ['table_number', 'franchise_id'],
+      },
+      {
+        id: 'franchise',
+        correlation_properties: ['franchise_id'],
+      },
+    ],
+    correlation_properties: [
+      {
+        id: 'table_number',
+        retrieval_expressions: [
+          { message_ref: 'table_seated', formal_expression: 'table_number' },
+          { message_ref: 'order_ready', formal_expression: 'table_number' },
+        ],
+      },
+      {
+        id: 'franchise_id',
+        retrieval_expressions: [
+          { message_ref: 'table_seated', formal_expression: 'franchise_id' },
+          { message_ref: 'order_ready', formal_expression: 'franchise_id' },
+          {
+            message_ref: 'franchise_report',
+            formal_expression: "franchise['id']",
+          },
+        ],
+      },
+    ],
+  });
+});
+
 // As call activites might refernce processes across the system
 // it should be possible to search for a paticular call activity.
 bpmnModeler.on('spiff.callactivity.search', (event) => {
-  console.log("Firing call activity update", event.element)
+  console.log('Firing call activity update', event.element);
   event.eventBus.fire('spiff.callactivity.update', {
     value: 'searched_bpmn_id',
     element: event.element,
@@ -191,15 +231,21 @@ bpmnModeler.on('spiff.callactivity.search', (event) => {
 
 /* This restores unresolved references that camunda removes */
 
-bpmnModeler.on('import.parse.complete', event => {
-  const refs = event.references.filter(r => r.property === 'bpmn:loopDataInputRef' || r.property === 'bpmn:loopDataOutputRef');
-  const desc = bpmnModeler._moddle.registry.getEffectiveDescriptor('bpmn:ItemAwareElement');
-  refs.forEach(ref => {
+bpmnModeler.on('import.parse.complete', (event) => {
+  const refs = event.references.filter(
+    (r) =>
+      r.property === 'bpmn:loopDataInputRef' ||
+      r.property === 'bpmn:loopDataOutputRef'
+  );
+  const desc = bpmnModeler._moddle.registry.getEffectiveDescriptor(
+    'bpmn:ItemAwareElement'
+  );
+  refs.forEach((ref) => {
     const props = {
       id: ref.id,
-      name: ref.id ? typeof(ref.name) === 'undefined': ref.name,
+      name: ref.id ? typeof ref.name === 'undefined' : ref.name,
     };
-    let elem = bpmnModeler._moddle.create(desc, props);
+    const elem = bpmnModeler._moddle.create(desc, props);
     elem.$parent = ref.element;
     ref.element.set(ref.property, elem);
   });

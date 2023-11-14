@@ -1,4 +1,5 @@
 import TestContainer from 'mocha-test-container-support';
+import { getBpmnJS } from 'bpmn-js/test/helper';
 import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
@@ -41,10 +42,65 @@ describe('Messages should work', function () {
     })
   );
 
-  it('should allow you to see the collaborations section', async function () {
-    // THEN - a select Data Object section should appear in the properties panel
-    const entry = findGroupEntry('correlation_keys', container);
-    expect(entry).to.exist;
+  const messageResponse = (event) => {
+    event.eventBus.fire('spiff.messages.returned', {
+      messages: [
+        { id: 'table_seated' },
+        { id: 'order_ready' },
+        { id: 'end_of_day_receipts' },
+      ],
+      correlation_keys: [
+        {
+          id: 'order',
+          correlation_properties: ['table_number', 'franchise_id'],
+        },
+        {
+          id: 'franchise',
+          correlation_properties: ['franchise_id'],
+        },
+      ],
+      correlation_properties: [
+        {
+          id: 'table_number',
+          retrieval_expressions: [
+            { message_ref: 'table_seated', formal_expression: 'table_number' },
+            { message_ref: 'order_ready', formal_expression: 'table_number' },
+          ],
+        },
+        {
+          id: 'franchise_id',
+          retrieval_expressions: [
+            { message_ref: 'table_seated', formal_expression: 'franchise_id' },
+            { message_ref: 'order_ready', formal_expression: 'franchise_id' },
+            {
+              message_ref: 'franchise_report',
+              formal_expression: "franchise['id']",
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  it('should show a list of messages in a drop down inside the message group', async function () {
+    // Select the send Task
+    const modeler = getBpmnJS();
+    modeler.get('eventBus').once('spiff.messages.requested', messageResponse);
+
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
+
+    // THEN - there are two options to choose from.
+    const entry = findEntry('selectMessage', container);
+    expect(entry, "Can't find the message select list").to.exist;
+
+    // AND - There should be two entries in it, one for each message.
+    const selector = findSelect(entry);
+    expect(selector).to.exist;
+    expect(selector.length).to.equal(3);
+    expect(selector[0].value).to.equal('table_seated');
+    expect(selector[1].value).to.equal('order_ready');
+    expect(selector[2].value).to.equal('end_of_day_receipts');
     await expectSelected('my_collaboration');
   });
 
@@ -60,19 +116,10 @@ describe('Messages should work', function () {
     await expectSelected('my_collaboration');
   });
 
-  it('should show a list of messages in a drop down inside the message group', async function () {
-    // Select the send Task
-    const sendShape = await expectSelected('ActivitySendLetter');
-    expect(sendShape, "Can't find Send Task").to.exist;
-
-    // THEN - there are two options to choose from.
-    const entry = findEntry('selectMessage', container);
-    expect(entry, "Can't find the message select list").to.exist;
-
-    // AND - There should be two entries in it, one for each message.
-    const selector = findSelect(entry);
-    expect(selector).to.exist;
-    expect(selector.length).to.equal(2);
+  it('should allow you to see the collaborations section', async function () {
+    // THEN - a select Data Object section should appear in the properties panel
+    const entry = findGroupEntry('correlation_keys', container);
+    expect(entry).to.exist;
     await expectSelected('my_collaboration');
   });
 
@@ -80,7 +127,7 @@ describe('Messages should work', function () {
     // Select the second Task
     const sendShape = await expectSelected('ActivitySendLetter');
     expect(sendShape, "Can't find Send Task").to.exist;
-    
+
     // THEN - there is a payload.
     const payload = findEntry('messagePayload', container);
     expect(payload, "Can't find the message payload").to.exist;
