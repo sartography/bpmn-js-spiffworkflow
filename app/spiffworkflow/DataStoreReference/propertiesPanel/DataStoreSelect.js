@@ -17,23 +17,24 @@ export function DataStoreSelect(props) {
   const eventBus = useService('eventBus');
 
   const getValue = () => {
-    const value = (element.businessObject.dataStoreRef) ? element.businessObject.dataStoreRef.id : '';
-    return value;
+    return element.businessObject.dataStoreRef
+      ? element.businessObject.dataStoreRef.id
+      : '';
   };
 
   const setValue = (value) => {
-    if(!value || value == ''){
+    if (!value || value === '') {
       modeling.updateProperties(element, {
-        dataStoreRef: null
+        dataStoreRef: null,
       });
       return;
     }
     const dataStore = bpmnFactory.create('bpmn:DataStore', {
       id: value,
-      name: 'DataStore_' + value
+      name: `DataStore_${value}`,
     });
     modeling.updateProperties(element, {
-      dataStoreRef: dataStore
+      dataStoreRef: dataStore,
     });
   };
 
@@ -64,7 +65,7 @@ export function DataStoreSelect(props) {
     }
     return optionList;
   };
-  
+
   return SelectEntry({
     id,
     element,
@@ -83,4 +84,3 @@ function requestOptions(eventBus, element, commandStack, optionType) {
   });
   eventBus.fire(`spiff.${optionType}.requested`, { eventBus });
 }
-
