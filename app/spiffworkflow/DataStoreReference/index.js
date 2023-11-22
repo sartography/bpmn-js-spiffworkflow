@@ -1,10 +1,10 @@
 import RulesModule from 'diagram-js/lib/features/rules';
-import CustomDataStorePropertiesProvider from './propertiesPanel/CustomDataStorePropertiesProvider';
+import DataStorePropertiesProvider from './propertiesPanel/DataStorePropertiesProvider';
 
 export default {
   __depends__: [
     RulesModule
   ],
   __init__: [ 'dataSourcePropertiesProvider' ],
-  dataSourcePropertiesProvider: [ 'type', CustomDataStorePropertiesProvider ]
+  dataSourcePropertiesProvider: [ 'type', DataStorePropertiesProvider ]
 };

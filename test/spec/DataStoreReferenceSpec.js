@@ -86,7 +86,7 @@ describe('Data Source Reference Test cases', function () {
         expect(selector[2].value === 'foods');
     });
 
-    it('should update dataStoreRef after a select event - DataStoreReference element', async function () {
+    it('should update dataStoreRef after a select event && should add new DataState in the level of process definition - DataStoreReference element', async function () {
         const modeler = getBpmnJS();
         modeler.get('eventBus').once('spiff.data_stores.requested', return_datastores);
 
@@ -106,6 +106,14 @@ describe('Data Source Reference Test cases', function () {
         changeInput(selector, 'foods');
         const nwbusinessObject = getBusinessObject(shapeElement);
         expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foods');
+
+        // Check if the DataStore is added at the root level
+        const definitions = modeler.getDefinitions();
+        const dataStoreExists = definitions.get('rootElements').some(element =>
+            element.$type === 'bpmn:DataStore' && element.id === 'foods'
+        );
+        expect(dataStoreExists, "DataStore 'foods' should be added at the root level").to.be.true;
+
     });
 
 });

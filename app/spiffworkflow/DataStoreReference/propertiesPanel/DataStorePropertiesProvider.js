@@ -3,14 +3,13 @@ import { DataStoreSelect, OPTION_TYPE } from './DataStoreSelect';
 
 const LOW_PRIORITY = 500;
 
-export default function CustomDataStorePropertiesProvider(
+export default function DataStorePropertiesProvider(
     modeling,
     propertiesPanel,
     translate,
     moddle,
     commandStack,
     bpmnFactory,
-    elementRegistry
 ) {
     this.getGroups = function (element) {
         return function (groups) {
@@ -25,14 +24,13 @@ export default function CustomDataStorePropertiesProvider(
     propertiesPanel.registerProvider(LOW_PRIORITY, this);
 }
 
-CustomDataStorePropertiesProvider.$inject = [
+DataStorePropertiesProvider.$inject = [
     'modeling',
     'propertiesPanel',
     'translate',
     'moddle',
     'commandStack',
     'bpmnFactory',
-    'elementRegistry'
 ];
 
 function createCustomDataStoreGroup(modeling, element, translate, moddle, commandStack, bpmnFactory) {
@@ -56,7 +54,7 @@ function createCustomDataStoreGroup(modeling, element, translate, moddle, comman
         label: translate('Select DataSource'),
         description: translate('Select a datasource from the list'),
         modeling,
-        bpmnFactory
+        bpmnFactory,
     })
 
     return group;
