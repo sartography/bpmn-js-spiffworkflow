@@ -4,12 +4,12 @@ import { DataStoreSelect, OPTION_TYPE } from './DataStoreSelect';
 const LOW_PRIORITY = 500;
 
 export default function DataStorePropertiesProvider(
-    modeling,
-    propertiesPanel,
-    translate,
-    moddle,
-    commandStack,
-    bpmnFactory,
+  modeling,
+  propertiesPanel,
+  translate,
+  moddle,
+  commandStack,
+  bpmnFactory,
 ) {
   this.getGroups = function (element) {
     return function (groups) {
@@ -32,12 +32,12 @@ export default function DataStorePropertiesProvider(
 }
 
 DataStorePropertiesProvider.$inject = [
-    'modeling',
-    'propertiesPanel',
-    'translate',
-    'moddle',
-    'commandStack',
-    'bpmnFactory',
+  'modeling',
+  'propertiesPanel',
+  'translate',
+  'moddle',
+  'commandStack',
+  'bpmnFactory',
 ];
 
 function createCustomDataStoreGroup(
@@ -70,21 +70,5 @@ function createCustomDataStoreGroup(
     bpmnFactory,
   });
 
-    // other custom properties as needed
-    group.entries.push({
-        id: 'selectDataStore',
-        element,
-        component: DataStoreSelect,
-        optionType: OPTION_TYPE.data_stores,
-        moddle,
-        commandStack,
-        translate,
-        name: 'dataStoreRef',
-        label: translate('Select DataSource'),
-        description: translate('Select a datasource from the list'),
-        modeling,
-        bpmnFactory,
-    })
-
-    return group;
+  return group;
 }
