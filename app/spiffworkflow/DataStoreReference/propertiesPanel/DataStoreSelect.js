@@ -23,14 +23,15 @@ export function DataStoreSelect(props) {
   const bpmnFactory = useService('bpmnFactory');
 
   const getValue = () => {
-    const value = (element.businessObject.dataStoreRef) ? element.businessObject.dataStoreRef.id : '';
-    return value;
+    return element.businessObject.dataStoreRef
+      ? element.businessObject.dataStoreRef.id
+      : '';
   };
 
   const setValue = (value) => {
     if (!value || value == '') {
       modeling.updateProperties(element, {
-        dataStoreRef: null
+        dataStoreRef: null,
       });
       return;
     }
@@ -57,7 +58,7 @@ export function DataStoreSelect(props) {
     }
 
     modeling.updateProperties(element, {
-      dataStoreRef: dataStore
+      dataStoreRef: dataStore,
     });
   };
 
@@ -107,4 +108,3 @@ function requestOptions(eventBus, element, commandStack, optionType) {
   });
   eventBus.fire(`spiff.${optionType}.requested`, { eventBus });
 }
-
