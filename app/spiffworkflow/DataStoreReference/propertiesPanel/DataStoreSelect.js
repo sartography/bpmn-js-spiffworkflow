@@ -63,7 +63,7 @@ export function DataStoreSelect(props) {
     });
 
     // Remove the old DataStore if it's no longer referenced
-    if (currentDataStoreRef && !isDataStoreReferenced(definitions, currentDataStoreRef.id)) {
+    if (currentDataStoreRef && !isDataStoreReferenced(process, currentDataStoreRef.id)) {
       removeDataStore(definitions, currentDataStoreRef.id);
     }
   };

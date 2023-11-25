@@ -59,15 +59,15 @@ export default class DataStoreInterceptor extends CommandInterceptor {
     /**
      * 
      */
-    this.executed(['shape.delete'], HIGH_PRIORITY, function (event) {
+    this.postExecuted(['shape.delete'], HIGH_PRIORITY, function (event) {
       const { context } = event;
       const { shape } = context;
 
       if (is(shape, 'bpmn:DataStoreReference')  && shape.type !== 'label') {
         const definitions = context.oldParent.businessObject.$parent;
         const dataStore = shape.businessObject.dataStoreRef;
-        if (dataStore && !isDataStoreReferenced(definitions, dataStore.id)) {
-          // Remove datastore in case it's not linked with another datastore ref
+        if (dataStore && !isDataStoreReferenced(context.oldParent.businessObject, dataStore.id)) {
+          // Remove datastore if it's not linked with another datastore ref
           removeDataStore(definitions, dataStore.id);
         }
       }
