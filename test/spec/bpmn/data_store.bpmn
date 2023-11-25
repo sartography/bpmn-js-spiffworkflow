@@ -30,6 +30,7 @@
     </bpmn:userTask>
     <bpmn:dataStoreReference id="DataStoreReference_0eqeh4p" dataStoreRef="countries" />
   </bpmn:process>
+  <bpmn:dataStore id="countries" name="DataStore_countries" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_16xfaqc">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">

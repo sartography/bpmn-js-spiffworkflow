@@ -14,10 +14,11 @@ import {
     getPropertiesPanel
 } from './helpers';
 
-import { getBpmnJS } from 'bpmn-js/test/helper';
+import { getBpmnJS, inject } from 'bpmn-js/test/helper';
 
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import DataStoreReference from '../../app/spiffworkflow/DataStoreReference';
+import DataStoreInterceptor from '../../app/spiffworkflow/DataStoreReference/DataStoreInterceptor';
 
 const return_datastores = (event) => {
     event.eventBus.fire('spiff.data_stores.returned', {
@@ -27,7 +28,6 @@ const return_datastores = (event) => {
         ],
     });
 }
-
 
 describe('Data Source Reference Test cases', function () {
     const xml = require('./bpmn/data_store.bpmn').default;
@@ -43,6 +43,7 @@ describe('Data Source Reference Test cases', function () {
             debounceInput: false,
             additionalModules: [
                 DataStoreReference,
+                DataStoreInterceptor,
                 BpmnPropertiesPanelModule,
                 BpmnPropertiesProviderModule,
             ],
@@ -113,6 +114,44 @@ describe('Data Source Reference Test cases', function () {
             element.$type === 'bpmn:DataStore' && element.id === 'foods'
         );
         expect(dataStoreExists, "DataStore 'foods' should be added at the root level").to.be.true;
+
+    });
+
+    it('should delete dataStore if dataStorRef is updated - DataStoreReference element', async function () {
+        const modeler = getBpmnJS();
+        modeler.get('eventBus').once('spiff.data_stores.requested', return_datastores);
+
+        // We Select a DataStoreReference element
+        const shapeElement = await expectSelected('DataStoreReference_0eqeh4p');
+        expect(shapeElement, "I can't find DataStoreReference element").to.exist;
+
+        // Interact with the DataStoreSelect component
+        const selectGroup = findGroupEntry('custom-datastore-properties', container)
+        expect(selectGroup).to.exist;
+
+        const entry = findEntry('selectDataStore', getPropertiesPanel());
+        expect(entry).to.exist;
+
+        // Verification if the dataStoreRef attribute is updated
+        let selector = findSelect(entry);
+        changeInput(selector, 'foods');
+        let nwbusinessObject = getBusinessObject(shapeElement);
+        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foods');
+        // Then choose new dataStore
+        changeInput(selector, 'countries');
+        nwbusinessObject = getBusinessObject(shapeElement);
+        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('countries');
+
+        // Check if the DataStore is added at the root level with the updated dataStore
+        const definitions = modeler.getDefinitions();
+        const countriesDataStoreExists = definitions.get('rootElements').some(element =>
+            element.$type === 'bpmn:DataStore' && element.id === 'countries'
+        );
+        expect(countriesDataStoreExists, "DataStore 'countries' should be added at the root level").to.be.true;
+        const foodsDataStoreExists = definitions.get('rootElements').some(element =>
+            element.$type === 'bpmn:DataStore' && element.id === 'foods'
+        );
+        expect(foodsDataStoreExists, "DataStore 'countries' should be removed from the root level").not.to.be.true;
 
     });
 
