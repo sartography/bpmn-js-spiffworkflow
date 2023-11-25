@@ -1,5 +1,6 @@
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import { getDi, is } from 'bpmn-js/lib/util/ModelUtil';
+import { isDataStoreReferenced, removeDataStore } from './DataStoreHelpers';
 
 const HIGH_PRIORITY = 1500;
 
@@ -16,7 +17,8 @@ export default class DataStoreInterceptor extends CommandInterceptor {
      */
     // bpmnUpdater.updateSemanticParent = (businessObject, parentBusinessObject) => {
     //   if (is(businessObject, 'bpmn:DataStoreReference')) {
-    //     console.log('updateSemanticParent', businessObject);
+    //     console.log('updateSemanticParent', businessObject, parentBusinessObject);
+    //     bpmnUpdater.__proto__.updateSemanticParent.call(bpmnUpdater, businessObject, parentBusinessObject);
     //   }
     // };
 
@@ -61,7 +63,12 @@ export default class DataStoreInterceptor extends CommandInterceptor {
       const { context } = event;
       const { shape } = context;
       if (is(shape, 'bpmn:DataStoreReference') && shape.type !== 'label') {
-        console.log('executed shape.delete', shape, context);
+        const definitions = context.oldParent.businessObject.$parent;
+        const dataStore = shape.businessObject.dataStoreRef;
+        if (dataStore && !isDataStoreReferenced(definitions, dataStore.id)) {
+          // Remove datastore in case it's not linked with another datastore ref
+          removeDataStore(definitions, dataStore.id);
+        }
       }
     });
   }

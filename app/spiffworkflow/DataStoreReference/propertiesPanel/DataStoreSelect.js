@@ -1,6 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
-import { is } from 'bpmn-js/lib/util/ModelUtil';
+import { isDataStoreReferenced, removeDataStore } from '../DataStoreHelpers';
 
 export const OPTION_TYPE = {
   data_stores: 'data_stores',
@@ -15,8 +15,6 @@ export function DataStoreSelect(props) {
   const { element } = props;
   const { commandStack } = props;
   const { modeling } = props;
-  const { moddle } = props;
-  // const { bpmnFactory } = props;
 
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
@@ -43,6 +41,9 @@ export function DataStoreSelect(props) {
       definitions.set('rootElements', []);
     }
 
+    // Persist Current DataStore Ref
+    const currentDataStoreRef = element.businessObject.dataStoreRef;
+
     // Create DataStore
     let dataStore = definitions.get('rootElements').find(element =>
       element.$type === 'bpmn:DataStore' && element.id === value
@@ -60,6 +61,11 @@ export function DataStoreSelect(props) {
     modeling.updateProperties(element, {
       dataStoreRef: dataStore,
     });
+
+    // Remove the old DataStore if it's no longer referenced
+    if (currentDataStoreRef && !isDataStoreReferenced(definitions, currentDataStoreRef.id)) {
+      removeDataStore(definitions, currentDataStoreRef.id);
+    }
   };
 
   if (
