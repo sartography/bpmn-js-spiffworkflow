@@ -7,6 +7,7 @@ import DataObjectRules from './DataObject/DataObjectRules';
 import DataObjectRenderer from './DataObject/DataObjectRenderer';
 import DataObjectPropertiesProvider from './DataObject/propertiesPanel/DataObjectPropertiesProvider';
 import DataStorePropertiesProvider from './DataStoreReference/propertiesPanel/DataStorePropertiesProvider';
+import DataStoreInterceptor from './DataStoreReference/DataStoreInterceptor';
 import ConditionsPropertiesProvider from './conditions/propertiesPanel/ConditionsPropertiesProvider';
 import ExtensionsPropertiesProvider from './extensions/propertiesPanel/ExtensionsPropertiesProvider';
 import MessagesPropertiesProvider from './messages/propertiesPanel/MessagesPropertiesProvider';
@@ -23,7 +24,8 @@ export default {
     'dataObjectInterceptor',
     'dataObjectRules',
     'dataObjectPropertiesProvider',
-    'dataSourcePropertiesProvider',
+    'dataStoreInterceptor',
+    'dataStorePropertiesProvider',
     'conditionsPropertiesProvider',
     'extensionsPropertiesProvider',
     'messagesPropertiesProvider',
@@ -42,7 +44,8 @@ export default {
   dataObjectRules: ['type', DataObjectRules],
   dataObjectRenderer: ['type', DataObjectRenderer],
   dataObjectPropertiesProvider: ['type', DataObjectPropertiesProvider],
-  dataSourcePropertiesProvider: ['type', DataStorePropertiesProvider],
+  dataStoreInterceptor: ['type', DataStoreInterceptor],
+  dataStorePropertiesProvider: ['type', DataStorePropertiesProvider],
   conditionsPropertiesProvider: ['type', ConditionsPropertiesProvider],
   extensionsPropertiesProvider: ['type', ExtensionsPropertiesProvider],
   signalPropertiesProvider: ['type', SignalPropertiesProvider],

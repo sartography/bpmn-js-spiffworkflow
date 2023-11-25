@@ -5,6 +5,6 @@ export default {
   __depends__: [
     RulesModule
   ],
-  __init__: [ 'dataSourcePropertiesProvider' ],
-  dataSourcePropertiesProvider: [ 'type', DataStorePropertiesProvider ]
+  __init__: [ 'dataStorePropertiesProvider' ],
+  dataStorePropertiesProvider: [ 'type', DataStorePropertiesProvider ]
 };
