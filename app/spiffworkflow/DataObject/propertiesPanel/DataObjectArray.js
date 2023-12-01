@@ -57,6 +57,7 @@ export function DataObjectArray(props) {
     const newDataObject = moddle.create('bpmn:DataObject');
     const newElements = process.get('flowElements');
     newDataObject.id = moddle.ids.nextPrefixed('DataObject_');
+    newDataObject.name = 'DataObject Name';
     newDataObject.$parent = process;
     newElements.push(newDataObject);
     commandStack.execute('element.updateModdleProperties', {
@@ -153,11 +154,14 @@ function DataObjectNameTextField(props) {
     // Update references name
     const references = findDataObjectReferenceShapes(element.children, dataObject.id);
     for (const ref of references) {
+      const stateName = ref.businessObject.dataState && ref.businessObject.dataState.name ? ref.businessObject.dataState.name : '';
+      const newName = stateName ? `${value} [${stateName}]` : value;
+      
       commandStack.execute('element.updateProperties', {
         element: ref,
         moddleElement: ref.businessObject,
         properties: {
-          name: idToHumanReadableName(value),
+          name: newName,
         },
         changed: [ref],
       });
