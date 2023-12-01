@@ -126,19 +126,6 @@ function DataObjectTextField(props) {
         id: value,
       },
     });
-
-    // Also update the label of all the references
-    const references = findDataObjectReferenceShapes(element.children, dataObject.id);
-    for (const ref of references) {
-      commandStack.execute('element.updateProperties', {
-        element: ref,
-        moddleElement: ref.businessObject,
-        properties: {
-          name: idToHumanReadableName(value),
-        },
-        changed: [ref], // everything is already marked as changed, don't recalculate.
-      });
-    }
   };
 
   const getValue = () => {
@@ -163,6 +150,21 @@ function DataObjectNameTextField(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
+    
+    // Update references name
+    const references = findDataObjectReferenceShapes(element.children, dataObject.id);
+    for (const ref of references) {
+      commandStack.execute('element.updateProperties', {
+        element: ref,
+        moddleElement: ref.businessObject,
+        properties: {
+          name: idToHumanReadableName(value),
+        },
+        changed: [ref],
+      });
+    }
+
+    // Update dataObject name
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: dataObject,
