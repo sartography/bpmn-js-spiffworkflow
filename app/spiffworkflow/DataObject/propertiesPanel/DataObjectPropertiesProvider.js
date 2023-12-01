@@ -18,6 +18,13 @@ export default function DataObjectPropertiesProvider(
   this.getGroups = function (element) {
     return function (groups) {
       if (is(element, 'bpmn:DataObjectReference')) {
+
+        // Remove Name Input from default group entries
+        const generalGroup = groups.find(group => group.id === 'general');
+        if (generalGroup) {
+          generalGroup.entries = generalGroup.entries.filter(entry => entry.id !== 'name');
+        }
+
         groups.push(
           createDataObjectSelector(element, translate, moddle, commandStack, modeling, bpmnFactory)
         );

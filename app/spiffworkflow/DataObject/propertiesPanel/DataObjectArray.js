@@ -142,7 +142,6 @@ function DataObjectTextField(props) {
   });
 }
 
-
 function DataObjectNameTextField(props) {
   const { idPrefix, element, parameter, dataObject } = props;
 
