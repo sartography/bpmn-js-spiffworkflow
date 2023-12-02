@@ -150,13 +150,13 @@ function DataObjectNameTextField(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    
+
     // Update references name
     const references = findDataObjectReferenceShapes(element.children, dataObject.id);
     for (const ref of references) {
       const stateName = ref.businessObject.dataState && ref.businessObject.dataState.name ? ref.businessObject.dataState.name : '';
       const newName = stateName ? `${value} [${stateName}]` : value;
-      
+
       commandStack.execute('element.updateProperties', {
         element: ref,
         moddleElement: ref.businessObject,

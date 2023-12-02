@@ -34,7 +34,7 @@ export function DataObjectSelect(props) {
     const dataObjects = findDataObjects(businessObject.$parent)
     for (const dataObject of dataObjects) {
       if (dataObject.$type === 'bpmn:DataObject' && dataObject.id === value) {
-        
+
         commandStack.execute('element.updateModdleProperties', {
           element: element,
           moddleElement: businessObject,
