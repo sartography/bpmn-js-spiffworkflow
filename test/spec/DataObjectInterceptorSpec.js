@@ -88,7 +88,7 @@ describe('DataObject Interceptor', function() {
     const dataObjects = findDataObjects(rootShape.businessObject);
     expect(dataObjects.length).to.equal(0);
   }));
-
+  
   // it('Creating a new Reference will update the name to match the DataObject', inject(function(canvas, modeling) {
 
   //   // IF - a Data Reference Exists
@@ -164,5 +164,29 @@ describe('DataObject Interceptor', function() {
     expect(references.length).to.equal(2);
 
   }));
+
+  // it('should not allow two dataObjects to have the same ID', inject(async function(canvas, modeling) {
+
+  //   // Creating the first dataObject
+  //   let rootShape = canvas.getRootElement();
+  //   const dataObject1 = modeling.createShape({ type: 'bpmn:DataObject' },
+  //     { x: 100, y: 100 }, rootShape);
+  
+  //   // Creating the second dataObject
+  //   const dataObject2 = modeling.createShape({ type: 'bpmn:DataObject' },
+  //     { x: 150, y: 100 }, rootShape);
+  
+  //   await expectSelected(dataObject2.id);
+  
+  //   let entry = findEntry('dataObjectId', container);
+  //   let idInput = findInput('text', entry);
+  
+  //   const duplicateId = dataObject1.businessObject.id;
+  //   changeInput(idInput, duplicateId);
+  
+  //   // Checkk that the ID change is not successful
+  //   expect(dataObject2.businessObject.id).not.to.equal(duplicateId);
+  
+  // }));
 
 });
