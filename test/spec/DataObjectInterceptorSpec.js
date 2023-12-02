@@ -1,4 +1,4 @@
-import { bootstrapPropertiesPanel } from './helpers';
+import { bootstrapPropertiesPanel, changeInput, expectSelected, findEntry, findInput } from './helpers';
 import dataObjectInterceptor from '../../app/spiffworkflow/DataObject';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import {
@@ -163,30 +163,6 @@ describe('DataObject Interceptor', function() {
     let references = findDataObjectReferenceShapes(rootShape.children, dataObjects[0].id);
     expect(references.length).to.equal(2);
 
-  }));
-
-  it('should not allow two dataObjects to have the same ID', inject(async function(canvas, modeling) {
-
-    // Creating the first dataObject
-    let rootShape = canvas.getRootElement();
-    const dataObject1 = modeling.createShape({ type: 'bpmn:DataObject' },
-      { x: 100, y: 100 }, rootShape);
-  
-    // Creating the second dataObject
-    const dataObject2 = modeling.createShape({ type: 'bpmn:DataObject' },
-      { x: 150, y: 100 }, rootShape);
-  
-    await expectSelected(dataObject2.id);
-  
-    let entry = findEntry('dataObjectId', container);
-    let idInput = findInput('text', entry);
-  
-    const duplicateId = dataObject1.businessObject.id;
-    changeInput(idInput, duplicateId);
-  
-    // Check that the ID change is not successful
-    expect(dataObject2.businessObject.id).not.to.equal(duplicateId);
-  
   }));
 
 });

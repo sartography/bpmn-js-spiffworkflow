@@ -10,6 +10,7 @@ import {
   findDataObjectReferenceShapes,
   updateDataObjectReferencesName,
   idToHumanReadableName,
+  findDataObject,
 } from '../DataObjectHelpers';
 
 /**
@@ -122,6 +123,12 @@ function DataObjectTextField(props) {
 
   const setValue = (value) => {
     try {
+      // Check if new dataObject Id is not unique
+      if(findDataObject(element.businessObject, value) !== undefined){
+        alert('Data Object ID Should be unique');
+        return;
+      }
+
       // let doName = idToHumanReadableName(value);
       commandStack.execute('element.updateModdleProperties', {
         element,
