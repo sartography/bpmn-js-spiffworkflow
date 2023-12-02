@@ -13,8 +13,7 @@ export default function DataObjectPropertiesProvider(
   commandStack,
   elementRegistry,
   modeling,
-  bpmnFactory,
-  eventBus
+  bpmnFactory
 ) {
   this.getGroups = function (element) {
     return function (groups) {
@@ -55,8 +54,7 @@ DataObjectPropertiesProvider.$inject = [
   'commandStack',
   'elementRegistry',
   'modeling',
-  'bpmnFactory',
-  'eventBus'
+  'bpmnFactory'
 ];
 
 /**
