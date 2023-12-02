@@ -9,6 +9,7 @@ import {
   findDataObjects,
   findDataObjectReferenceShapes,
   updateDataObjectReferencesName,
+  idToHumanReadableName,
 } from '../DataObjectHelpers';
 
 /**
@@ -57,7 +58,7 @@ export function DataObjectArray(props) {
     const newDataObject = moddle.create('bpmn:DataObject');
     const newElements = process.get('flowElements');
     newDataObject.id = moddle.ids.nextPrefixed('DataObject_');
-    newDataObject.name = 'DataObject Name';
+    newDataObject.name = idToHumanReadableName(newDataObject.id);
     newDataObject.$parent = process;
     newElements.push(newDataObject);
     commandStack.execute('element.updateModdleProperties', {
@@ -120,13 +121,21 @@ function DataObjectTextField(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: dataObject,
-      properties: {
-        id: value,
-      },
-    });
+    try {
+      // let doName = idToHumanReadableName(value);
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: dataObject,
+        properties: {
+          id: value,
+          // name: doName
+        },
+      });
+      // Update references name
+      // updateDataObjectReferencesName(element, doName, value, commandStack);
+    } catch (error) {
+      console.log('Set Value Error : ', error);
+    }
   };
 
   const getValue = () => {

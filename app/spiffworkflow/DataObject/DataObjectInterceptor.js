@@ -87,7 +87,7 @@ export default class DataObjectInterceptor extends CommandInterceptor {
           dataObject = existingDataObjects[0];
         } else {
           dataObject = bpmnFactory.create('bpmn:DataObject');
-          dataObject.name = 'DataObject Name';
+          dataObject.name = idToHumanReadableName(dataObject.id);
         }
         // set the reference to the DataObject
         shape.businessObject.dataObjectRef = dataObject;
@@ -108,7 +108,7 @@ export default class DataObjectInterceptor extends CommandInterceptor {
           element: shape,
           moddleElement: shape.businessObject,
           properties: {
-            name: idToHumanReadableName(shape.businessObject.dataObjectRef.name),
+            name: shape.businessObject.dataObjectRef.name,
           },
         });
       }
