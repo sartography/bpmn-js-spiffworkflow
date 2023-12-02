@@ -3,6 +3,7 @@ import DataObjectRules from './DataObjectRules';
 import RulesModule from 'diagram-js/lib/features/rules';
 import DataObjectRenderer from './DataObjectRenderer';
 import DataObjectPropertiesProvider from './propertiesPanel/DataObjectPropertiesProvider';
+import DataObjectLabelEditingProvider from './DataObjectLabelEditingProvider';
 
 
 export default {
@@ -13,7 +14,8 @@ export default {
   dataInterceptor: [ 'type', DataObjectInterceptor ],
   dataObjectRules: [ 'type', DataObjectRules ],
   dataObjectRenderer: [ 'type', DataObjectRenderer ],
-  dataObjectPropertiesProvider: [ 'type', DataObjectPropertiesProvider ]
+  dataObjectPropertiesProvider: [ 'type', DataObjectPropertiesProvider ],
+  dataObjectLabelEditingProvider: [ 'type', DataObjectLabelEditingProvider ]
 };
 
 

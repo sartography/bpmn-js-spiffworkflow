@@ -19,53 +19,6 @@ export default function DataObjectPropertiesProvider(
   this.getGroups = function (element) {
     return function (groups) {
       if (is(element, 'bpmn:DataObjectReference')) {
-
-        eventBus.on('element.dblclick', 1000, function (event) {
-          console.log('element.dblclick', event);
-          // const element = event.element;
-          // modeling.updateLabel(element, 'newLabel');
-          // // eventBus.fire('directEditing.activate', element);
-          // eventBus.fire('directEditing.activate', {
-          //   element: element
-          // });
-        });
-
-        eventBus.on('directEditing.activate', async function (event) {
-          console.log('directEditing.activate', event);
-          const { element, provider, context } = event.active;
-          // console.log('element', element);
-          // console.log('provider', provider);
-          // console.log('context', context);
-          // console.log('modeling', modeling);
-
-          await modeling.updateLabel(element, 'newLabel');
-          // provider.update(element, 'newLabel', context);
-          provider.activate(element);
-        });
-
-        eventBus.on('directEditing.complete', function (event) {
-          console.log('directEditing.complete', event);
-        });
-
-        // eventBus.on('directEditing.activate', function (event) {
-        //   // Direct editing started
-        //   console.log('directEditing.activate', event);
-        //   event.active.context.text = 'elele'
-        //   const element = event.active.element;
-        //   // event.active.element.label = "jeje";
-        //   // event.active.element.set('label', 'jke');
-        //   event.active.element.name = "jeje";
-        //   element.businessObject.name = "jeje";
-        //   element.businessObject.dataObjectRef.name = "jeje";
-        //   const originalLabel = element.businessObject.name;
-        //   const labelWithoutState = originalLabel.split(' [')[0];
-        //   // modeling.updateProperties(element, { name: labelWithoutState });
-        //   // storeOriginalLabel(element, originalLabel);
-        // });
-
-
-
-        // Remove Name Input from default group entries
         const generalGroup = groups.find(group => group.id === 'general');
         if (generalGroup) {
           generalGroup.entries = generalGroup.entries.filter(entry => entry.id !== 'name');
