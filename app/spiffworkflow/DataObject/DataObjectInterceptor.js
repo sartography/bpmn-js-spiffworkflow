@@ -138,6 +138,7 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         }
       }
     });
+    
   }
 }
 
