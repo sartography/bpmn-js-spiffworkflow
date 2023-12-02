@@ -1,9 +1,9 @@
 import {
-  bootstrapPropertiesPanel, 
+  bootstrapPropertiesPanel,
   changeInput,
   expectSelected,
-  findEntry, 
-  findInput, 
+  findEntry,
+  findInput,
   findSelect
 } from './helpers';
 
@@ -11,20 +11,20 @@ import {
   inject,
 } from 'bpmn-js/test/helper';
 
-import { 
-  BpmnPropertiesPanelModule, 
-  BpmnPropertiesProviderModule 
+import {
+  BpmnPropertiesPanelModule,
+  BpmnPropertiesProviderModule
 } from 'bpmn-js-properties-panel';
 
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import TestContainer from 'mocha-test-container-support';
 import DataObject from '../../app/spiffworkflow/DataObject';
 
-describe('Properties Panel for Data Objects', function() {
+describe('Properties Panel for Data Objects', function () {
   let xml = require('./bpmn/diagram.bpmn').default;
   let container;
 
-  beforeEach(function() {
+  beforeEach(function () {
     container = TestContainer.get(this);
   });
 
@@ -41,7 +41,7 @@ describe('Properties Panel for Data Objects', function() {
     },
   }));
 
-  it('should allow you to see a list of data objects', async function() {
+  it('should allow you to see a list of data objects', async function () {
 
     // IF - a data object reference is selected
     let my_data_ref_1 = await expectSelected('my_data_ref_1');
@@ -58,7 +58,7 @@ describe('Properties Panel for Data Objects', function() {
   });
 
 
-  it('selecting a different data object should change the data model.', async function() {
+  it('selecting a different data object should change the data model.', async function () {
 
     // IF - a data object reference is selected
     let my_data_ref_1 = await expectSelected('my_data_ref_1');
@@ -89,8 +89,8 @@ describe('Properties Panel for Data Objects', function() {
   //   expect(my_data_ref_1.businessObject.dataObjectRef.id).to.equal('my_nifty_new_name');
   //   expect(my_data_ref_1.businessObject.name).to.equal('My Nifty New Name');
   // });
-  
-  it('renaming a data object creates a lable without losing the numbers', async function() {
+
+  it('renaming a data object creates a lable without losing the numbers', async function () {
 
     // IF - a process is selected, and the name of a data object is changed.
     let entry = findEntry('ProcessTest-dataObj-2-id', container);
@@ -104,7 +104,7 @@ describe('Properties Panel for Data Objects', function() {
     // expect(my_data_ref_1.businessObject.name).to.equal('My Object 1');
   });
 
-  it('renaming a data object, does not change the label of references', async function() {
+  it('renaming a data object, does not change the label of references', async function () {
     // IF - a process is selected, and the name of a data object is changed.
     let entry = findEntry('ProcessTest-dataObj-2-id', container);
     let textInput = findInput('text', entry);
@@ -115,7 +115,7 @@ describe('Properties Panel for Data Objects', function() {
     expect(my_data_ref_1.businessObject.name).not.to.equal('My Nifty New Name');
   });
 
-  it('selecting a different data object should not change the data object reference name.', async function() {
+  it('selecting a different data object should not change the data object reference name.', async function () {
 
     // IF - a data object reference is selected
     let my_data_ref_1 = await expectSelected('my_data_ref_1');
@@ -123,7 +123,7 @@ describe('Properties Panel for Data Objects', function() {
     let entry = findEntry('selectDataObject', container);
     let selector = findSelect(entry);
     let businessObject = my_data_ref_1.businessObject;
-    
+
     changeInput(selector, 'my_third_data_object');
 
     expect(businessObject.get('dataObjectRef').id).to.equal('my_third_data_object');
@@ -131,28 +131,28 @@ describe('Properties Panel for Data Objects', function() {
     expect(businessObject.name).not.to.equal('my_data_object');
   });
 
-  it('should not allow two dataObjects to have the same ID', inject(async function(canvas, modeling) {
+  it('should not allow two dataObjects to have the same ID', inject(async function (canvas, modeling) {
 
     // Creating the first dataObject
     let rootShape = canvas.getRootElement();
     const dataObject1 = modeling.createShape({ type: 'bpmn:DataObject' },
       { x: 100, y: 100 }, rootShape);
-  
+
     // Creating the second dataObject
     const dataObject2 = modeling.createShape({ type: 'bpmn:DataObject' },
       { x: 150, y: 100 }, rootShape);
-  
+
     await expectSelected(dataObject2.id);
-  
+
     let entry = findEntry('dataObjectId', container);
     let idInput = findInput('text', entry);
-  
+
     const duplicateId = dataObject1.businessObject.id;
     changeInput(idInput, duplicateId);
-  
+
     // Check that the ID change is not successful
     expect(dataObject2.businessObject.id).not.to.equal(duplicateId);
-  
+
   }));
 
 });
