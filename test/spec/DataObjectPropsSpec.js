@@ -1,9 +1,17 @@
 import {
-  bootstrapPropertiesPanel, changeInput,
+  bootstrapPropertiesPanel, 
+  changeInput,
   expectSelected,
-  findEntry, findInput, findSelect,
+  findEntry, 
+  findInput, 
+  findSelect
 } from './helpers';
-import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
+
+import { 
+  BpmnPropertiesPanelModule, 
+  BpmnPropertiesProviderModule 
+} from 'bpmn-js-properties-panel';
+
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import TestContainer from 'mocha-test-container-support';
 import DataObject from '../../app/spiffworkflow/DataObject';
@@ -103,20 +111,20 @@ describe('Properties Panel for Data Objects', function() {
     expect(my_data_ref_1.businessObject.name).not.to.equal('My Nifty New Name');
   });
 
-  // it('selecting a different data object should not change the data object reference name.', async function() {
+  it('selecting a different data object should not change the data object reference name.', async function() {
 
-  //   // IF - a data object reference is selected
-  //   let my_data_ref_1 = await expectSelected('my_data_ref_1');
+    // IF - a data object reference is selected
+    let my_data_ref_1 = await expectSelected('my_data_ref_1');
 
-  //   let entry = findEntry('selectDataObject', container);
-  //   let selector = findSelect(entry);
-  //   let businessObject = my_data_ref_1.businessObject;
-
-  //   changeInput(selector, 'my_third_data_object');
+    let entry = findEntry('selectDataObject', container);
+    let selector = findSelect(entry);
+    let businessObject = my_data_ref_1.businessObject;
     
-  //   expect(businessObject.get('dataObjectRef').id).to.equal('my_third_data_object');
-  //   expect(businessObject.name).to.equal('my_data_object');
-  //   expect(businessObject.name).not.to.equal('My Third Data Object');
-  // });
+    changeInput(selector, 'my_third_data_object');
+
+    expect(businessObject.get('dataObjectRef').id).to.equal('my_third_data_object');
+    expect(businessObject.name).to.equal('D3');
+    expect(businessObject.name).not.to.equal('my_data_object');
+  });
 
 });

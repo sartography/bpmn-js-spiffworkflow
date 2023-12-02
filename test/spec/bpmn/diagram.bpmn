@@ -38,7 +38,7 @@
       <bpmn:script>elizabeth="awesome"</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:dataObject id="my_other_data_object" />
-    <bpmn:dataObject id="my_third_data_object" />
+    <bpmn:dataObject id="my_third_data_object" name="D3" />
     <bpmn:dataObjectReference id="my_data_ref_1" name="my_data_object" dataObjectRef="my_data_object" />
     <bpmn:sequenceFlow id="Flow_132laxn" sourceRef="task_confirm" targetRef="business_rule_task" />
     <bpmn:userTask id="task_confirm" name="confirm contentment">

@@ -46,7 +46,6 @@ export function DataObjectSelect(props) {
         // Construct the new name by : the dataObject name and the current state
         const stateName = businessObject.dataState && businessObject.dataState.name ? businessObject.dataState.name : '';
         const newName = stateName ? `${dataObject.name} [${stateName}]` : dataObject.name;
-
         // Update the name property of the DataObjectReference
         commandStack.execute('element.updateProperties', {
           element: element,
