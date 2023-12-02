@@ -8,7 +8,7 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
   findDataObjects,
   findDataObjectReferenceShapes,
-  idToHumanReadableName,
+  updateDataObjectReferencesName,
 } from '../DataObjectHelpers';
 
 /**
@@ -152,20 +152,7 @@ function DataObjectNameTextField(props) {
   const setValue = (value) => {
 
     // Update references name
-    const references = findDataObjectReferenceShapes(element.children, dataObject.id);
-    for (const ref of references) {
-      const stateName = ref.businessObject.dataState && ref.businessObject.dataState.name ? ref.businessObject.dataState.name : '';
-      const newName = stateName ? `${value} [${stateName}]` : value;
-
-      commandStack.execute('element.updateProperties', {
-        element: ref,
-        moddleElement: ref.businessObject,
-        properties: {
-          name: newName,
-        },
-        changed: [ref],
-      });
-    }
+    updateDataObjectReferencesName(element, value, dataObject.id, commandStack);
 
     // Update dataObject name
     commandStack.execute('element.updateModdleProperties', {

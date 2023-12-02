@@ -1,6 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
-import { findDataObjects, idToHumanReadableName } from '../DataObjectHelpers';
+import { findDataObjects } from '../DataObjectHelpers';
 
 /**
  * Finds the value of the given type within the extensionElements

@@ -1,5 +1,5 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { findDataObject, findDataObjectReferenceShapes, findDataObjects } from './DataObjectHelpers';
+import { findDataObject, updateDataObjectReferencesName } from './DataObjectHelpers';
 
 const LOW_PRIORITY = 500;
 
@@ -47,20 +47,7 @@ export default function DataObjectLabelEditingProvider(eventBus, canvas, directE
             });
 
             // Update references name
-            const references = findDataObjectReferenceShapes(element.parent.children, dataObject.id);
-            for (const ref of references) {
-                const stateName = ref.businessObject.dataState && ref.businessObject.dataState.name ? ref.businessObject.dataState.name : '';
-                const newName = stateName ? `${newLabel} [${stateName}]` : newLabel;
-
-                commandStack.execute('element.updateProperties', {
-                    element: ref,
-                    moddleElement: ref.businessObject,
-                    properties: {
-                        name: newName,
-                    },
-                    changed: [ref],
-                });
-            }
+            updateDataObjectReferencesName(element.parent, newLabel, dataObject.id, commandStack);
 
             // Append the data state if it exists
             if (dataState) {
@@ -69,9 +56,7 @@ export default function DataObjectLabelEditingProvider(eventBus, canvas, directE
 
             // Update the label with the data state
             modeling.updateLabel(element, newLabel);
-
             el = undefined;
-            
         }
     });
 
