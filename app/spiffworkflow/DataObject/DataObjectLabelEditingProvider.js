@@ -38,6 +38,10 @@ export default function DataObjectLabelEditingProvider(eventBus, canvas, directE
 
             let newLabel = element.businessObject.name;
 
+            console.log('newLabel', newLabel);
+            console.log('dataObject', dataObject);
+            console.log('element', element);
+
             commandStack.execute('element.updateModdleProperties', {
                 element,
                 moddleElement: dataObject,
@@ -45,6 +49,8 @@ export default function DataObjectLabelEditingProvider(eventBus, canvas, directE
                     name: newLabel,
                 },
             });
+
+            console.log('cdataObject', dataObject);
 
             // Update references name
             updateDataObjectReferencesName(element.parent, newLabel, dataObject.id, commandStack);
@@ -57,6 +63,8 @@ export default function DataObjectLabelEditingProvider(eventBus, canvas, directE
             // Update the label with the data state
             modeling.updateLabel(element, newLabel);
             el = undefined;
+            
+            console.log('---------------------');
         }
     });
 
