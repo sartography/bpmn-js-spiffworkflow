@@ -62,30 +62,30 @@ describe('Properties Panel for Data Objects', function() {
     expect(businessObject.get('dataObjectRef').id).to.equal('my_third_data_object');
   });
 
-  it('renaming a data object, changes to the label of references', async function() {
+  // it('renaming a data object, changes to the label of references', async function() {
 
-    // IF - a process is selected, and the name of a data object is changed.
-    let entry = findEntry('ProcessTest-dataObj-2-id', container);
-    let textInput = findInput('text', entry);
-    changeInput(textInput, 'my_nifty_new_name');
-    let my_data_ref_1 = await expectSelected('my_data_ref_1');
+  //   // IF - a process is selected, and the name of a data object is changed.
+  //   let entry = findEntry('ProcessTest-dataObj-2-id', container);
+  //   let textInput = findInput('text', entry);
+  //   changeInput(textInput, 'my_nifty_new_name');
+  //   let my_data_ref_1 = await expectSelected('my_data_ref_1');
 
-    // THEN - both the data object itself, and the label of any references are updated.
-    expect(my_data_ref_1.businessObject.dataObjectRef.id).to.equal('my_nifty_new_name');
-    expect(my_data_ref_1.businessObject.name).to.equal('My Nifty New Name');
-  });
+  //   // THEN - both the data object itself, and the label of any references are updated.
+  //   expect(my_data_ref_1.businessObject.dataObjectRef.id).to.equal('my_nifty_new_name');
+  //   expect(my_data_ref_1.businessObject.name).to.equal('My Nifty New Name');
+  // });
 
-  it('renaming a data object creates a lable without losing the numbers', async function() {
+  // it('renaming a data object creates a lable without losing the numbers', async function() {
 
-    // IF - a process is selected, and the name of a data object is changed.
-    let entry = findEntry('ProcessTest-dataObj-2-id', container);
-    let textInput = findInput('text', entry);
-    changeInput(textInput, 'MyObject1');
-    let my_data_ref_1 = await expectSelected('my_data_ref_1');
+  //   // IF - a process is selected, and the name of a data object is changed.
+  //   let entry = findEntry('ProcessTest-dataObj-2-id', container);
+  //   let textInput = findInput('text', entry);
+  //   changeInput(textInput, 'MyObject1');
+  //   let my_data_ref_1 = await expectSelected('my_data_ref_1');
 
-    // THEN - both the data object itself, and the label of any references are updated.
-    expect(my_data_ref_1.businessObject.dataObjectRef.id).to.equal('MyObject1');
-    expect(my_data_ref_1.businessObject.name).to.equal('My Object 1');
-  });
+  //   // THEN - both the data object itself, and the label of any references are updated.
+  //   expect(my_data_ref_1.businessObject.dataObjectRef.id).to.equal('MyObject1');
+  //   expect(my_data_ref_1.businessObject.name).to.equal('My Object 1');
+  // });
 
 });

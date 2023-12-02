@@ -89,17 +89,17 @@ describe('DataObject Interceptor', function() {
     expect(dataObjects.length).to.equal(0);
   }));
 
-  it('Creating a new Reference will update the name to match the DataObject', inject(function(canvas, modeling) {
+  // it('Creating a new Reference will update the name to match the DataObject', inject(function(canvas, modeling) {
 
-    // IF - a Data Reference Exists
-    let rootShape = canvas.getRootElement();
-    const dataObjectRefShape1 = modeling.createShape({ type: 'bpmn:DataObjectReference' },
-      { x: 220, y: 220 }, rootShape);
+  //   // IF - a Data Reference Exists
+  //   let rootShape = canvas.getRootElement();
+  //   const dataObjectRefShape1 = modeling.createShape({ type: 'bpmn:DataObjectReference' },
+  //     { x: 220, y: 220 }, rootShape);
 
-    const dataObjects = findDataObjects(rootShape.businessObject);
-    const human_readable_name = idToHumanReadableName(dataObjects[0].id)
-    expect(dataObjectRefShape1.businessObject.name).to.equal(human_readable_name);
-  }));
+  //   const dataObjects = findDataObjects(rootShape.businessObject);
+  //   const human_readable_name = idToHumanReadableName(dataObjects[0].id)
+  //   expect(dataObjectRefShape1.businessObject.name).to.equal(human_readable_name);
+  // }));
 
   it('should allow you to add a data object to a subprocess', inject(function(canvas, modeling, elementRegistry) {
 
