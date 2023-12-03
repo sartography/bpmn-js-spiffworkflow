@@ -1,7 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
-  isTextFieldEntryEdited,
-  TextFieldEntry,
+  TextAreaEntry
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
@@ -107,7 +106,7 @@ function ConditionExpressionTextField(props) {
     }
   };
 
-  return TextFieldEntry({
+  return TextAreaEntry({
     element,
     id: `the-id`,
     label,
