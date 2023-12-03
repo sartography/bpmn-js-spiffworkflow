@@ -136,7 +136,7 @@ describe('Properties Panel for Data Objects', function () {
     expect(my_data_ref_3.businessObject.name).to.equal(`${newDataObjectName} [${my_data_ref_3_DataState}]`);
   });
 
-  it('renaming a data object reference state, does change the label of references', async function () {
+  it('renaming a data object reference state, does change the label its reference', async function () {
 
     let my_data_ref_1 = await expectSelected('my_data_ref_1');
     let dtObjCurrentName = my_data_ref_1.businessObject.name;
