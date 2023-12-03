@@ -57,7 +57,6 @@ describe('Properties Panel for Data Objects', function () {
     expect(selector.length).to.equal(3);
   });
 
-
   it('selecting a different data object should change the data model.', async function () {
 
     // IF - a data object reference is selected
@@ -104,7 +103,7 @@ describe('Properties Panel for Data Objects', function () {
     // expect(my_data_ref_1.businessObject.name).to.equal('My Object 1');
   });
 
-  it('renaming a data object, does not change the label of references', async function () {
+  it('renaming a data object ID, does not change the label of references', async function () {
     // IF - a process is selected, and the name of a data object is changed.
     let entry = findEntry('ProcessTest-dataObj-2-id', container);
     let textInput = findInput('text', entry);
@@ -113,6 +112,44 @@ describe('Properties Panel for Data Objects', function () {
     // THEN - both the data object itself, and the label of any references are updated.
     expect(my_data_ref_1.businessObject.dataObjectRef.id).to.equal('my_nifty_new_name');
     expect(my_data_ref_1.businessObject.name).not.to.equal('My Nifty New Name');
+  });
+
+  it('renaming a data object name, does change the label of references', async function () {
+
+    let entry = findEntry('ProcessTest-dataObj-2-name', container);
+    let textInput = findInput('text', entry);
+    let newDataObjectName = 'A New Data Object Name';
+    
+    changeInput(textInput, newDataObjectName);
+
+    let my_data_ref_1 = await expectSelected('my_data_ref_1');
+    let my_data_ref_2 = await expectSelected('my_data_ref_2');
+   
+    // THEN - the label of any references are updated.
+    expect(my_data_ref_1.businessObject.name).to.equal(newDataObjectName);
+    expect(my_data_ref_2.businessObject.name).to.equal(newDataObjectName);
+
+    // Test References with DataState
+    let my_data_ref_3 = await expectSelected('my_data_ref_3');
+    let my_data_ref_3_DataState = my_data_ref_3.businessObject.dataState.name;
+
+    expect(my_data_ref_3.businessObject.name).to.equal(`${newDataObjectName} [${my_data_ref_3_DataState}]`);
+  });
+
+  it('renaming a data object reference state, does change the label of references', async function () {
+
+    let my_data_ref_1 = await expectSelected('my_data_ref_1');
+    let dtObjCurrentName = my_data_ref_1.businessObject.name;
+    let entry = findEntry('selectDataState-textField', container);
+    let idInput = findInput('text', entry);
+    let nwState = "New State";
+
+    // Change Data State
+    changeInput(idInput, nwState);
+
+    // Expect new DataObjectRef Name to be like 'DataObjectRefName [DataState]'
+    expect(my_data_ref_1.businessObject.name).to.equal(`${dtObjCurrentName} [${nwState}]`);
+    expect(my_data_ref_1.businessObject.name).not.to.equal(dtObjCurrentName);
   });
 
   it('selecting a different data object should not change the data object reference name.', async function () {
