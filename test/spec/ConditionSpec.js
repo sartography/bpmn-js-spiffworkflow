@@ -32,7 +32,7 @@ describe('BPMN Condition', function() {
     const conditions = findGroupEntry('conditions', PROPERTIES_PANEL_CONTAINER);
     expect(conditions).to.exist;
 
-    const textInput = domQuery('input', conditions);
+    const textInput = domQuery('textarea', conditions);
     expect(textInput.value).to.equal('cancel_task_2');
     changeInput(textInput, 'True');
   });
