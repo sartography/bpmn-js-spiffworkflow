@@ -1,11 +1,8 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { findDataObject, updateDataObjectReferencesName } from './DataObjectHelpers';
 
-const LOW_PRIORITY = 500;
+export default function DataObjectLabelEditingProvider(eventBus, directEditing, commandStack, modeling) {
 
-export default function DataObjectLabelEditingProvider(eventBus, canvas, directEditing, commandStack, modeling) {
-
-    // directEditing.registerProvider(LOW_PRIORITY, this);
     let el;
 
     // listen to dblclick on non-root elements
@@ -20,47 +17,45 @@ export default function DataObjectLabelEditingProvider(eventBus, canvas, directE
         }
     });
 
-    // eventBus.on('directEditing.activate', async function (event) {
-    //     const { element } = event.active;
-    //     if (is(element.businessObject, 'bpmn:DataObjectReference')) { }
-    // });
-
     eventBus.on('directEditing.complete', function (event) {
 
         const element = el;
+
         if (element && is(element.businessObject, 'bpmn:DataObjectReference')) {
-            const process = element.parent.businessObject;
-            const dataObject = findDataObject(process, element.businessObject.dataObjectRef.id);
-            const dataState = element.businessObject.dataState && element.businessObject.dataState.name;
 
-            let newLabel = element.businessObject.name;
+            setTimeout(() => {
+                const process = element.parent.businessObject;
+                const dataObject = findDataObject(process, element.businessObject.dataObjectRef.id);
+                const dataState = element.businessObject.dataState && element.businessObject.dataState.name;
 
-            commandStack.execute('element.updateModdleProperties', {
-                element,
-                moddleElement: dataObject,
-                properties: {
-                    name: newLabel,
-                },
-            });
+                let newLabel = element.businessObject.name;
 
-            // Update references name
-            updateDataObjectReferencesName(element.parent, newLabel, dataObject.id, commandStack);
+                commandStack.execute('element.updateModdleProperties', {
+                    element,
+                    moddleElement: dataObject,
+                    properties: {
+                        name: newLabel,
+                    },
+                });
 
-            // Append the data state if it exists
-            if (dataState) {
-                newLabel += ` [${dataState}]`;
-            }
+                // Update references name
+                updateDataObjectReferencesName(element.parent, newLabel, dataObject.id, commandStack);
 
-            // Update the label with the data state
-            modeling.updateLabel(element, newLabel);
-            el = undefined;
+                // Append the data state if it exists
+                if (dataState) {
+                    newLabel += ` [${dataState}]`;
+                }
+
+                // Update the label with the data state
+                modeling.updateLabel(element, newLabel);
+                el = undefined;
+            }, 100);
         }
     });
 }
 
 DataObjectLabelEditingProvider.$inject = [
     'eventBus',
-    'canvas',
     'directEditing',
     'commandStack',
     'modeling'
