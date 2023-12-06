@@ -168,7 +168,7 @@ function createDataStateTextField(props) {
     element,
     id: `${id}-textField`,
     name: 'spiffworkflow:DataStateLabel',
-    label: 'Enter Data State of this reference?',
+    label: 'What is the state of this reference?',
     description: 'Enter the Data State for this reference.',
     getValue,
     setValue,

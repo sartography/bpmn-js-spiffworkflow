@@ -1,4 +1,5 @@
 import { useService } from 'bpmn-js-properties-panel';
+import {SpiffExtensionTextInput} from '../../extensions/propertiesPanel/SpiffExtensionTextInput';
 import {
   isTextFieldEntryEdited,
   TextFieldEntry,
@@ -42,6 +43,8 @@ export function DataObjectArray(props) {
         idPrefix: id,
         element,
         dataObject,
+        commandStack,
+        moddle,
       }),
       autoFocusEntry: `${id}-dataObject`,
       remove: removeFactory({
@@ -95,7 +98,7 @@ function removeFactory(props) {
 }
 
 function DataObjectGroup(props) {
-  const { idPrefix, dataObject } = props;
+  const { idPrefix, dataObject, element, moddle, commandStack } = props;
 
   return [
     {
@@ -111,7 +114,16 @@ function DataObjectGroup(props) {
       isEdited: isTextFieldEntryEdited,
       idPrefix,
       dataObject,
-    }
+    },
+    {
+      businessObject: dataObject,
+      commandStack: commandStack,
+      moddle: moddle,
+      component: SpiffExtensionTextInput,
+      name: 'spiffworkflow:DataObjectCategory',
+      label: 'Data Object Category',
+      description: 'Useful for setting permissions on groups of data objects.',
+    },
   ];
 }
 
