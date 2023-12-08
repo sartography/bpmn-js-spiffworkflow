@@ -94,7 +94,7 @@
       ]
     },
     {
-      "name": "DataObjectCategory",
+      "name": "Category",
       "superClass": [ "Element" ],
       "properties": [
         {

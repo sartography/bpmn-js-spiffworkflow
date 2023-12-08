@@ -120,7 +120,7 @@ function DataObjectGroup(props) {
       commandStack: commandStack,
       moddle: moddle,
       component: SpiffExtensionTextInput,
-      name: 'spiffworkflow:DataObjectCategory',
+      name: 'spiffworkflow:Category',
       label: 'Data Object Category',
       description: 'Useful for setting permissions on groups of data objects.',
     },
