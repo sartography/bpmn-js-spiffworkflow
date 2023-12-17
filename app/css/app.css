@@ -1,5 +1,5 @@
-
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -9,7 +9,7 @@ html, body {
 
 #container {
   display: flex;
-  width: 100%;
+  width: calc(100% - 250px);
   height: 100%;
 }
 
@@ -54,25 +54,33 @@ html, body {
 
 /* Code Editor -- provided as a div overlay */
 .overlay {
-  position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
-  width: 100%; /* Full width (cover the whole page) */
-  height: 100%; /* Full height (cover the whole page) */
+  position: fixed;
+  /* Sit on top of the page content */
+  display: none;
+  /* Hidden by default */
+  width: 100%;
+  /* Full width (cover the whole page) */
+  height: 100%;
+  /* Full height (cover the whole page) */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-  z-index: 200; /* BPMN Canvas has some huge z-indexes, pop-up tools are 100 for ex.*/
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Black background with opacity */
+  z-index: 200;
+  /* BPMN Canvas has some huge z-indexes, pop-up tools are 100 for ex.*/
 }
 
-#code_editor, #markdown_editor {
+#code_editor,
+#markdown_editor {
   background-color: #ccc;
   margin: 50px auto 10px auto;
   max-width: 800px;
 }
 
-#code_buttons, #markdown_buttons {
+#code_buttons,
+#markdown_buttons {
   margin: 50px auto 10px auto;
   max-width: 800px;
   right: 10px;
@@ -80,4 +88,112 @@ html, body {
 
 .djs-palette.two-column.open {
   width: 95px;
+}
+
+
+/* Header  */
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+}
+
+#process-info h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+#process-info p {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+#header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.bpmn-js-spiffworkflow-btn {
+  margin-left: 8px;
+}
+
+/* Left sidebar */
+#left-sidebar {
+  display: flex;
+  width: 250px;
+  background-color: #f4f4f4;
+  overflow: hidden;
+  height: 100%;
+  float: left;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-button {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  flex-direction: column;
+  height: 50px;
+  margin-bottom: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.tab-button i {
+  font-size: 24px; 
+  color: #333;
+  margin-bottom: 5px; 
+}
+
+.tab-button .text {
+  font-size: 12px;
+  display: block; 
+}
+
+.tab-button.active i {
+  color: DodgerBlue;
+}
+
+.tab-button i {
+  transition: color 0.2s;
+}
+
+.tab-button.active i {
+  transition: color 0.2s;
+}
+
+.tab-button:hover {
+  background-color: #ddd;
+}
+
+.tab-button.active, .tab-button:hover {
+  background-color: #e9e9e9; 
+  color: DodgerBlue; 
+}
+
+.tab-content {
+  display: none;
+  padding: 10px;
+  border-left: 1px solid #ccc;
+  height: calc(100% - 40px);
+}
+
+.tab-content.active {
+  display: block;
+}
+
+#container::after {
+  content: "";
+  clear: both;
+  display: table;
 }

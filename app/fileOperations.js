@@ -32,6 +32,9 @@ export default function setupFileOperations(bpmnModeler) {
   uploadBtn.addEventListener('click', (_event) => {
     openFile(bpmnModeler);
   });
+
+  // Setup tabs after modeler is initialized
+  setupTabs();
 }
 
 function clickElem(elem) {
@@ -77,3 +80,35 @@ export function openFile(bpmnModeler) {
   document.body.appendChild(fileInput);
   clickElem(fileInput);
 }
+
+/** ****************************************
+ * Tab functionality
+ */
+function openTab(event, tabName) {
+  
+  // Hide all tab contents
+  const tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(content => {
+    content.classList.remove('active');
+  });
+
+  // Remove  active class from all tabs
+  const tabButtons = document.querySelectorAll('.tab-button');
+  tabButtons.forEach(button => {
+    button.classList.remove('active');
+  });
+
+  // append active tab content class to the clicked tab button
+  document.getElementById(tabName).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function setupTabs() {
+  const tabs = document.querySelectorAll('.tab-button');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function (event) {
+      openTab(event, this.getAttribute('data-tab-target'));
+    });
+  });
+}
+

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <!--
      IMPORTANT:
@@ -8,15 +9,15 @@
      -->
     <title>bpmn-js-spiffworkflow</title>
 
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <!-- here are the core dependencies you will need to include -->
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css"/>
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-js.css"/>
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css"/>
-    <link rel="stylesheet" href="vendor/bpmn-js-properties-panel/assets/properties-panel.css"/>
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css" />
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-js.css" />
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css" />
+    <link rel="stylesheet" href="vendor/bpmn-js-properties-panel/assets/properties-panel.css" />
 
     <!-- Some local css settings -->
-    <link rel="stylesheet" href="css/app.css"/>
+    <link rel="stylesheet" href="css/app.css" />
     <link rel="shortcut icon" href="#">
 
     <!-- A python code editor, we are using CodeMirror here -- see app.js for how this is wired in -->
@@ -32,33 +33,64 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
-<body>
-<div id="menu">
-    <button id="downloadButton" class="bpmn-js-spiffworkflow-btn"><i class="fa fa-download"></i> Download</button>
-    <button id="uploadButton" class="bpmn-js-spiffworkflow-btn">Open a file</button>
-</div>
-<div id="container">
-    <div id="modeler"></div>
-    <div id="panel"></div>
-</div>
-<!-- the following are overlays to provide editors for Python and Markdown -->
-<div id="code_overlay" class="overlay">
-    <div id="code_editor"></div>
-    <div id="code_buttons">
-        <button id="saveCode" class="bpmn-js-spiffworkflow-btn">Save</button>
-    </div>
-</div>
-<div id="markdown_overlay" class="overlay">
-    <div id="markdown_editor">
-    <textarea id="markdown_textarea"></textarea>
-    </div>
-    <div id="markdown_buttons">
-        <button id="saveMarkdown" class="bpmn-js-spiffworkflow-btn">Save</button>
-    </div>
-</div>
 
-<!-- Here we load up our application, it's where the configuration happens. -->
-<script src="app.js"></script>
+<body>
+    <div id="header">
+        <div id="process-info">
+            <h1>Process Name</h1>
+            <p>./Process Groups/bpmn_process.bpmn</p>
+        </div>
+        <div id="header-actions">
+            <button id="downloadButton" class="bpmn-js-spiffworkflow-btn"><i class="fa fa-download"></i>
+                Download</button>
+            <button id="uploadButton" class="bpmn-js-spiffworkflow-btn">Open a file</button>
+            <button id="viewXmlButton" class="bpmn-js-spiffworkflow-btn">View XML</button>
+            <button id="saveButton" class="bpmn-js-spiffworkflow-btn">Save</button>
+            <!-- Add more action buttons as needed -->
+        </div>
+    </div>
+    <div id="left-sidebar">
+        <div class="tabs">
+            <button class="tab-button active" data-tab-target="BPMNElements">
+                <i class="fa fa-cogs"></i> 
+            </button>
+            <button class="tab-button" data-tab-target="OtherTab">
+                <i class="fa fa-clipboard"></i> 
+            </button>
+        </div>
+
+        <div id="BPMNElements" class="tab-content active">
+            <!-- Content for BPMN Elements -->
+            <p> BPMNElements </p>
+        </div>
+        <div id="OtherTab" class="tab-content">
+            <!-- Content for Other Tab -->
+            <p> OtherTab </p>
+        </div>
+    </div>
+    <div id="container">
+        <div id="modeler"></div>
+        <div id="panel"></div>
+    </div>
+    <!-- the following are overlays to provide editors for Python and Markdown -->
+    <div id="code_overlay" class="overlay">
+        <div id="code_editor"></div>
+        <div id="code_buttons">
+            <button id="saveCode" class="bpmn-js-spiffworkflow-btn">Save</button>
+        </div>
+    </div>
+    <div id="markdown_overlay" class="overlay">
+        <div id="markdown_editor">
+            <textarea id="markdown_textarea"></textarea>
+        </div>
+        <div id="markdown_buttons">
+            <button id="saveMarkdown" class="bpmn-js-spiffworkflow-btn">Save</button>
+        </div>
+    </div>
+
+    <!-- Here we load up our application, it's where the configuration happens. -->
+    <script src="app.js"></script>
 
 </body>
+
 </html><!---->
