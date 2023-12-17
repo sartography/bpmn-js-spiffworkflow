@@ -4,17 +4,31 @@ import translate from 'diagram-js/lib/i18n/translate/translate';
 /**
  * Add data inputs and data outputs to the panel.
  */
-export default function IoPalette(palette, create, elementFactory,) {
+export default function IoPalette(palette, create, elementFactory, eventBus) {
+  console.log('palette', palette);
   this._create = create;
   this._elementFactory = elementFactory;
+  
+  eventBus.on('palette.create', function(event) {
+    console.log('palette.create', event)
+  
+    const paletteContainer = event.container; // This is the palette's DOM element
+    const bpmnElementsDiv = document.getElementById('BPMNElements'); // Your target container
+  
+    // Move the palette to your target container
+    bpmnElementsDiv.appendChild(paletteContainer);
+  });
+
   palette.registerProvider(this);
 }
 
 IoPalette.$inject = [
   'palette',
   'create',
-  'elementFactory'
+  'elementFactory',
+  'eventBus'
 ];
+
 
 IoPalette.prototype.getPaletteEntries = function() {
 
@@ -59,4 +73,8 @@ IoPalette.prototype.getPaletteEntries = function() {
 
   };
 };
+
+IoPalette.prototype.update = function() {
+  console.log('Update palette');
+}
 

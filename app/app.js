@@ -33,6 +33,7 @@ try {
       spiffworkflowModdle: spiffModdleExtension,
     },
   });
+  console.log('Bpmn Modeler Initialized', bpmnModeler);
 } catch (error) {
   if (error.constructor.name === 'AggregateError') {
     console.log(error.message);
