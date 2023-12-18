@@ -33,6 +33,25 @@ export default function setupFileOperations(bpmnModeler) {
     openFile(bpmnModeler);
   });
 
+  // Handle header actions
+  const headerButtons = document.querySelectorAll('.header-btn');
+  headerButtons.forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
+      const action = event.target.closest('.header-btn').getAttribute('data-action');
+      handleHeaderAction(action, bpmnModeler);
+    });
+  });
+
+  // Handle sidebar toggle button
+  const toggleButtons = document.querySelectorAll('.bpmn-elements-toggle');
+  toggleButtons.forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
+      // Use a data attribute to identify which tab to toggle
+      const tabTarget = event.target.closest('button').getAttribute('data-tab-target');
+      toggleTab(tabTarget);
+    });
+  });
+
   // Setup tabs after modeler is initialized
   setupTabs();
 }
@@ -85,7 +104,7 @@ export function openFile(bpmnModeler) {
  * Tab functionality
  */
 function openTab(event, tabName) {
-  
+
   // Hide all tab contents
   const tabContents = document.querySelectorAll('.tab-content');
   tabContents.forEach(content => {
@@ -112,3 +131,56 @@ function setupTabs() {
   });
 }
 
+function toggleTab(tabId) {
+  const tabContent = document.getElementById(tabId);
+  const allTabContents = document.querySelectorAll('.tab-content');
+
+  // Remove 'active' from all tabs
+  allTabContents.forEach(function (tab) {
+    tab.classList.remove('active');
+  });
+}
+
+/**
+ * Header functionality
+ */
+function handleHeaderAction(action, bpmnModeler) {
+  var commandStack = bpmnModeler.get('commandStack');
+  var paletteProvider = bpmnModeler.get('paletteProvider');
+  var canvas = bpmnModeler.get('canvas');
+  switch (action) {
+    case 'zoom-in':
+      bpmnModeler.get('zoomScroll').stepZoom(1);
+      break;
+    case 'zoom-out':
+      bpmnModeler.get('zoomScroll').stepZoom(-1);
+      break;
+    case 'expand':
+      canvas.zoom('fit-viewport', 'auto');
+      break;
+    case 'undo':
+      commandStack.undo();
+      break;
+    case 'redo':
+      commandStack.redo();
+      break;
+    case 'hand':
+      const handTool = paletteProvider._handTool;
+      handTool.activateHand();
+      break;
+    case 'lasso':
+      const lassoTool = paletteProvider._lassoTool;
+      lassoTool.activateSelection(event);
+      break;
+    case 'space':
+      const spaceTool = paletteProvider._spaceTool;
+      spaceTool.activateSelection();
+      break;
+    case 'connect':
+      const globalConnect = paletteProvider._globalConnect;
+      globalConnect.start();
+      break;
+    default:
+      console.log('Unknown action:', action);
+  }
+}
