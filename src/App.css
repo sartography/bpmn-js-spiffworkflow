@@ -1,0 +1,83 @@
+
+html, body, .App, #root {
+  height: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+#container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+#modeler {
+  flex-grow: 1;
+}
+
+#panel {
+  background-color: #fafafa;
+  border: solid 1px #ccc;
+  border-radius: 2px;
+  font-family: 'Arial', sans-serif;
+  padding: 10px;
+  min-width: 400px;
+}
+
+.djs-label {
+  font-family: 'Arial', sans-serif;
+}
+
+.spiffworkflow-properties-panel-button {
+  margin: 2px 32px 6px 12px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+/* Style buttons */
+.bpmn-js-spiffworkflow-btn {
+  background-color: DodgerBlue;
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 12px;
+}
+
+/* Darker background on mouse-over */
+.bpmn-js-spiffworkflow-btn:hover {
+  background-color: RoyalBlue;
+}
+
+/* Code Editor -- provided as a div overlay */
+.overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  z-index: 200; /* BPMN Canvas has some huge z-indexes, pop-up tools are 100 for ex.*/
+}
+
+#code_editor, #markdown_editor {
+  background-color: #ccc;
+  margin: 50px auto 10px auto;
+  max-width: 800px;
+}
+
+#code_buttons, #markdown_buttons {
+  margin: 50px auto 10px auto;
+  max-width: 800px;
+  right: 10px;
+}
+
+.djs-palette.two-column.open {
+  width: 95px;
+}

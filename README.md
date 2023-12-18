@@ -1,105 +1,70 @@
+# Getting Started with Create React App
 
-![Tests](https://github.com/sartography/bpmn-js-spiffworkflow/actions/workflows/tests.yml/badge.svg?branch=main)
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-# SpiffWorkflow Extensions for BPMN.js
-This package provides extensions that can be applied to BPMN.js that will enable some important features of [SpiffWorkflow](https://github.com/sartography/SpiffWorkflow) - the Python BPMN Library for executing business processes.  See below for more information.
+## Available Scripts
 
-**IMPORTANT**:  This is a work in progress, and is not yet released.
+In the project directory, you can run:
 
-# About
+### `npm start`
 
-This extension creates a BPMN editor with all the capabilities of [BPMN.js](https://github.com/bpmn-io/bpmn-js) and the following additions / modifications:
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-* Ability to insert BPMN's Data Input and Data Output Objects.
-* A SpiffWorkflow centric Properties Panel for specifying scripts to run before and after a task, and for defining documentation, and Mark-up content for displaying in user and manual tasks.  Among other things.
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-# Data Input and Data Output Element
-This extension will allow you to drag BPMN Data Input and Data Output elements onto the diagram and give them appropriate labels.  This will generate valid BPMN elements in the underlying XML file - connecting them to the IO Specification of the process, as shown below:
-```xml
-  <bpmn:process id="my_delightful_process" isExecutable="true">
-    <bpmn:ioSpecification>
-      <bpmn:dataInput id="DataInput-745019423-1" name="num_dogs" />
-      <bpmn:dataOutput id="DataOutput-711207596-1" name="happy_index" />
-    </bpmn:ioSpecification>
-    ...
-```
-![Screenshot](docs/io.png)
+### `npm test`
 
-Using these data input and outputs will allow you to create processes designed to be used as Call Activities.  SpiffWorkflow (in a soon-to-be released version) will pick up this information, and enforce it.  So that you must provide these input variables to execute, and only the variables mentioned in the output will be passed back to the calling process.
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-## Usage
-```javascript
-import BpmnModeler from 'bpmn-js/lib/Modeler';
-import spiffworkflow from 'bpmn-js-spiffworkflow/app/spiffworkflow';
+### `npm run build`
 
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-var bpmnJS = new BpmnModeler({
-  additionalModules: [
-    spiffworkflow
-  ],
-  moddleExtensions: {
-    spiffworkflowModdle: spiffModdleExtension
-  }
-});
-```
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-## Run the Example
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-You need a [NodeJS](http://nodejs.org) development stack with [npm](https://npmjs.org) installed to build the project.
+### `npm run eject`
 
-To install all project dependencies execute
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-```sh
-npm install
-```
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-To start the example execute
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-```sh
-npm start
-```
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-To build the example into the `public` folder execute
+## Learn More
 
-```sh
-npm run all
-```
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-# Integration Points
-You can use the EventBus to communicate with this UI, sending and receiving messages to change 
-the behavior of the editor making it easier for your end users.  There are many examples of 
-this in the app.js file.  
-Below is a table of all the events that are sent and accepted:
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-| Event Name                     | Description                                                      | Fired or Acceped | Parameters           | Description                                                              |
-|--------------------------------|------------------------------------------------------------------|---------|----------------------|--------------------------------------------------------------------------|
-| spiff.service\_tasks.requested | Request a list of available services for service task.           | Fired   | \-                   |                                                                          |
-| spiff.service\_tasks.returned  | Provides a list of services.                                     | Recieved | serviceTaskOperators | ex: \[{id:'Chuck Facts', parameters\[{id:'category', type:'string'}\]}\] |
-| spiff.script.edit              | Request to edit a python script in some sort of facy editor.     | Fired   | scriptType           | one of: script, preScript, postScript                                    |
-|                                |                                                                  |         | value                | The actual python script                                                 |
-|                                |                                                                  |         | element              | The element that needs updating                                          |
-|                                |                                                                  |         | eventBus             | Used by receiver to fire back an event                                   |
-| spiff.script.update            | Update a python script to a new value.                           | Recieved | scriptType           | one of: script, preScript, postScript                                    |
-|                                |                                                                  |         | value                | The updated script                                                       |
-|                                |                                                                  |         | element              | The element that needs updating                                          |
-| spiff.markdown.edit            | Request to edit markdown in a fancy editor.                      | Fired   | element              | The element that needs updating                                          |
-|                                |                                                                  |         | value                | The current markdown content                                             |
-| spiff.markdown.update          | Update Markdown content for a paticular elements 'instructions'. | Recieved | element              | The element that needs updating                                          |
-|                                |                                                                  |         | value                | Tne updated Markdown content                                             |
-| spiff.callactivity.edit        | Requst to edit a call activity by process id.                    | Fired   | processId            | The Process the users wants to edit                                      |
-| spiff.callactivity.search      | Requst to search for a call activity                             | Fired   | processUd            | The currently seleted process id                                         |
-|                                |                                                                  |         | eventBus             | For sending back the selected process id.                                |
-| spiff.callactivity.update      | Update the process id from a call activity (based on search)     | Received | processId            | The Process the users wants to edit                                      |
-| spiff.file.edit                | request to edit a file, but file name.                           | Fired   | value                | The file name the user wants to edit                                     |
-| spiff.dmn.edit                 | request to edit a dmn by process id.                             | Fired   | value                | The DMN id the user wants to edit                                        |
-| spiff.json\_files.requested    | request a list of local json files.                              | Fired   | optionType           | The type of options required ('json' or 'dmn')                           |
-| spff.dmn\_files.requested      | request of list of local dmn files.                              |         |                      |                                                                          |
-| spiff.json\_files.returned     | Return a list of available json files                            | Recieved | options              | \[{lable:'My Label', value:'1'}\]                                        |
-| spff.dmn\_files.returned       | Return a list of available dmn files.                            | Recieved | options              | \[{lable:'My Label', value:'1'}\]                                        |
+### Code Splitting
 
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
+### Analyzing the Bundle Size
 
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
+### Making a Progressive Web App
 
-## License
-MIT
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
