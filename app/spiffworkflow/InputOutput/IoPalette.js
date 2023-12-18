@@ -33,11 +33,6 @@ IoPalette.$inject = [
 
 IoPalette.prototype.getPaletteEntries = function (e) {
 
-  const handTool = this._handTool;
-  const globalConnect = this._globalConnect;
-  const lassoTool = this._lassoTool;
-  const spaceTool = this._spaceTool;
-
   let input_type = 'bpmn:DataInput';
   let output_type = 'bpmn:DataOutput';
   let elementFactory = this._elementFactory, create = this._create;
@@ -57,84 +52,11 @@ IoPalette.prototype.getPaletteEntries = function (e) {
     createListener(event, output_type);
   }
 
-  function createStartEvent(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:StartEvent' }, {}));
-    create.start(event, shape);
-  }
-
-  function createEndEvent(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:EndEvent' }, {}));
-    create.start(event, shape);
-  }
-
-  function createIntermediateEvent(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:IntermediateCatchEvent' }, {}));
-    create.start(event, shape);
-  }
-
-  function createTask(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:Task' }, {}));
-    create.start(event, shape);
-  }
-
-  function createScriptTask(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:ScriptTask' }, {}));
-    create.start(event, shape);
-  }
-
-  function createServiceTask(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:ServiceTask' }, {}));
-    create.start(event, shape);
-  }
-
-  function createUserTask(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:UserTask' }, {}));
-    create.start(event, shape);
-  }
-
-  function createConditionGateaway(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:ExclusiveGateway' }, {}));
-    create.start(event, shape);
-  }
-
-  function createParallelGateaway(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:ParallelGateway' }, {}));
-    create.start(event, shape);
-  }
-
-  function createEventBasedGateaway(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:EventBasedGateway' }, {}));
-    create.start(event, shape);
-  }
-
-  function createInclusiveGateaway(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:InclusiveGateway' }, {}));
-    create.start(event, shape);
-  }
-
-  function createDataStore(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:DataStoreReference' }, {}));
-    create.start(event, shape);
-  }
-
-  function createDataObject(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:DataObjectReference' }, {}));
-    create.start(event, shape);
-  }
-
-  function createCallActivity(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:CallActivity' }, {}));
-    create.start(event, shape);
-  }
-
-  function createParticipant(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:Participant' }, {}));
-    create.start(event, shape);
-  }
-
-  function createSubProcess(event) {
-    let shape = elementFactory.createShape(assign({ type: 'bpmn:SubProcess', isExpanded: true }, {}));
-    create.start(event, shape);
+  function createShape(type, options = {}) {
+    return function(event) {
+      let shape = elementFactory.createShape(assign({ type: type }, options));
+      create.start(event, shape);
+    };
   }
 
   return {
@@ -144,8 +66,8 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       className: 'bpmn-icon-start-event-none',
       title: translate('Start'),
       action: {
-        dragstart: createStartEvent,
-        click: createStartEvent
+        dragstart: createShape('bpmn:StartEvent'),
+        click: createShape('bpmn:StartEvent')
       }
     },
     'create.intermediate-event': {
@@ -153,8 +75,8 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       className: 'bpmn-icon-intermediate-event-none',
       title: translate('Intermediate'),
       action: {
-        dragstart: createIntermediateEvent,
-        click: createIntermediateEvent
+        dragstart: createShape('bpmn:IntermediateCatchEvent'),
+        click: createShape('bpmn:IntermediateCatchEvent')
       }
     },
     'create.end-event': {
@@ -162,8 +84,8 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       className: 'bpmn-icon-end-event-none',
       title: translate('End'),
       action: {
-        dragstart: createEndEvent,
-        click: createEndEvent
+        dragstart: createShape('bpmn:EndEvent'),
+        click: createShape('bpmn:EndEvent')
       }
     },
     // Activities
@@ -171,48 +93,36 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       group: 'activities',
       className: 'bpmn-icon-task',
       title: translate('Task'),
-      target: {
-        type: 'bpmn:Task',
-      },
       action: {
-        dragstart: createTask,
-        click: createTask
+        dragstart: createShape('bpmn:Task'),
+        click: createShape('bpmn:Task')
       }
     },
     'create.user-task': {
       group: 'activities',
       className: 'bpmn-icon-user',
       title: translate('User Task'),
-      target: {
-        type: 'bpmn:UserTask',
-      },
       action: {
-        dragstart: createUserTask,
-        click: createUserTask
+        dragstart: createShape('bpmn:UserTask'),
+        click: createShape('bpmn:UserTask')
       }
     },
     'create.scirpt-task': {
       group: 'activities',
       className: 'bpmn-icon-script',
       title: translate('Script Task'),
-      target: {
-        type: 'bpmn:ScriptTask',
-      },
       action: {
-        dragstart: createScriptTask,
-        click: createScriptTask
+        dragstart: createShape('bpmn:ScriptTask'),
+        click: createShape('bpmn:ScriptTask')
       }
     },
     'create.service-task': {
       group: 'activities',
       className: 'bpmn-icon-service',
       title: translate('Service Task'),
-      target: {
-        type: 'bpmn:ServiceTask',
-      },
       action: {
-        dragstart: createServiceTask,
-        click: createServiceTask
+        dragstart: createShape('bpmn:ServiceTask'),
+        click: createShape('bpmn:ServiceTask')
       }
     },
     // Gateways
@@ -220,48 +130,36 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       group: 'decisions',
       className: 'bpmn-icon-gateway-xor',
       title: translate('Decision'),
-      target: {
-        type: 'bpmn:ExclusiveGateway',
-      },
       action: {
-        dragstart: createConditionGateaway,
-        click: createConditionGateaway
+        dragstart: createShape('bpmn:ExclusiveGateway'),
+        click: createShape('bpmn:ExclusiveGateway')
       }
     },
     'create.parallel-gateaway': {
       group: 'decisions',
       className: 'bpmn-icon-gateway-parallel',
       title: translate('Parallel'),
-      target: {
-        type: 'bpmn:ParallelGateway',
-      },
       action: {
-        dragstart: createParallelGateaway,
-        click: createParallelGateaway
+        dragstart: createShape('bpmn:ParallelGateway'),
+        click: createShape('bpmn:ParallelGateway')
       }
     },
     'create.eventbased-gateaway': {
       group: 'decisions',
       className: 'bpmn-icon-gateway-eventbased',
       title: translate('Event Based'),
-      target: {
-        type: 'bpmn:EventBasedGateway',
-      },
       action: {
-        dragstart: createEventBasedGateaway,
-        click: createEventBasedGateaway
+        dragstart: createShape('bpmn:EventBasedGateway'),
+        click: createShape('bpmn:EventBasedGateway')
       }
     },
     'create.inclusive-gateaway': {
       group: 'decisions',
       className: 'bpmn-icon-gateway-or',
       title: translate('xOR'),
-      target: {
-        type: 'bpmn:InclusiveGateway',
-      },
       action: {
-        dragstart: createInclusiveGateaway,
-        click: createInclusiveGateaway
+        dragstart: createShape('bpmn:InclusiveGateway'),
+        click: createShape('bpmn:InclusiveGateway')
       }
     },
     // Data Object
@@ -270,8 +168,8 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       className: 'bpmn-icon-data-store',
       title: translate('Data Store'),
       action: {
-        dragstart: createDataStore,
-        click: createDataStore
+        dragstart: createShape('bpmn:DataStoreReference'),
+        click: createShape('bpmn:DataStoreReference')
       }
     },
     'create.data-object': {
@@ -279,8 +177,8 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       className: 'bpmn-icon-data-object',
       title: translate('Data Object'),
       action: {
-        dragstart: createDataObject,
-        click: createDataObject
+        dragstart: createShape('bpmn:DataObjectReference'),
+        click: createShape('bpmn:DataObjectReference')
       }
     },
     'create.data-input': {
@@ -305,37 +203,27 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       group: 'advanced',
       className: 'bpmn-icon-call-activity',
       title: translate('Call Activity'),
-      target: {
-        type: 'bpmn:CallActivity',
-      },
       action: {
-        dragstart: createCallActivity,
-        click: createCallActivity
+        dragstart: createShape('bpmn:CallActivity'),
+        click: createShape('bpmn:CallActivity')
       }
     },
     'create.participant': {
       group: 'advanced',
       className: 'bpmn-icon-participant',
       title: translate('Participant'),
-      target: {
-        type: 'bpmn:Participant',
-      },
       action: {
-        dragstart: createParticipant,
-        click: createParticipant
+        dragstart: createShape('bpmn:Participant'),
+        click: createShape('bpmn:Participant')
       }
     },
     'create.sub-process-expanded': {
       group: 'advanced',
       className: 'bpmn-icon-subprocess-expanded',
       title: translate('SubProcess'),
-      target: {
-        type: 'bpmn:SubProcess',
-        isExpanded: true
-      },
       action: {
-        dragstart: createSubProcess,
-        click: createSubProcess
+        dragstart: createShape('bpmn:SubProcess', {isExpanded: true}),
+        click: createShape('bpmn:SubProcess', {isExpanded: true})
       }
     },
   };
@@ -343,6 +231,7 @@ IoPalette.prototype.getPaletteEntries = function (e) {
 
 IoPalette.prototype.init = function (event) {
 
+  // Override Palette DOM Generated by BPMN-JS Library
   const paletteContainer = event.container;
   const bpmnElementsDiv = document.getElementById('BPMNElements');
 
