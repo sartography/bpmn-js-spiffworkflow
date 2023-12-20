@@ -95,7 +95,7 @@ export function setExtensionValue(element, name, value, moddle, commandStack, bu
 }
 
 function getExtension(businessObject, name) {
-  if (!businessObject.extensionElements) {
+  if (!businessObject || !businessObject.extensionElements) {
     return null;
   }
   const extensionElements = businessObject.extensionElements.get('values');
