@@ -22,8 +22,8 @@ describe('BPMN Input / Output', function() {
   it('should have a data input and data output in the properties panel', function() {
     var paletteElement = domQuery('.djs-palette', CONTAINER);
     var entries = domQueryAll('.entry', paletteElement);
-    expect(entries[11].title).to.equals('Create DataInput');
-    expect(entries[12].title).to.equals('Create DataOutput');
+    expect(entries[14].title).to.equals('Data Input');
+    expect(entries[15].title).to.equals('Data Output');
   });
 
 });

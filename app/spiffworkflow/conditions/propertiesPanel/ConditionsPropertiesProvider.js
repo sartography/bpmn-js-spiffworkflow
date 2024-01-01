@@ -48,6 +48,8 @@ function createConditionsGroup(element, translate, moddle, commandStack) {
   return {
     id: 'conditions',
     label: translate('Conditions'),
+    // is default property is mainly used to mark this group as a high priority group that located in General Tab
+    isDefault: true,
     entries: conditionGroup(
       element,
       moddle,

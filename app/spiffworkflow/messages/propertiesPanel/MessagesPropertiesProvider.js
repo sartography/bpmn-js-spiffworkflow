@@ -181,6 +181,7 @@ function createMessageGroup(
   return {
     id: 'messages',
     label: translate('Message'),
+    isDefault: true,
     entries,
   };
 }
