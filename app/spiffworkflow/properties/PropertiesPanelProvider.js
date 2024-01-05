@@ -41,7 +41,6 @@ PropertiesPanelProvider.$inject = ['propertiesPanel', 'eventBus'];
 PropertiesPanelProvider.prototype.render = function (groups) {
 
   setTimeout(() => {
-    console.log('Render ;;;')
     const propertiesPanelContainer = document.querySelector('.bio-properties-panel-container');
     if (!propertiesPanelContainer) return;
 
