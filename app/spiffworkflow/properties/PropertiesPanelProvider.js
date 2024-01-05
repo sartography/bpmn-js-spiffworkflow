@@ -37,7 +37,7 @@ export default function PropertiesPanelProvider(propertiesPanel, eventBus) {
 PropertiesPanelProvider.$inject = ['propertiesPanel', 'eventBus'];
 
 PropertiesPanelProvider.prototype.render = function (groups) {
-  
+
   setTimeout(() => {
     const propertiesPanelContainer = document.querySelector('.bio-properties-panel-container');
     if (!propertiesPanelContainer) return;
@@ -46,20 +46,29 @@ PropertiesPanelProvider.prototype.render = function (groups) {
     const scrollContainer = propertiesPanelContainer.querySelector('.bio-properties-panel-scroll-container');
     if (!scrollContainer) return;
 
+    // Functions : 
+
     // This function makes the groups able to open and close.
     function makeGroupCollapsible(group) {
       const header = group.querySelector('.bio-properties-panel-group-header');
       const entries = group.querySelector('.bio-properties-panel-group-entries');
+      const arrow = header.querySelector('svg');
 
-      if (header && entries) {
+      let isFirstClick = true;
+
+      if (header && entries && arrow) {
         header.classList.add('open');
         entries.classList.add('open');
-
-        // When you click the header, it should open or close
-        header.addEventListener('click', function() {
-          header.classList.toggle('open');
-          entries.classList.toggle('open');
-        });
+        arrow.classList.add('bio-properties-panel-arrow-down');
+        arrow.classList.remove('bio-properties-panel-arrow-right');
+    
+        // Handles the first click, to prevent the bpmn js library from handling it instead
+        header.addEventListener('click', function(event) {
+          if (isFirstClick) {
+            header.click();
+            isFirstClick = false;
+          }
+        }, { once: true });
       }
     }
 
@@ -75,7 +84,7 @@ PropertiesPanelProvider.prototype.render = function (groups) {
           if (activeTab.dataset.tab === 'general' && (group.id === 'general' || group.isDefault)) {
             groupElement.style.display = '';
             if (group.isDefault) {
-              makeGroupCollapsible(groupElement); 
+              makeGroupCollapsible(groupElement);
             }
           } else if (activeTab.dataset.tab === 'advanced' && group.id !== 'general' && !group.isDefault) {
             groupElement.style.display = '';
@@ -83,15 +92,6 @@ PropertiesPanelProvider.prototype.render = function (groups) {
         }
       });
     }
-
-    // Add a click event to each tab to change what's shown
-    document.querySelectorAll('.tabs li').forEach(tab => {
-      tab.addEventListener('click', function(event) {
-        document.querySelectorAll('.tabs li').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        updateTabContent(tab);
-      });
-    });
 
     // Function to always start with the 'General' tab opened
     function resetTabsToShowGeneral() {
@@ -104,6 +104,15 @@ PropertiesPanelProvider.prototype.render = function (groups) {
         updateTabContent(generalTab);
       }
     }
+
+    // Add a click event to each tab to change what's shown
+    document.querySelectorAll('.tabs li').forEach(tab => {
+      tab.addEventListener('click', function (event) {
+        document.querySelectorAll('.tabs li').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        updateTabContent(tab);
+      });
+    });
 
     // Create the tabs if they don't exist yet.
     if (!scrollContainer.querySelector('.tabs')) {
@@ -128,7 +137,7 @@ PropertiesPanelProvider.prototype.render = function (groups) {
     const tabs = scrollContainer.querySelectorAll('.tabs li');
     tabs.forEach(tab => {
       if (!tab.dataset.listenerAttached) {
-        tab.addEventListener('click', function(event) {
+        tab.addEventListener('click', function (event) {
           tabs.forEach(t => t.classList.remove('active'));
           tab.classList.add('active');
           updateTabContent(tab);
@@ -144,5 +153,5 @@ PropertiesPanelProvider.prototype.render = function (groups) {
     }
 
     resetTabsToShowGeneral();
-  }, 0); 
+  }, 0);
 }
