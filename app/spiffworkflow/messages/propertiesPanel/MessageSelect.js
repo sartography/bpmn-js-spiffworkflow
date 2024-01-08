@@ -25,15 +25,30 @@ export function MessageSelect(props) {
 
   const getValue = () => {
     const messageRefElement = getMessageRefElement(shapeElement);
+    console.log("The business Object event def is ", shapeElement.businessObject.eventDefinitions[0]);
+    return shapeElement.businessObject.messageRef;
+    /*
+    const messageRefElement = getMessageRefElement(shapeElement);
     if (messageRefElement) {
       return messageRefElement.id;
     }
     return '';
+    */
   };
 
   const setValue = (value) => {
-    /* Need to add the selected message as the messageRef on the current message task */
     const { businessObject } = shapeElement;
+    commandStack.execute('element.updateModdleProperties', {
+      element: shapeElement,
+      moddleElement: businessObject,
+      properties: {
+        messageRef: value,
+      },
+    });
+
+
+    /* Need to add the selected message as the messageRef on the current message task */
+    /*
     const messages = findMessageModdleElements(shapeElement.businessObject);
     for (const message of messages) {
       if (message.id === value) {
@@ -69,6 +84,7 @@ export function MessageSelect(props) {
         }
       }
     }
+`      */
   };
 
   if (spiffExtensionOptions.messages === null || spiffExtensionOptions.messages === undefined) {

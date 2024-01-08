@@ -210,8 +210,7 @@ bpmnModeler.on('spiff.messages.requested', (event) => {
           { message_ref: 'table_seated', formal_expression: 'franchise_id' },
           { message_ref: 'order_ready', formal_expression: 'franchise_id' },
           {
-            message_ref: 'franchise_report',
-            formal_expression: "franchise['id']",
+            message_ref: 'end_of_day_receipts', formal_expression: "franchise['id']",
           },
         ],
       },

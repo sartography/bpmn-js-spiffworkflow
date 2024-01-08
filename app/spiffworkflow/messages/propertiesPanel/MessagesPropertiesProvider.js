@@ -20,17 +20,7 @@ export default function MessagesPropertiesProvider(
 ) {
   this.getGroups = function getGroupsCallback(element) {
     return function pushGroup(groups) {
-      if (is(element, 'bpmn:Collaboration')) {
-        groups.push(
-          ...createCollaborationGroup(
-            element,
-            translate,
-            moddle,
-            commandStack,
-            elementRegistry
-          )
-        );
-      } else if (isMessageElement(element)) {
+    if (isMessageElement(element)) {
         const messageIndex = findEntry(groups, 'message');
         if (messageIndex) {
           groups.splice(messageIndex, 1);
@@ -70,8 +60,7 @@ MessagesPropertiesProvider.$inject = [
 ];
 
 /**
- * Adds a group to the properties panel for the script task that allows you
- * to set the script.
+ * Adds a group to the properties panelfor correlations.
  * @param element
  * @param translate
  * @returns The components to add to the properties panel. */
