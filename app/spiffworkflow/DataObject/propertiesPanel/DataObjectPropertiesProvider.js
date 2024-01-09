@@ -68,6 +68,7 @@ function createDataObjectSelector(element, translate, moddle, commandStack, mode
   return {
     id: 'data_object_properties',
     label: translate('Data Object Properties'),
+    isDefault: true,
     entries: [
       {
         id: 'selectDataObject',

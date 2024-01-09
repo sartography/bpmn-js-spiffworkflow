@@ -9,14 +9,14 @@ import {
   ServiceTaskParameterArray,
   ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
-import {OPTION_TYPE, spiffExtensionOptions, SpiffExtensionSelect} from './SpiffExtensionSelect';
-import {SpiffExtensionLaunchButton} from './SpiffExtensionLaunchButton';
-import {SpiffExtensionTextArea} from './SpiffExtensionTextArea';
-import {SpiffExtensionTextInput} from './SpiffExtensionTextInput';
-import {SpiffExtensionCheckboxEntry} from './SpiffExtensionCheckboxEntry';
-import {hasEventDefinition} from 'bpmn-js/lib/util/DiUtil';
+import { OPTION_TYPE, spiffExtensionOptions, SpiffExtensionSelect } from './SpiffExtensionSelect';
+import { SpiffExtensionLaunchButton } from './SpiffExtensionLaunchButton';
+import { SpiffExtensionTextArea } from './SpiffExtensionTextArea';
+import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
+import { SpiffExtensionCheckboxEntry } from './SpiffExtensionCheckboxEntry';
+import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { PropertyDescription } from 'bpmn-js-properties-panel/';
-import {setExtensionValue} from "../extensionHelpers";
+import { setExtensionValue } from "../extensionHelpers";
 
 const LOW_PRIORITY = 500;
 
@@ -112,6 +112,8 @@ function createScriptGroup(element, translate, moddle, commandStack) {
   return {
     id: 'spiff_script',
     label: translate('Script'),
+    // is default property is mainly used to mark this group as a high priority group that located in General Tab
+    isDefault: true,
     entries: scriptGroup({
       element,
       moddle,
@@ -154,7 +156,7 @@ function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
     }),
   ];
   const loopCharacteristics = element.businessObject.loopCharacteristics;
-  if (typeof(loopCharacteristics) !== 'undefined') {
+  if (typeof (loopCharacteristics) !== 'undefined') {
     entries.push({
       id: 'scriptValence',
       component: ScriptValenceCheckbox,
@@ -211,13 +213,14 @@ function createUserGroup(element, translate, moddle, commandStack) {
     setExtensionValue(element, 'formUiSchemaFilename', uiName, moddle, commandStack);
     const matches = spiffExtensionOptions[OPTION_TYPE.json_schema_files].filter((opt) => opt.value === value);
     if (matches.length === 0) {
-      spiffExtensionOptions[OPTION_TYPE.json_schema_files].push({label: value, value: value});
+      spiffExtensionOptions[OPTION_TYPE.json_schema_files].push({ label: value, value: value });
     }
   }
 
   return {
     id: 'user_task_properties',
     label: translate('Web Form (with Json Schemas)'),
+    isDefault: true,
     entries: [
       {
         element,
@@ -288,7 +291,7 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
  * @param moddle
  * @returns entries
  */
-function createUserInstructionsGroup (
+function createUserInstructionsGroup(
   element,
   translate,
   moddle,
@@ -329,7 +332,7 @@ function createUserInstructionsGroup (
  * @param moddle
  * @returns entries
  */
-function createAllowGuestGroup (
+function createAllowGuestGroup(
   element,
   translate,
   moddle,
@@ -379,14 +382,14 @@ function createAllowGuestGroup (
  * @param moddle
  * @returns entries
  */
-function createSignalButtonGroup (
+function createSignalButtonGroup(
   element,
   translate,
   moddle,
   commandStack
 ) {
   let description =
-    <p style={{maxWidth : "330px"}}> If attached to a user/manual task, setting this value will display a button which a user can click to immediately fire this signal event.
+    <p style={{ maxWidth: "330px" }}> If attached to a user/manual task, setting this value will display a button which a user can click to immediately fire this signal event.
     </p>
   return {
     id: 'signal_button',
@@ -417,6 +420,7 @@ function createServiceGroup(element, translate, moddle, commandStack) {
   return {
     id: 'service_task_properties',
     label: translate('Spiffworkflow Service Properties'),
+    isDefault: true,
     entries: [
       {
         element,
