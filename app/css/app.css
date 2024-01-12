@@ -341,3 +341,46 @@ body {
   width: 100%;
   border: unset;
 }
+
+/* BPMN JS CSS */
+/* Override default palette styles */
+
+.djs-palette {
+  /* position: relative;
+  display: block; */
+  width: 100% !important;
+  height: 90%;
+  overflow-y: auto;
+  /* padding: 0;
+  margin: 0;
+  left: 0;
+  top: 0; */
+}
+
+.djs-palette.two-column.open {
+  width: 230px !important;
+}
+
+.djs-palette-entries {
+  display: grid;
+}
+
+.djs-palette .entry,
+.djs-palette .djs-palette-toggle {
+  justify-items: center;
+  height: unset;
+  width: unset;
+  line-height: unset;
+  display: inline-grid;
+  cursor: pointer;
+}
+
+.bio-properties-panel-header {
+  background-color: #FAFAFA;
+}
+
+.djs-label {
+  font-family: 'Arial', sans-serif;
+}
+
+

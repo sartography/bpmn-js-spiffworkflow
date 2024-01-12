@@ -1,7 +1,7 @@
 const LOW_PRIORITY = 800;
 
 export default function PropertiesPanelProvider(propertiesPanel, eventBus) {
-  let elId;
+  let el;
 
   // eventBus.on('propertiesPanel.providersChanged', function (event) {
   //     console.log('------------------- propertiesPanel.providersChanged', event);
@@ -21,10 +21,12 @@ export default function PropertiesPanelProvider(propertiesPanel, eventBus) {
 
   this.getGroups = function (element) {
     return function (groups) {
-      // console.log('PropertiesPanelProvider -> getGroups:  ', groups, propertiesPanel, element);
-      // Only render the properties panel once per element
-      if (element.id !== elId || !elId) {
-        elId = element.id;
+      // Only render when : el is undefined (editor onload state) or user selects new element or user changes the type of a selected element
+      if (!el || element.id !== el.id || (element.type !== el.type && element.id === el.id)) {
+        el = {
+          id: element.id,
+          type: element.type
+        }
         this.render(groups);
       }
       return groups;
@@ -63,12 +65,12 @@ PropertiesPanelProvider.prototype.render = function (groups) {
         arrow.classList.remove('bio-properties-panel-arrow-right');
     
         // Handles the first click, to prevent the bpmn js library from handling it instead
-        header.addEventListener('click', function(event) {
+        header.addEventListener('click', function() {
           if (isFirstClick) {
             header.click();
             isFirstClick = false;
           }
-        }, { once: true });
+        });
       }
     }
 

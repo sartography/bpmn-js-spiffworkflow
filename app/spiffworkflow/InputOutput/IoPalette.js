@@ -312,7 +312,7 @@ IoPalette.prototype.init = function (event) {
     });
 
     // Move the palette
-    bpmnElementsDiv.appendChild(paletteContainer);
+    bpmnElementsDiv ? bpmnElementsDiv.appendChild(paletteContainer): null;
 
   }, 0);
 
