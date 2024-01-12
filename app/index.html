@@ -4,7 +4,7 @@
 <head>
     <title>bpmn-js-spiffworkflow</title>
     <meta charset="utf-8" />
-    
+
     <!-- here are the core dependencies you will need to include -->
     <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css" />
     <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-js.css" />
@@ -13,7 +13,7 @@
 
     <!-- Some local css settings -->
     <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/bpmn-js.css" />
+    <!-- <link rel="stylesheet" href="css/bpmn-js.css" /> -->
     <link rel="shortcut icon" href="#">
 
     <!-- A python code editor, we are using CodeMirror here -- see app.js for how this is wired in -->
@@ -29,6 +29,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
+
+<style>
+    .djs-palette {
+        position: relative;
+        display: block;
+        width: 100% !important;
+        height: 90%;
+        overflow-y: auto;
+        padding: 0;
+        margin: 0;
+        left: 0;
+        top: 0;
+    }
+
+    .djs-palette.two-column.open {
+        width: 100% !important;
+    }
+</style>
 
 <body>
     <div id="header">
