@@ -345,17 +345,17 @@ body {
 /* BPMN JS CSS */
 /* Override default palette styles */
 
-.djs-palette {
+.bjs-container .djs-palette {
   width: 100% !important;
   height: 90%;
   overflow-y: auto;
 }
 
-.djs-palette.two-column.open {
+.bjs-container .djs-palette.two-column.open {
   width: 230px !important;
 }
 
-.djs-palette-entries {
+.bjs-container .djs-palette-entries {
   display: grid;
 }
 
@@ -376,5 +376,3 @@ body {
 .djs-label {
   font-family: 'Arial', sans-serif;
 }
-
-
