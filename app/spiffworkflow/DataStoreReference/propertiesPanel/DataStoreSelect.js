@@ -29,8 +29,6 @@ export function DataStoreSelect(props) {
 
   const setValue = (value) => {
 
-    console.log('elements', element)
-
     const splitValue = value.split('___');
     const valId = splitValue[0]
     const valClz = splitValue[1]

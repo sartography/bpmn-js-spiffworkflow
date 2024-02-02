@@ -187,7 +187,6 @@ bpmnModeler.on('spiff.dmn_files.requested', (event) => {
 });
 
 bpmnModeler.on('spiff.data_stores.requested', (event) => {
-  console.log(event)
   event.eventBus.fire('spiff.data_stores.returned', {
     options: [
       { id: 'countriesID', type: 'json', name: 'countries', clz: 'JSONDataStore' },
