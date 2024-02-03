@@ -134,7 +134,7 @@ function getRetrievalExpressionFromCorrelationProperty(
     for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
       if (
         retrievalExpression.$type ===
-          'bpmn:CorrelationPropertyRetrievalExpression' &&
+        'bpmn:CorrelationPropertyRetrievalExpression' &&
         retrievalExpression.messageRef &&
         retrievalExpression.messageRef.id === message.id
       ) {
@@ -194,4 +194,84 @@ export function findMessageModdleElements(businessObject) {
     }
   }
   return messages;
+}
+
+export function findMessageElement(businessObject, messageId) {
+  const root = getRoot(businessObject);
+
+  if (root.rootElements) {
+    for (const rootElement of root.rootElements) {
+      if (rootElement.$type === 'bpmn:Message' && rootElement.name == messageId) {
+        return rootElement;
+      }
+    }
+  }
+  return null;
+}
+
+export function createOrUpdateCorrelationProperties(bpmnFactory, commandStack, element, definitions, propertiesConfig, messageId) {
+
+  // Iterate over each property configuration
+  propertiesConfig.forEach(propConfig => {
+
+    let correlationProperty = findCorrelationPropertyById(definitions, propConfig.id);
+
+    // If the correlationProperty does not exist, create it
+    if (!correlationProperty) {
+      
+      let isCorrelated = false;
+
+      const correlationProperty = bpmnFactory.create(
+        'bpmn:CorrelationProperty'
+      );
+
+      correlationProperty.id = propConfig.id;
+      correlationProperty.name = propConfig.id;
+      
+      if (!correlationProperty.correlationPropertyRetrievalExpression) {
+        correlationProperty.correlationPropertyRetrievalExpression = [];
+      }
+
+      // Iterate over retrieval expressions and add them to the correlationProperty
+      propConfig.retrieval_expressions.forEach(expr => {
+        if(expr.message_ref == messageId){
+          const retrievalExpression = bpmnFactory.create('bpmn:CorrelationPropertyRetrievalExpression');
+          const formalExpression = bpmnFactory.create('bpmn:FormalExpression');
+          formalExpression.body = (expr.formal_expression) ? expr.formal_expression : '';
+          retrievalExpression.messagePath = formalExpression;
+          const msgElement = findMessageElement(element.businessObject, expr.message_ref);
+          retrievalExpression.messageRef = msgElement;
+          correlationProperty.correlationPropertyRetrievalExpression.push(retrievalExpression);
+          isCorrelated = true;
+        }
+      });
+
+      if(isCorrelated){
+        definitions.rootElements.push(correlationProperty);
+        commandStack.execute('element.updateProperties', {
+          element,
+          properties: {},
+        });
+      }
+    }
+
+  });
+
+  // Save or re-render the model as needed
+}
+
+export function findCorrelationPropertyById(definitions, id) {
+  let foundCorrelationProperty = null;
+
+  definitions.rootElements.forEach(rootElement => {
+    if (rootElement.correlationProperties && rootElement.correlationProperties.length > 0) {
+      const correlationProperty = rootElement.correlationProperties.find(cp => cp.id === id);
+      if (correlationProperty) {
+        foundCorrelationProperty = correlationProperty;
+        return;
+      }
+    }
+  });
+
+  return foundCorrelationProperty;
 }

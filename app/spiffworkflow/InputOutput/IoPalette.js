@@ -125,15 +125,6 @@ IoPalette.prototype.getPaletteEntries = function (e) {
         click: createShape('bpmn:ServiceTask')
       }
     },
-    // 'create.dmn-task': {
-    //   group: 'activities',
-    //   className: 'bpmn-icon-business-rule',
-    //   title: translate('Business Rule Task'),
-    //   action: {
-    //     dragstart: createShape('bpmn:BusinessRuleTask'),
-    //     click: createShape('bpmn:BusinessRuleTask')
-    //   }
-    // },
     // Gateways
     'create.condition-gateaway': {
       group: 'decisions',
@@ -165,7 +156,7 @@ IoPalette.prototype.getPaletteEntries = function (e) {
     'create.inclusive-gateaway': {
       group: 'decisions',
       className: 'bpmn-icon-gateway-or',
-      title: translate('xOR'),
+      title: translate('Data Based'),
       action: {
         dragstart: createShape('bpmn:InclusiveGateway'),
         click: createShape('bpmn:InclusiveGateway')
@@ -216,6 +207,15 @@ IoPalette.prototype.getPaletteEntries = function (e) {
       action: {
         dragstart: createShape('bpmn:CallActivity'),
         click: createShape('bpmn:CallActivity')
+      }
+    },
+    'create.dmn-task': {
+      group: 'advanced',
+      className: 'bpmn-icon-business-rule',
+      title: translate('Business Rule Task'),
+      action: {
+        dragstart: createShape('bpmn:BusinessRuleTask'),
+        click: createShape('bpmn:BusinessRuleTask')
       }
     },
     'create.participant': {
@@ -312,7 +312,7 @@ IoPalette.prototype.init = function (event) {
     });
 
     // Move the palette
-    bpmnElementsDiv ? bpmnElementsDiv.appendChild(paletteContainer): null;
+    bpmnElementsDiv ? bpmnElementsDiv.appendChild(paletteContainer) : null;
 
   }, 0);
 

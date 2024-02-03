@@ -121,6 +121,7 @@ saveCodeBtn.addEventListener('click', (_event) => {
 const simplemde = new SimpleMDE({
   element: document.getElementById('markdown_textarea'),
 });
+
 let launchMarkdownEvent = null;
 bpmnModeler.on('spiff.markdown.edit', (newEvent) => {
   launchMarkdownEvent = newEvent;
@@ -192,6 +193,74 @@ bpmnModeler.on('spiff.data_stores.requested', (event) => {
       { id: 'countriesID', type: 'json', name: 'countries', clz: 'JSONDataStore' },
       { id: 'foodsID', type: 'kkv', name: 'foods', clz: 'JSONDataStore' }
     ],
+  });
+});
+
+bpmnModeler.on('spiff.messages.requested', (event) => {
+  event.eventBus.fire('spiff.messages.returned', {
+    configuration: {
+      "messages": [
+        {
+          "id": "order_ready",
+          // "name": "Order Ready"
+        },
+        {
+          "id": "end_of_day_receipts",
+          // "name": "End Of Day Receipts"
+        },
+        {
+          "id": "food_is_ready",
+          // "name": "Food Is Ready"
+        }
+      ],
+      "correlation_keys": [
+        {
+          "correlation_properties": [
+            "franchise_id",
+            "table_number"
+          ],
+          "id": "order"
+        },
+        {
+          "correlation_properties": [
+            "franchise_id"
+          ],
+          "id": "franchise"
+        }
+      ],
+      "correlation_properties": [
+        {
+          "id": "table_number",
+          "retrieval_expressions": [
+            {
+              "formal_expression": "table_number",
+              "message_ref": "order_ready"
+            },
+            {
+              "formal_expression": "table_number",
+              "message_ref": "food_is_ready"
+            }
+          ]
+        },
+        {
+          "id": "franchise_id",
+          "retrieval_expressions": [
+            {
+              "formal_expression": "franchise['id']",
+              "message_ref": "end_of_day_receipts"
+            },
+            {
+              "formal_expression": "franchise_id",
+              "message_ref": "order_ready"
+            },
+            {
+              "formal_expression": "franchise_id",
+              "message_ref": "food_is_ready"
+            }
+          ]
+        }
+      ]
+    }
   });
 });
 

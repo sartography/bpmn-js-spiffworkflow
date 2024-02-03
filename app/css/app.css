@@ -11,7 +11,7 @@ body {
 
 #container {
   display: flex;
-  height: calc(100% - 80px);
+  height: calc(100% - 81px);
 }
 
 #modeler {
@@ -164,7 +164,7 @@ body {
   background-color: #ffffff;
   /* background-color: #f4f4f4; */
   overflow: hidden;
-  height: calc(100% - 80px);
+  height: calc(100% - 81px);
   float: left;
 }
 

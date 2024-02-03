@@ -5,9 +5,11 @@ import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
 import { MessageVariable } from './MessageVariable';
 import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
+import { CorrelationPropertiesList } from './CorrelationPropertiesList';
 import { MessageCorrelationPropertiesArray } from './MessageCorrelationPropertiesArray';
 import { MessageArray } from './MessageArray';
 import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
+import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
 
 const LOW_PRIORITY = 500;
 
@@ -36,7 +38,7 @@ export default function MessagesPropertiesProvider(
           groups.splice(messageIndex, 1);
         }
         groups.push(
-          createMessageGroup(
+          ...createMessageGroup(
             element,
             translate,
             moddle,
@@ -84,10 +86,11 @@ function createCollaborationGroup(
 ) {
   return [
     {
-      id: 'correlation_keys',
-      label: translate('Correlation Keys'),
+      id: 'messages',
+      label: translate('Messages'),
+      isDefault: true,
       component: ListGroup,
-      ...CorrelationKeysArray({
+      ...MessageArray({
         element,
         moddle,
         commandStack,
@@ -98,6 +101,7 @@ function createCollaborationGroup(
     {
       id: 'correlation_properties',
       label: translate('Correlation Properties'),
+      isDefault: true,
       component: ListGroup,
       ...CorrelationPropertiesArray({
         element,
@@ -108,10 +112,11 @@ function createCollaborationGroup(
       }),
     },
     {
-      id: 'messages',
-      label: translate('Messages'),
+      id: 'correlation_keys',
+      label: translate('Correlation Keys'),
+      isDefault: true,
       component: ListGroup,
-      ...MessageArray({
+      ...CorrelationKeysArray({
         element,
         moddle,
         commandStack,
@@ -134,6 +139,7 @@ function createMessageGroup(
   commandStack,
   elementRegistry
 ) {
+
   const entries = [
     {
       id: 'selectMessage',
@@ -178,10 +184,43 @@ function createMessageGroup(
     }),
   });
 
-  return {
-    id: 'messages',
-    label: translate('Message'),
-    isDefault: true,
-    entries,
-  };
+  entries.push({
+    id: 'isCorrelated',
+    element,
+    moddle,
+    commandStack,
+    component: CorrelationCheckboxEntry,
+    name: 'enable.correlation',
+    label: 'Enable Correlation',
+    description: 'Enable Correlation desc',
+  });
+
+  var results = [
+    {
+      id: 'messages',
+      label: translate('Message'),
+      isDefault: true,
+      entries,
+    }
+  ]
+  
+  const { businessObject } = element;
+
+  if (businessObject.get('isCorrelated')) {
+    results.push({
+      id: 'correlation_properties',
+      label: translate('Correlation Properties'),
+      isDefault: true,
+      component: ListGroup,
+      ...CorrelationPropertiesList({
+        element,
+        moddle,
+        commandStack,
+        elementRegistry,
+        translate,
+      }),
+    })
+  }
+
+  return results;
 }

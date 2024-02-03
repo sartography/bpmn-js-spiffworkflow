@@ -261,6 +261,7 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
   return {
     id: 'business_rule_properties',
     label: translate('Business Rule Properties'),
+    isDefault: true,
     entries: [
       {
         element,
