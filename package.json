@@ -31,7 +31,7 @@
       "url": "https://github.com/bpmn-io"
     }
   ],
-  "license": "MIT",
+  "license": "LGPL",
   "devDependencies": {
     "@babel/core": "^7.18.6",
     "@babel/plugin-transform-react-jsx": "^7.17.12",
