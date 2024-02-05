@@ -96,3 +96,10 @@ Below is a table of all the events that are sent and accepted:
 | spff.dmn\_files.requested      | request of list of local dmn files.                              |         |                      |                                                                          |
 | spiff.json\_files.returned     | Return a list of available json files                            | Recieved | options              | \[{lable:'My Label', value:'1'}\]                                        |
 | spff.dmn\_files.returned       | Return a list of available dmn files.                            | Recieved | options              | \[{lable:'My Label', value:'1'}\]                                        |
+
+
+
+
+
+## License
+MIT

@@ -87,7 +87,6 @@ function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
     return {
       id: `${idPrefix}-group`,
       label: label,
-      isDefault: true,
       entries,
     }
   }

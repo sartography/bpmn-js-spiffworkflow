@@ -51,7 +51,6 @@ function createCustomDataStoreGroup(
   const group = {
     label: translate('Custom Data Store Properties'),
     id: 'custom-datastore-properties',
-    isDefault: true,
     entries: [],
   };
 

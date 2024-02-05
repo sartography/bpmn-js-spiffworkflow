@@ -23,8 +23,8 @@ import DataStoreInterceptor from '../../app/spiffworkflow/DataStoreReference/Dat
 const return_datastores = (event) => {
     event.eventBus.fire('spiff.data_stores.returned', {
         options: [
-            { id: 'countriesID', type: 'json', name: 'countries', clz: 'JSONDataStore' },
-            { id: 'foodsID', type: 'kkv', name: 'foods', clz: 'JSONDataStore' }
+            { type: 'typeahead', name: 'countries' },
+            { type: 'kkv', name: 'foods' }
         ],
     });
 }
@@ -83,11 +83,11 @@ describe('Data Source Reference Test cases', function () {
         // Verification if the dataStoreRef attribute is updated
         let selector = findSelect(entry);
         expect(selector.length).to.equal(3);
-        expect(selector[1].value === 'foodsID___JSONDataStore');
-        expect(selector[2].value === 'countriesID___JSONDataStore');
+        expect(selector[1].value === 'countries');
+        expect(selector[2].value === 'foods');
     });
 
-    it('should update dataStoreRef after a select event && should add new DataStore in the level of process definition - DataStoreReference element', async function () {
+    it('should update dataStoreRef after a select event && should add new DataState in the level of process definition - DataStoreReference element', async function () {
         const modeler = getBpmnJS();
         modeler.get('eventBus').once('spiff.data_stores.requested', return_datastores);
 
@@ -104,16 +104,17 @@ describe('Data Source Reference Test cases', function () {
 
         // Verification if the dataStoreRef attribute is updated
         let selector = findSelect(entry);
-        changeInput(selector, 'foodsID___JSONDataStore');
+        changeInput(selector, 'foods');
         const nwbusinessObject = getBusinessObject(shapeElement);
-        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foodsID');
+        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foods');
 
         // Check if the DataStore is added at the root level
         const definitions = modeler.getDefinitions();
         const dataStoreExists = definitions.get('rootElements').some(element =>
-            element.$type === 'bpmn:DataStore' && element.id === 'foodsID'
+            element.$type === 'bpmn:DataStore' && element.id === 'foods'
         );
-        expect(dataStoreExists, "DataStore 'foodsID' should be added at the root level").to.be.true;
+        expect(dataStoreExists, "DataStore 'foods' should be added at the root level").to.be.true;
+
     });
 
     it('should delete dataStore if dataStorRef is updated - DataStoreReference element', async function () {
@@ -133,22 +134,22 @@ describe('Data Source Reference Test cases', function () {
 
         // Verification if the dataStoreRef attribute is updated
         let selector = findSelect(entry);
-        changeInput(selector, 'foodsID___JSONDataStore');
+        changeInput(selector, 'foods');
         let nwbusinessObject = getBusinessObject(shapeElement);
-        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foodsID');
+        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foods');
         // Then choose new dataStore
-        changeInput(selector, 'countriesID___JSONDataStore');
+        changeInput(selector, 'countries');
         nwbusinessObject = getBusinessObject(shapeElement);
-        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('countriesID');
+        expect(nwbusinessObject.get('dataStoreRef').id).to.equal('countries');
 
         // Check if the DataStore is added at the root level with the updated dataStore
         const definitions = modeler.getDefinitions();
         const countriesDataStoreExists = definitions.get('rootElements').some(element =>
-            element.$type === 'bpmn:DataStore' && element.id === 'countriesID'
+            element.$type === 'bpmn:DataStore' && element.id === 'countries'
         );
         expect(countriesDataStoreExists, "DataStore 'countries' should be added at the root level").to.be.true;
         const foodsDataStoreExists = definitions.get('rootElements').some(element =>
-            element.$type === 'bpmn:DataStore' && element.id === 'foodsID'
+            element.$type === 'bpmn:DataStore' && element.id === 'foods'
         );
         expect(foodsDataStoreExists, "DataStore 'countries' should be removed from the root level").not.to.be.true;
 

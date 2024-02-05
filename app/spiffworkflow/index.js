@@ -18,7 +18,6 @@ import EscalationPropertiesProvider from './escalations/propertiesPanel/Escalati
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
 import StandardLoopPropertiesProvider from './loops/propertiesPanel/StandardLoopPropertiesProvider';
 import MultiInstancePropertiesProvider from './loops/propertiesPanel/MultiInstancePropertiesProvider';
-import PropertiesPanelProvider from './properties/PropertiesPanelProvider';
 
 export default {
   __depends__: [RulesModule],
@@ -37,8 +36,6 @@ export default {
     'escalationPropertiesProvider',
     'callActivityPropertiesProvider',
     'ioPalette',
-    'paletteProvider',
-    'propertiesPanelProvider',
     'ioRules',
     'ioInterceptor',
     'dataObjectRenderer',
@@ -60,8 +57,6 @@ export default {
   messagesPropertiesProvider: ['type', MessagesPropertiesProvider],
   callActivityPropertiesProvider: ['type', CallActivityPropertiesProvider],
   ioPalette: ['type', IoPalette],
-  paletteProvider: ['type', IoPalette],
-  propertiesPanelProvider: ['type', PropertiesPanelProvider],
   ioRules: ['type', IoRules],
   ioInterceptor: ['type', IoInterceptor],
   multiInstancePropertiesProvider: ['type', MultiInstancePropertiesProvider],

@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+    <!--
+     IMPORTANT:
+     This is here to provide an exmaple of how you might use this library in your application.
+     You should be able to take this example, and modify it to suite your own needs.
+     -->
     <title>bpmn-js-spiffworkflow</title>
-    <meta charset="utf-8" />
 
+    <meta charset="utf-8"/>
     <!-- here are the core dependencies you will need to include -->
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css" />
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-js.css" />
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css" />
-    <link rel="stylesheet" href="vendor/bpmn-js-properties-panel/assets/properties-panel.css" />
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css"/>
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-js.css"/>
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css"/>
+    <link rel="stylesheet" href="vendor/bpmn-js-properties-panel/assets/properties-panel.css"/>
 
     <!-- Some local css settings -->
-    <link rel="stylesheet" href="css/app.css" />
-    <!-- <link rel="stylesheet" href="css/bpmn-js.css" /> -->
+    <link rel="stylesheet" href="css/app.css"/>
     <link rel="shortcut icon" href="#">
 
     <!-- A python code editor, we are using CodeMirror here -- see app.js for how this is wired in -->
@@ -29,163 +32,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
-
-<style>
-    .djs-palette {
-        position: relative;
-        display: block;
-        width: 100% !important;
-        height: 90%;
-        overflow-y: auto;
-        padding: 0;
-        margin: 0;
-        left: 0;
-        top: 0;
-    }
-
-    .djs-palette.two-column.open {
-        width: 100% !important;
-    }
-</style>
-
 <body>
-    <div id="header">
-        <div id="process-info">
-            <h1>Process Name</h1>
-            <p>. / Process Groups / bpmn_process.bpmn </p>
-        </div>
-        <div id="header-actions-center">
-            <button class="header-btn" title="Hand" data-action="hand">
-                <i class="bpmn-icon-hand-tool"></i>
-            </button>
-            <button class="header-btn" title="LassoTool" data-action="lasso">
-                <i class="bpmn-icon-lasso-tool"></i>
-            </button>
-            <button class="header-btn" title="SpaceTool" data-action="space">
-                <i class="bpmn-icon-space-tool"></i>
-            </button>
-            <button class="header-btn" title="Connect" data-action="connect">
-                <i class="bpmn-icon-connection-multi"></i>
-            </button>
-            <button class="header-btn" title="Zoom In" data-action="zoom-in">
-                <i class="fa fa-search-plus"></i>
-            </button>
-            <button class="header-btn" title="Zoom Out" data-action="zoom-out">
-                <i class="fa fa-search-minus"></i>
-            </button>
-            <button class="header-btn" title="Expand" data-action="expand">
-                <i class="fa fa-expand"></i>
-            </button>
-            <button class="header-btn" title="Undo" data-action="undo">
-                <i class="fa fa-undo"></i>
-            </button>
-            <button class="header-btn" title="Redo" data-action="redo">
-                <i class="fa fa-repeat"></i>
-            </button>
-        </div>
-        <div id="header-actions">
-            <button id="downloadButton" class="bpmn-js-spiffworkflow-btn">
-                Download
-            </button>
-            <button id="uploadButton" class="bpmn-js-spiffworkflow-btn">Open a file</button>
-            <button id="viewXmlButton" class="bpmn-js-spiffworkflow-btn">View XML</button>
-            <button id="saveButton" class="bpmn-js-spiffworkflow-btn main-btn">
-                Save <i class="fa fa-long-arrow-right"></i>
-            </button>
-        </div>
+<div id="menu">
+    <button id="downloadButton" class="bpmn-js-spiffworkflow-btn"><i class="fa fa-download"></i> Download</button>
+    <button id="uploadButton" class="bpmn-js-spiffworkflow-btn">Open a file</button>
+</div>
+<div id="container">
+    <div id="modeler"></div>
+    <div id="panel"></div>
+</div>
+<!-- the following are overlays to provide editors for Python and Markdown -->
+<div id="code_overlay" class="overlay">
+    <div id="code_editor"></div>
+    <div id="code_buttons">
+        <button id="saveCode" class="bpmn-js-spiffworkflow-btn">Save</button>
     </div>
-    <div id="left-sidebar">
-        <div class="tabs">
-            <button class="tab-button active" data-tab-target="BPMNElements">
-                <i class="fa fa-th-large"></i>
-            </button>
-            <button class="tab-button" data-tab-target="SearchTab">
-                <i class="fa fa-search"></i>
-            </button>
-            <button class="tab-button" data-tab-target="ActionTab">
-                <i class="fa fa-bolt"></i>
-            </button>
-            <button class="tab-button" data-tab-target="ConnectorTab">
-                <i class="fa fa-cube"></i>
-            </button>
-            <button class="tab-button" data-tab-target="HistoryTab">
-                <i class="fa fa-clock-o"></i>
-            </button>
-        </div>
+</div>
+<div id="markdown_overlay" class="overlay">
+    <div id="markdown_editor">
+    <textarea id="markdown_textarea"></textarea>
+    </div>
+    <div id="markdown_buttons">
+        <button id="saveMarkdown" class="bpmn-js-spiffworkflow-btn">Save</button>
+    </div>
+</div>
 
-        <div id="BPMNElements" class="tab-content active">
-            <div class="bpmn-elements-header">
-                <span class="bpmn-elements-title">BPMN Elements</span>
-                <button class="bpmn-elements-toggle">
-                    <i class="fa fa-outdent" aria-hidden="true"></i>
-                </button>
-            </div>
-            <!-- Content for BPMN Elements -->
-        </div>
-        <div id="HistoryTab" class="tab-content">
-            <div class="bpmn-elements-header">
-                <span class="bpmn-elements-title">History</span>
-                <button class="bpmn-elements-toggle">
-                    <i class="fa fa-outdent" aria-hidden="true"></i>
-                </button>
-            </div>
-            <!-- Content for BPMN Elements -->
-            History Tab Content
-        </div>
-        <div id="ActionTab" class="tab-content">
-            <div class="bpmn-elements-header">
-                <span class="bpmn-elements-title">Visual Activity</span>
-                <button class="bpmn-elements-toggle">
-                    <i class="fa fa-outdent" aria-hidden="true"></i>
-                </button>
-            </div>
-            <!-- Content for BPMN Elements -->
-            Pre built Actions Tab Content
-        </div>
-        <div id="SearchTab" class="tab-content">
-            <div class="bpmn-elements-header">
-                <span class="bpmn-elements-title">Search</span>
-                <button class="bpmn-elements-toggle">
-                    <i class="fa fa-outdent" aria-hidden="true"></i>
-                </button>
-            </div>
-            <!-- Content for BPMN Elements -->
-            Search Tab Content
-        </div>
-        <div id="ConnectorTab" class="tab-content">
-            <div class="bpmn-elements-header">
-                <span class="bpmn-elements-title">Integrations / Connectors </span>
-                <button class="bpmn-elements-toggle">
-                    <i class="fa fa-outdent" aria-hidden="true"></i>
-                </button>
-            </div>
-            <!-- Content for BPMN Elements -->
-            Connectors Tab Content
-        </div>
-    </div>
-    <div id="container">
-        <div id="modeler"></div>
-        <div id="panel"></div>
-    </div>
-    <!-- the following are overlays to provide editors for Python and Markdown -->
-    <div id="code_overlay" class="overlay">
-        <div id="code_editor"></div>
-        <div id="code_buttons">
-            <button id="saveCode" class="bpmn-js-spiffworkflow-btn">Save</button>
-        </div>
-    </div>
-    <div id="markdown_overlay" class="overlay">
-        <div id="markdown_editor">
-            <textarea id="markdown_textarea"></textarea>
-        </div>
-        <div id="markdown_buttons">
-            <button id="saveMarkdown" class="bpmn-js-spiffworkflow-btn">Save</button>
-        </div>
-    </div>
-
-    <!-- Here we load up our application, it's where the configuration happens. -->
-    <script src="app.js"></script>
+<!-- Here we load up our application, it's where the configuration happens. -->
+<script src="app.js"></script>
 
 </body>
-
-</html>
+</html><!---->

@@ -36,7 +36,6 @@ function createCalledElementGroup(element, translate, moddle, commandStack) {
   return {
     id: 'called_element',
     label: translate('Called Element'),
-    isDefault: true,
     entries: [
       {
         id: `called_element_text_field`,

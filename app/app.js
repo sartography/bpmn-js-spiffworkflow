@@ -23,13 +23,6 @@ try {
     keyboard: { bindTo: document },
     propertiesPanel: {
       parent: panelEl,
-      layout: {
-        groups: {
-          general: {
-            open: true
-          }
-        }
-      }
     },
     additionalModules: [
       spiffworkflow,
@@ -189,8 +182,8 @@ bpmnModeler.on('spiff.dmn_files.requested', (event) => {
 bpmnModeler.on('spiff.data_stores.requested', (event) => {
   event.eventBus.fire('spiff.data_stores.returned', {
     options: [
-      { id: 'countriesID', type: 'json', name: 'countries', clz: 'JSONDataStore' },
-      { id: 'foodsID', type: 'kkv', name: 'foods', clz: 'JSONDataStore' }
+      { type: 'typeahead', name: 'countries' },
+      { type: 'kkv', name: 'foods' }
     ],
   });
 });
@@ -213,7 +206,7 @@ bpmnModeler.on('import.parse.complete', event => {
   refs.forEach(ref => {
     const props = {
       id: ref.id,
-      name: ref.id ? typeof (ref.name) === 'undefined' : ref.name,
+      name: ref.id ? typeof(ref.name) === 'undefined': ref.name,
     };
     let elem = bpmnModeler._moddle.create(desc, props);
     elem.$parent = ref.element;
@@ -221,10 +214,7 @@ bpmnModeler.on('import.parse.complete', event => {
   });
 });
 
-bpmnModeler.importXML(diagramXML).then(() => {
-  // Zoom up and center workflow in the middle of the canvas
-  bpmnModeler.get('canvas').zoom('fit-viewport', 'auto');
-});
+bpmnModeler.importXML(diagramXML).then(() => {});
 
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
