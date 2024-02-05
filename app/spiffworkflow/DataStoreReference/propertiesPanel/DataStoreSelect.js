@@ -21,13 +21,19 @@ export function DataStoreSelect(props) {
   const bpmnFactory = useService('bpmnFactory');
 
   const getValue = () => {
-    return element.businessObject.dataStoreRef
-      ? element.businessObject.dataStoreRef.id
+    const dtRef = element.businessObject.dataStoreRef;
+    return dtRef
+      ? `${dtRef.id}___${dtRef.name}`
       : '';
   };
 
   const setValue = (value) => {
-    if (!value || value == '') {
+
+    const splitValue = value.split('___');
+    const valId = splitValue[0]
+    const valClz = splitValue[1]
+
+    if (!valId || valId == '') {
       modeling.updateProperties(element, {
         dataStoreRef: null,
       });
@@ -46,19 +52,20 @@ export function DataStoreSelect(props) {
 
     // Create DataStore
     let dataStore = definitions.get('rootElements').find(element =>
-      element.$type === 'bpmn:DataStore' && element.id === value
+      element.$type === 'bpmn:DataStore' && element.id === valId
     );
 
     // If the DataStore doesn't exist, create new one
     if (!dataStore) {
       dataStore = bpmnFactory.create('bpmn:DataStore', {
-        id: value,
-        name: 'DataStore_' + value
+        id: valId,
+        name: valClz
       });
       definitions.get('rootElements').push(dataStore);
     }
 
     modeling.updateProperties(element, {
+      name: `Data Store (${valId})`,
       dataStoreRef: dataStore,
     });
 
@@ -89,7 +96,7 @@ export function DataStoreSelect(props) {
       spiffExtensionOptions[optionType].forEach((opt) => {
         optionList.push({
           label: opt.name,
-          value: opt.name,
+          value: `${opt.id}___${opt.clz}`,
         });
       });
     }
