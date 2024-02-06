@@ -218,6 +218,15 @@ IoPalette.prototype.getPaletteEntries = function (e) {
         click: createShape('bpmn:BusinessRuleTask')
       }
     },
+    'create.send-task': {
+      group: 'advanced',
+      className: 'bpmn-icon-send-task',
+      title: translate('Send Task'),
+      action: {
+        dragstart: createShape('bpmn:SendTask'),
+        click: createShape('bpmn:SendTask')
+      }
+    },
     'create.participant': {
       group: 'advanced',
       className: 'bpmn-icon-participant',

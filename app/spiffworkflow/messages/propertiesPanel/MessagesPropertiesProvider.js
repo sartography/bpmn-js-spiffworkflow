@@ -6,7 +6,6 @@ import { MessagePayload } from './MessagePayload';
 import { MessageVariable } from './MessageVariable';
 import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
 import { CorrelationPropertiesList } from './CorrelationPropertiesList';
-import { MessageCorrelationPropertiesArray } from './MessageCorrelationPropertiesArray';
 import { MessageArray } from './MessageArray';
 import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
 import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
@@ -99,19 +98,6 @@ function createCollaborationGroup(
       }),
     },
     {
-      id: 'correlation_properties',
-      label: translate('Correlation Properties'),
-      isDefault: true,
-      component: ListGroup,
-      ...CorrelationPropertiesArray({
-        element,
-        moddle,
-        commandStack,
-        elementRegistry,
-        translate,
-      }),
-    },
-    {
       id: 'correlation_keys',
       label: translate('Correlation Keys'),
       isDefault: true,
@@ -124,6 +110,19 @@ function createCollaborationGroup(
         translate,
       }),
     },
+    {
+      id: 'correlation_properties',
+      label: translate('Correlation Properties'),
+      isDefault: true,
+      component: ListGroup,
+      ...CorrelationPropertiesArray({
+        element,
+        moddle,
+        commandStack,
+        elementRegistry,
+        translate,
+      }),
+    }
   ];
 }
 
@@ -171,18 +170,18 @@ function createMessageGroup(
     });
   }
 
-  entries.push({
-    id: 'correlationProperties',
-    label: translate('Correlation'),
-    component: ListGroup,
-    ...MessageCorrelationPropertiesArray({
-      element,
-      moddle,
-      commandStack,
-      elementRegistry,
-      translate,
-    }),
-  });
+  // entries.push({
+  //   id: 'correlationProperties',
+  //   label: translate('Correlation'),
+  //   component: ListGroup,
+  //   ...MessageCorrelationPropertiesArray({
+  //     element,
+  //     moddle,
+  //     commandStack,
+  //     elementRegistry,
+  //     translate,
+  //   }),
+  // });
 
   entries.push({
     id: 'isCorrelated',
