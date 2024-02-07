@@ -48,11 +48,21 @@ function createCustomDataStoreGroup(
   commandStack,
   bpmnFactory
 ) {
+
+  const { businessObject } = element;
+
   const group = {
     label: translate('Custom Data Store Properties'),
     id: 'custom-datastore-properties',
     entries: [],
   };
+
+  let description = translate('Select a datasource from the list');
+  if(businessObject.dataStoreRef){
+    const dataStoreId = businessObject.dataStoreRef.id;
+    const type = businessObject.get('type');
+    description = `The selected data store is of type: ${type}`;
+  }
 
   // other custom properties as needed
   group.entries.push({
@@ -65,7 +75,7 @@ function createCustomDataStoreGroup(
     translate,
     name: 'dataStoreRef',
     label: translate('Select DataSource'),
-    description: translate('Select a datasource from the list'),
+    description,
     modeling,
     bpmnFactory,
   });

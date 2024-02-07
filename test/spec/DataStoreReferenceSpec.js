@@ -83,8 +83,8 @@ describe('Data Source Reference Test cases', function () {
         // Verification if the dataStoreRef attribute is updated
         let selector = findSelect(entry);
         expect(selector.length).to.equal(3);
-        expect(selector[1].value === 'foodsID___JSONDataStore');
-        expect(selector[2].value === 'countriesID___JSONDataStore');
+        expect(selector[1].value === 'foodsID');
+        expect(selector[2].value === 'countriesID');
     });
 
     it('should update dataStoreRef after a select event && should add new DataStore in the level of process definition - DataStoreReference element', async function () {
@@ -104,7 +104,7 @@ describe('Data Source Reference Test cases', function () {
 
         // Verification if the dataStoreRef attribute is updated
         let selector = findSelect(entry);
-        changeInput(selector, 'foodsID___JSONDataStore');
+        changeInput(selector, 'foodsID');
         const nwbusinessObject = getBusinessObject(shapeElement);
         expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foodsID');
 
@@ -133,11 +133,11 @@ describe('Data Source Reference Test cases', function () {
 
         // Verification if the dataStoreRef attribute is updated
         let selector = findSelect(entry);
-        changeInput(selector, 'foodsID___JSONDataStore');
+        changeInput(selector, 'foodsID');
         let nwbusinessObject = getBusinessObject(shapeElement);
         expect(nwbusinessObject.get('dataStoreRef').id).to.equal('foodsID');
         // Then choose new dataStore
-        changeInput(selector, 'countriesID___JSONDataStore');
+        changeInput(selector, 'countriesID');
         nwbusinessObject = getBusinessObject(shapeElement);
         expect(nwbusinessObject.get('dataStoreRef').id).to.equal('countriesID');
 

@@ -182,8 +182,8 @@ bpmnModeler.on('spiff.dmn_files.requested', (event) => {
 bpmnModeler.on('spiff.data_stores.requested', (event) => {
   event.eventBus.fire('spiff.data_stores.returned', {
     options: [
-      { id: 'countriesID', type: 'json', name: 'countries', clz: 'JSONDataStore' },
-      { id: 'foodsID', type: 'kkv', name: 'foods', clz: 'JSONDataStore' }
+      { id: 'countriesID', type: 'json', name: 'Countries', clz: 'JSONDataStore' },
+      { id: 'foodsID', type: 'kkv', name: 'Foods', clz: 'JSONDataStore' }
     ],
   });
 });
