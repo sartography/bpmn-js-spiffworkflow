@@ -1,6 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import { getRoot, findMessageModdleElements } from '../MessageHelpers';
+import { getRoot, findMessageModdleElements, createNewMessage } from '../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
 
 /**
@@ -36,19 +36,7 @@ export function MessageArray(props) {
 
   function add(event) {
     event.stopPropagation();
-    if (element.type === 'bpmn:Collaboration') {
-      const newMessageElement = moddle.create('bpmn:Message');
-      const messageId = moddle.ids.nextPrefixed('Message_');
-      newMessageElement.id = messageId;
-      newMessageElement.name = messageId;
-      const rootElement = getRoot(element.businessObject);
-      const { rootElements } = rootElement;
-      rootElements.push(newMessageElement);
-      commandStack.execute('element.updateProperties', {
-        element,
-        properties: {},
-      });
-    }
+    createNewMessage(element, moddle, commandStack);
   }
 
   return { items, add };

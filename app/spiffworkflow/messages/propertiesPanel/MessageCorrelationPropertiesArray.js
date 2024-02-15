@@ -226,7 +226,7 @@ function MessageCorrelationPropertySelect(props) {
       if (
         !foundElement ||
         foundElement.correlationPropertyModdleElement ===
-          correlationPropertyModdleElement
+        correlationPropertyModdleElement
       ) {
         options.push({
           label: cpe.name,
