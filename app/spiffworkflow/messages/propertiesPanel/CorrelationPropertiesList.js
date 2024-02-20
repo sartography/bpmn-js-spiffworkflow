@@ -11,7 +11,8 @@ import {
   findCorrelationPropertiesByMessage,
   isMessageEvent,
   isMessageElement,
-  createNewCorrelationProperty
+  createNewCorrelationProperty,
+  getMessageRefElement
 } from '../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
 
@@ -61,8 +62,7 @@ export function CorrelationPropertiesList(props) {
     
     event.stopPropagation();
     
-    const { businessObject } = element;
-    const messageRef = (businessObject) ? businessObject.messageRef : null;
+    const messageRef = getMessageRefElement(element);
 
     if(!messageRef){
       alert('Please select a message');
