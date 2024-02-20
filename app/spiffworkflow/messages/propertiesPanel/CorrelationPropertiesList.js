@@ -1,4 +1,3 @@
-import { useService } from 'bpmn-js-properties-panel';
 import {
   SelectEntry,
   isTextFieldEntryEdited,
@@ -141,8 +140,6 @@ function CorrelationPropertyRetrivialExpressionTextField(props) {
     idPrefix
   } = props;
 
-  const debounce = useService('debounceInput');
-  
   const setValue = (value) => {
 
     const message = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0].messageRef : element.businessObject.messageRef;
@@ -186,7 +183,6 @@ function CorrelationPropertyRetrivialExpressionTextField(props) {
     id: `${id}-name-textField`,
     label: translate('Retrivial Expression'),
     getValue,
-    setValue,
-    debounce,
+    setValue
   });
 }
