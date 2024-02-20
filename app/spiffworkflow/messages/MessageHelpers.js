@@ -245,57 +245,60 @@ export function createOrUpdateCorrelationProperties(bpmnFactory, commandStack, e
 
   let definitions = getRoot(element.businessObject);
 
-  // Iterate over each property configuration
-  propertiesConfig.forEach(propConfig => {
-    if (isMessageIdInRetrievalExpressions(propConfig, messageId)) {
+  if (propertiesConfig) {
+    // Iterate over each property configuration
+    propertiesConfig.forEach(propConfig => {
+      if (isMessageIdInRetrievalExpressions(propConfig, messageId)) {
 
-      let correlationProperty = findCorrelationPropertyById(definitions, propConfig.id);
+        let correlationProperty = findCorrelationPropertyById(definitions, propConfig.id);
 
-      // If the correlationProperty does not exist, create it
-      if (correlationProperty === null) {
-        correlationProperty = bpmnFactory.create(
-          'bpmn:CorrelationProperty'
-        );
-        correlationProperty.id = propConfig.id;
-        correlationProperty.name = propConfig.id;
-        correlationProperty.correlationPropertyRetrievalExpression = [];
-      } else if (correlationProperty && !correlationProperty.correlationPropertyRetrievalExpression) {
-        correlationProperty.correlationPropertyRetrievalExpression = [];
-      }
-
-      // Iterate over retrieval expressions and add them to the correlationProperty
-      propConfig.retrieval_expressions.forEach(expr => {
-        const existingExpressionIndex = correlationProperty.correlationPropertyRetrievalExpression.findIndex(retrievalExpr =>
-          retrievalExpr.messageRef && retrievalExpr.messageRef.id === messageId
-        );
-        if (expr.message_ref == messageId && existingExpressionIndex === -1) {
-          const retrievalExpression = bpmnFactory.create('bpmn:CorrelationPropertyRetrievalExpression');
-          const formalExpression = bpmnFactory.create('bpmn:FormalExpression');
-          formalExpression.body = (expr.formal_expression) ? expr.formal_expression : '';
-          retrievalExpression.messagePath = formalExpression;
-          const msgElement = findMessageElement(element.businessObject, expr.message_ref);
-          retrievalExpression.messageRef = msgElement;
-          correlationProperty.correlationPropertyRetrievalExpression.push(retrievalExpression);
+        // If the correlationProperty does not exist, create it
+        if (correlationProperty === null) {
+          correlationProperty = bpmnFactory.create(
+            'bpmn:CorrelationProperty'
+          );
+          correlationProperty.id = propConfig.id;
+          correlationProperty.name = propConfig.id;
+          correlationProperty.correlationPropertyRetrievalExpression = [];
+        } else if (correlationProperty && !correlationProperty.correlationPropertyRetrievalExpression) {
+          correlationProperty.correlationPropertyRetrievalExpression = [];
         }
-      });
 
-      const existingIndex = definitions.rootElements.findIndex(element =>
-        element.id === correlationProperty.id && element.$type === correlationProperty.$type);
+        // Iterate over retrieval expressions and add them to the correlationProperty
+        propConfig.retrieval_expressions.forEach(expr => {
+          const existingExpressionIndex = correlationProperty.correlationPropertyRetrievalExpression.findIndex(retrievalExpr =>
+            retrievalExpr.messageRef && retrievalExpr.messageRef.id === messageId
+          );
+          if (expr.message_ref == messageId && existingExpressionIndex === -1) {
+            const retrievalExpression = bpmnFactory.create('bpmn:CorrelationPropertyRetrievalExpression');
+            const formalExpression = bpmnFactory.create('bpmn:FormalExpression');
+            formalExpression.body = (expr.formal_expression) ? expr.formal_expression : '';
+            retrievalExpression.messagePath = formalExpression;
+            const msgElement = findMessageElement(element.businessObject, expr.message_ref);
+            retrievalExpression.messageRef = msgElement;
+            correlationProperty.correlationPropertyRetrievalExpression.push(retrievalExpression);
+          }
+        });
 
-      if (existingIndex !== -1) {
-        // Update existing correlationProperty
-        definitions.rootElements[existingIndex] = correlationProperty;
-      } else {
-        // Add new correlationProperty
-        definitions.rootElements.push(correlationProperty);
+        const existingIndex = definitions.rootElements.findIndex(element =>
+          element.id === correlationProperty.id && element.$type === correlationProperty.$type);
+
+        if (existingIndex !== -1) {
+          // Update existing correlationProperty
+          definitions.rootElements[existingIndex] = correlationProperty;
+        } else {
+          // Add new correlationProperty
+          definitions.rootElements.push(correlationProperty);
+        }
+
+        commandStack.execute('element.updateProperties', {
+          element,
+          properties: {},
+        });
       }
+    });
+  }
 
-      commandStack.execute('element.updateProperties', {
-        element,
-        properties: {},
-      });
-    }
-  });
 }
 
 export function findCorrelationPropertyById(definitions, id) {
