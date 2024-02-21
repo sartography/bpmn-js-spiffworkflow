@@ -14,6 +14,7 @@ import {
   getMessageRefElement
 } from '../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+import { useService } from 'bpmn-js-properties-panel';
 
 /**
  * Allows the creation, or editing of messageCorrelations at the bpmn:sendTask level of a BPMN document.
@@ -140,6 +141,8 @@ function CorrelationPropertyRetrivialExpressionTextField(props) {
     idPrefix
   } = props;
 
+  const debounce = useService('debounceInput');
+
   const setValue = (value) => {
 
     const message = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0].messageRef : element.businessObject.messageRef;
@@ -180,9 +183,10 @@ function CorrelationPropertyRetrivialExpressionTextField(props) {
 
   return TextFieldEntry({
     element,
-    id: `${id}-name-textField`,
+    id: `${id}-name-xp-textField`,
     label: translate('Retrivial Expression'),
     getValue,
-    setValue
+    setValue,
+    debounce
   });
 }

@@ -24,6 +24,7 @@ html, body {
   border-radius: 2px;
   font-family: 'Arial', sans-serif;
   padding: 10px;
+  /* width: 400px; */
   min-width: 400px;
 }
 
@@ -94,4 +95,29 @@ adjust CSS props so that padding won't add to dimensions.
 
 .djs-palette.two-column.open {
   width: 95px;
+}
+
+.nice-select {
+  background-color: #f7f7f8 !important;
+  border: 1px solid var(--input-border-color) !important;
+  border-radius: 2px !important;
+  padding-left: 8px !important;
+}
+
+.nice-select .nice-select-dropdown {
+  z-index: 50 !important;
+  width: 100%;
+}
+
+.nice-select .multiple-options .current {
+  margin: 2px;
+  padding: 5px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: #333;
+}
+.d-grid {
+  display: grid !important;
 }

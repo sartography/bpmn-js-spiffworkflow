@@ -9,6 +9,8 @@ import { CorrelationPropertiesList } from './CorrelationPropertiesList';
 import { MessageArray } from './MessageArray';
 import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
 import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
+import { OPTION_TYPE, SpiffExtensionSelect } from '../../extensions/propertiesPanel/SpiffExtensionSelect';
+import { SpiffExtensionLaunchButton } from '../../extensions/propertiesPanel/SpiffExtensionLaunchButton';
 
 const LOW_PRIORITY = 500;
 
@@ -83,7 +85,8 @@ function createCollaborationGroup(
   commandStack,
   elementRegistry
 ) {
-  return [
+
+  const results = [
     {
       id: 'messages',
       label: translate('Messages'),
@@ -97,19 +100,6 @@ function createCollaborationGroup(
         translate,
       }),
     },
-    // {
-    //   id: 'correlation_keys',
-    //   label: translate('Correlation Keys'),
-    //   isDefault: true,
-    //   component: ListGroup,
-    //   ...CorrelationKeysArray({
-    //     element,
-    //     moddle,
-    //     commandStack,
-    //     elementRegistry,
-    //     translate,
-    //   }),
-    // },
     {
       id: 'correlation_properties',
       label: translate('Correlation Properties'),
@@ -124,6 +114,24 @@ function createCollaborationGroup(
       }),
     }
   ];
+
+  if (element.type === 'bpmn:Collaboration') {
+    results.push({
+      id: 'correlation_keys',
+      label: translate('Correlation Keys'),
+      isDefault: true,
+      component: ListGroup,
+      ...CorrelationKeysArray({
+        element,
+        moddle,
+        commandStack,
+        elementRegistry,
+        translate,
+      }),
+    })
+  }
+  
+  return results;
 }
 
 /**
@@ -202,7 +210,7 @@ function createMessageGroup(
       entries,
     }
   ]
-  
+
   const { businessObject } = element;
 
   if (businessObject.get('isCorrelated')) {
@@ -220,6 +228,35 @@ function createMessageGroup(
       }),
     })
   }
+
+  results.push({
+    id: 'messageSchema',
+    label: translate('Json-Schema'),
+    entries: [
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionSelect,
+        optionType: OPTION_TYPE.json_schema_files,
+        name: 'formJsonSchemaFilename',
+        label: translate('JSON Schema Filename'),
+        description: translate('Form Description (RSJF)'),
+      },
+      {
+        component: SpiffExtensionLaunchButton,
+        element,
+        moddle,
+        commandStack,
+        name: 'formJsonSchemaFilename',
+        label: translate('Launch Editor'),
+        event: 'spiff.file.edit',
+        listenEvent: 'spiff.jsonSchema.update',
+        // listenFunction: updateExtensionProperties,
+        description: translate('Edit the form schema')
+      }
+    ]
+  })
 
   return results;
 }

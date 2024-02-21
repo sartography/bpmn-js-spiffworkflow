@@ -331,8 +331,12 @@ function isMessageIdInRetrievalExpressions(propConfig, messageId) {
   return propConfig.retrieval_expressions.some(expr => expr.message_ref === messageId);
 }
 
+function isMessageRefInCorrelationPropertiesRetrivalExpression(correlationProperty, messageRef) {
+  return (correlationProperty.correlationPropertyRetrievalExpression) ?
+    correlationProperty.correlationPropertyRetrievalExpression.some(expr => expr.messageRef === messageRef)
+    : false;
 
-
+}
 
 // MY HELPERS
 
@@ -374,7 +378,25 @@ export function createNewCorrelationProperty(element, moddle, commandStack, mess
 
 }
 
+// Create new correlation key from editor
+export function createNewCorrelationKey(element, moddle, commandStack, messageRef) {
+  if (element.type === 'bpmn:Collaboration') {
+    const newCorrelationKeyElement = moddle.create('bpmn:CorrelationKey');
+    const newCorrelationKey = moddle.ids.nextPrefixed(
+      'CorrelationKey_'
+    );
+    newCorrelationKeyElement.name = newCorrelationKey;
+    newCorrelationKeyElement.id = newCorrelationKey;
 
+    const currentCorrelationKeyElements = element.businessObject.get('correlationKeys');
+    currentCorrelationKeyElements.push(newCorrelationKeyElement);
+
+    commandStack.execute('element.updateProperties', {
+      element,
+      properties: {}
+    });
+  }
+}
 
 // Create new message from editor
 export function createNewMessage(element, moddle, commandStack) {
@@ -399,4 +421,50 @@ export function createNewMessage(element, moddle, commandStack) {
     });
 
   }
+}
+
+// Set a message to a list of correlation properties
+export function setMessageRefToListofCorrelationProperties(messageRef, correlationPropertyIDs, element, moddle, commandStack) {
+
+  let definitions = getRoot(element.businessObject);
+  if (definitions) {
+    definitions.rootElements.forEach(rootElement => {
+      if (rootElement.$type === "bpmn:CorrelationProperty" && correlationPropertyIDs.includes(rootElement.id) && !isMessageRefInCorrelationPropertiesRetrivalExpression(rootElement, messageRef)) {
+        const retrievalExpression = moddle.create('bpmn:CorrelationPropertyRetrievalExpression');
+        const formalExpression = moddle.create('bpmn:FormalExpression');
+        formalExpression.body = '';
+        retrievalExpression.messagePath = formalExpression;
+        retrievalExpression.messageRef = messageRef;
+        (rootElement.correlationPropertyRetrievalExpression)
+          ? rootElement.correlationPropertyRetrievalExpression.push(retrievalExpression)
+          : rootElement.correlationPropertyRetrievalExpression = [retrievalExpression]
+      } else if (rootElement.$type === "bpmn:CorrelationProperty" && !correlationPropertyIDs.includes(rootElement.id) && isMessageRefInCorrelationPropertiesRetrivalExpression(rootElement, messageRef)) {
+        rootElement.correlationPropertyRetrievalExpression = rootElement.correlationPropertyRetrievalExpression.filter(expr => expr.messageRef !== messageRef);
+      }
+    });
+  }
+
+}
+
+export function getCorrelationPropertiesIDsFiltredByMessageRef(businessObject, moddle, messageRef) {
+  const root = getRoot(businessObject, moddle);
+  const IDs = [];
+  if (isIterable(root.rootElements)) {
+    for (const rootElement of root.rootElements) {
+      if (rootElement.$type === 'bpmn:CorrelationProperty' && isMessageRefInCorrelationPropertiesRetrivalExpression(rootElement, messageRef)) {
+        IDs.push({
+          value: rootElement.id,
+          text: rootElement.name || rootElement.id,
+          selected: true
+        });
+      } else if (rootElement.$type === 'bpmn:CorrelationProperty' && !isMessageRefInCorrelationPropertiesRetrivalExpression(rootElement, messageRef)) {
+        IDs.push({
+          value: rootElement.id,
+          text: rootElement.name || rootElement.id,
+          selected: false
+        });
+      }
+    }
+  }
+  return IDs;
 }

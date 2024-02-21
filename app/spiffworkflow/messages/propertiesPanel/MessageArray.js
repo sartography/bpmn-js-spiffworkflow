@@ -2,6 +2,7 @@ import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
 import { getRoot, findMessageModdleElements, createNewMessage } from '../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+import { MessagePropertiesMultiSelect } from './MessagePropertiesMultiSelect';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -22,6 +23,7 @@ export function MessageArray(props) {
         element,
         messageElement,
         commandStack,
+        moddle,
         translate,
       }),
       autoFocusEntry: id,
@@ -82,7 +84,7 @@ function removeFactory(props) {
 }
 
 function messageGroup(props) {
-  const { messageElement, commandStack, translate, idPrefix } = props;
+  const { messageElement, commandStack, moddle, translate, idPrefix } = props;
   return [
     {
       id: `${idPrefix}-name`,
@@ -91,6 +93,14 @@ function messageGroup(props) {
       commandStack,
       translate,
     },
+    {
+      id: `${idPrefix}-properties`,
+      component: MessagePropertiesSelectField,
+      messageElement,
+      commandStack,
+      moddle,
+      translate,
+    }
   ];
 }
 
@@ -147,5 +157,20 @@ function MessageNameTextField(props) {
     getValue,
     setValue,
     debounce,
+  });
+}
+
+function MessagePropertiesSelectField(props) {
+  const { id, element, moddle, translate, messageElement } = props;
+
+  const debounce = useService('debounceInput');
+
+  return MessagePropertiesMultiSelect({
+    element,
+    id: `${id}-properties-input`,
+    label: translate('Properties'),
+    debounce,
+    messageElement,
+    moddle
   });
 }

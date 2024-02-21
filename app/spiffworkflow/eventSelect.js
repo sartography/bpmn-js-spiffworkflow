@@ -123,7 +123,7 @@ function getSelectorForType(eventDetails) {
     const getOptions = (val) => {
       const matching = root.rootElements ? root.rootElements.filter(elem => elem.$type === eventType) : [];
       const options = [];
-      matching.map(option => options.push({label: option.name, value: option.id}));
+      matching.map(option => options.push({ label: option.name, value: option.id }));
       return options;
     }
 
@@ -169,7 +169,7 @@ function getTextFieldForExtension(eventDetails, label, description, catching) {
       }
     }
 
-    const setValue = (value)  => {
+    const setValue = (value) => {
       const bpmnEvent = getEvent();
       if (bpmnEvent) {
         if (!bpmnEvent.extensionElements)
