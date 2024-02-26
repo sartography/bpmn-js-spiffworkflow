@@ -248,11 +248,10 @@ function createMessageGroup(
         element,
         moddle,
         commandStack,
-        name: 'formJsonSchemaFilename',
+        name: 'msgJsonSchema',
         label: translate('Launch Editor'),
-        event: 'spiff.file.edit',
-        listenEvent: 'spiff.jsonSchema.update',
-        // listenFunction: updateExtensionProperties,
+        event: 'spiff.msg_json_schema_files.requested',
+        listenEvent: 'spiff.msg_json_schema_files.requested',
         description: translate('Edit the form schema')
       }
     ]

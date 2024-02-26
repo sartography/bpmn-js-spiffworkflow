@@ -152,6 +152,7 @@ bpmnModeler.on('spiff.callactivity.edit', (newEvent) => {
 bpmnModeler.on('spiff.file.edit', (newEvent) => {
   console.log('Open new window to edit file: ', newEvent.value);
 });
+
 bpmnModeler.on('spiff.dmn.edit', (newEvent) => {
   console.log('Open new window to edit DMN table: ', newEvent.value);
 });
@@ -167,6 +168,10 @@ bpmnModeler.on('spiff.json_schema_files.requested', (event) => {
       { label: 'credit_card_form.json', value: 'credit_card_form.json' },
     ],
   });
+});
+
+bpmnModeler.on('spiff.msg_json_schema_files.requested', (event) => {
+  console.log('Open new window to edit Message json schema: ');
 });
 
 bpmnModeler.on('spiff.dmn_files.requested', (event) => {
