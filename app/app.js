@@ -261,6 +261,16 @@ bpmnModeler.on('spiff.messages.requested', (event) => {
   });
 });
 
+bpmnModeler.on('spiff.message_schemas.requested', (event) => {
+  event.eventBus.fire('spiff.message_schemas.returned', {
+    options: [
+      { schema_id: 's1' },
+      { schema_id: 's2' }
+    ],
+  });
+});
+
+
 // As call activites might refernce processes across the system
 // it should be possible to search for a paticular call activity.
 bpmnModeler.on('spiff.callactivity.search', (event) => {

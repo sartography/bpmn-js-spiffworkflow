@@ -11,6 +11,9 @@ import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
 import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
 import { OPTION_TYPE, SpiffExtensionSelect } from '../../extensions/propertiesPanel/SpiffExtensionSelect';
 import { SpiffExtensionLaunchButton } from '../../extensions/propertiesPanel/SpiffExtensionLaunchButton';
+import { HeaderButton, TextFieldEntry } from '@bpmn-io/properties-panel';
+import { useService } from 'bpmn-js-properties-panel';
+import { MessageJsonSchemaSelect } from './MessageJsonSchemaSelect';
 
 const LOW_PRIORITY = 500;
 
@@ -237,25 +240,37 @@ function createMessageGroup(
         element,
         moddle,
         commandStack,
-        component: SpiffExtensionSelect,
-        optionType: OPTION_TYPE.json_schema_files,
-        name: 'formJsonSchemaFilename',
-        label: translate('JSON Schema Filename'),
-        description: translate('Form Description (RSJF)'),
+        component: MessageJsonSchemaSelect,
+        name: 'msgJsonSchema',
+        label: translate('Json-schema input'),
+        description: translate('Json-schema description'),
       },
       {
-        component: SpiffExtensionLaunchButton,
+        component: LaunchJsonSchemaEditorButton,
         element,
-        moddle,
-        commandStack,
-        name: 'msgJsonSchema',
-        label: translate('Launch Editor'),
-        event: 'spiff.msg_json_schema_files.requested',
-        listenEvent: 'spiff.msg_json_schema_files.requested',
-        description: translate('Edit the form schema')
+        name: 'messageRef',
+        label: translate('Launch Editor')
       }
     ]
   })
 
   return results;
+}
+
+function LaunchJsonSchemaEditorButton(props) {
+  const { element } = props;
+  const eventBus = useService('eventBus');
+  return HeaderButton({
+    id: 'spiffworkflow-search-call-activity-button',
+    class: 'spiffworkflow-properties-panel-button',
+    children: 'Launch Editor',
+    onClick: () => {
+      const messageId = (element.businessObject && element.businessObject.messageRef) ? element.businessObject.messageRef['name']: '';
+      eventBus.fire('spiff.msg_json_schema_files.requested', {
+        messageId,
+        eventBus,
+        element
+      });
+    }
+  });
 }
