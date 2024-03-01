@@ -28,7 +28,7 @@ export function MessageJsonSchemaSelect(props) {
 
         let definitions = getRoot(businessObject);
         if (!definitions.get('rootElements')) {
-          definitions.set('rootElements', []);
+            definitions.set('rootElements', []);
         }
 
         // Retrieve Message
@@ -36,7 +36,7 @@ export function MessageJsonSchemaSelect(props) {
             element.$type === 'bpmn:Message' && (element.id === msgRef.id || element.name === msgRef.id)
         );
 
-        if(!bpmnMessage){
+        if (!bpmnMessage) {
             return '';
         }
 
@@ -55,7 +55,7 @@ export function MessageJsonSchemaSelect(props) {
 
         let definitions = getRoot(businessObject);
         if (!definitions.get('rootElements')) {
-          definitions.set('rootElements', []);
+            definitions.set('rootElements', []);
         }
 
         // Retrieve Message

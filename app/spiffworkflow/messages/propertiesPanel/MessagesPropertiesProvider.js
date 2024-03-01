@@ -7,11 +7,9 @@ import { MessageVariable } from './MessageVariable';
 import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
 import { CorrelationPropertiesList } from './CorrelationPropertiesList';
 import { MessageArray } from './MessageArray';
-import { isMessageElement, canReceiveMessage } from '../MessageHelpers';
+import { isMessageElement, canReceiveMessage, getRoot, getMessageRefElement } from '../MessageHelpers';
 import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
-import { OPTION_TYPE, SpiffExtensionSelect } from '../../extensions/propertiesPanel/SpiffExtensionSelect';
-import { SpiffExtensionLaunchButton } from '../../extensions/propertiesPanel/SpiffExtensionLaunchButton';
-import { HeaderButton, TextFieldEntry } from '@bpmn-io/properties-panel';
+import { HeaderButton } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 import { MessageJsonSchemaSelect } from './MessageJsonSchemaSelect';
 
@@ -133,7 +131,7 @@ function createCollaborationGroup(
       }),
     })
   }
-  
+
   return results;
 }
 
@@ -237,13 +235,13 @@ function createMessageGroup(
     label: translate('Json-Schema'),
     entries: [
       {
-        element,
-        moddle,
-        commandStack,
         component: MessageJsonSchemaSelect,
+        element,
         name: 'msgJsonSchema',
         label: translate('Json-schema input'),
         description: translate('Json-schema description'),
+        moddle,
+        commandStack
       },
       {
         component: LaunchJsonSchemaEditorButton,
@@ -265,9 +263,32 @@ function LaunchJsonSchemaEditorButton(props) {
     class: 'spiffworkflow-properties-panel-button',
     children: 'Launch Editor',
     onClick: () => {
-      const messageId = (element.businessObject && element.businessObject.messageRef) ? element.businessObject.messageRef['name']: '';
-      eventBus.fire('spiff.msg_json_schema_files.requested', {
-        messageId,
+      const { businessObject } = element;
+
+      const msgRef = getMessageRefElement(element);
+      if (!msgRef) {
+        alert('Please select a message');
+        return '';
+      }
+
+      let definitions = getRoot(businessObject);
+      if (!definitions.get('rootElements')) {
+        definitions.set('rootElements', []);
+      }
+
+      // Retrieve Message
+      let bpmnMessage = definitions.get('rootElements').find(element =>
+        element.$type === 'bpmn:Message' && (element.id === msgRef.id || element.name === msgRef.id)
+      );
+
+      if (!bpmnMessage) {
+        alert('Error : Message not found!');
+        return '';
+      }
+
+      eventBus.fire('spiff.msg_json_schema_editor.requested', {
+        messageId: msgRef.name,
+        schemaId: bpmnMessage.get('jsonSchemaId'),
         eventBus,
         element
       });

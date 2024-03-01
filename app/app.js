@@ -270,7 +270,6 @@ bpmnModeler.on('spiff.message_schemas.requested', (event) => {
   });
 });
 
-
 // As call activites might refernce processes across the system
 // it should be possible to search for a paticular call activity.
 bpmnModeler.on('spiff.callactivity.search', (event) => {
@@ -289,7 +288,7 @@ bpmnModeler.on('import.parse.complete', event => {
   refs.forEach(ref => {
     const props = {
       id: ref.id,
-      name: ref.id ? typeof(ref.name) === 'undefined': ref.name,
+      name: ref.id ? typeof (ref.name) === 'undefined' : ref.name,
     };
     let elem = bpmnModeler._moddle.create(desc, props);
     elem.$parent = ref.element;
@@ -297,7 +296,7 @@ bpmnModeler.on('import.parse.complete', event => {
   });
 });
 
-bpmnModeler.importXML(diagramXML).then(() => {});
+bpmnModeler.importXML(diagramXML).then(() => { });
 
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
