@@ -117,7 +117,7 @@ describe('Messages should work', function () {
   //   pressButton(button);
   //
   // });
-  //
+
   // it('should add a new Correlation Key when clicked', async function () {
   //   const divClass = 'bio-properties-panel-list';
   //   const divs = findDivByClass(divClass, container);
@@ -133,4 +133,5 @@ describe('Messages should work', function () {
   //
   //   const divs2 = findDivByClass(divClass, container);
   // });
+  
 });
