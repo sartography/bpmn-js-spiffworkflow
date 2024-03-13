@@ -1,6 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { useService } from 'bpmn-js-properties-panel';
-import { TextFieldEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
+import { TextFieldEntry, isTextFieldEntryEdited, CheckboxEntry, isCheckboxEntryEdited } from '@bpmn-io/properties-panel';
 import { getLoopProperty, setLoopProperty } from './LoopProperty';
 
 const LOW_PRIORITY = 500;
@@ -22,12 +22,13 @@ export default function MultiInstancePropertiesProvider(propertiesPanel) {
 MultiInstancePropertiesProvider.$inject = ['propertiesPanel'];
 
 function updateMultiInstanceGroup(element, group) {
-  group.entries = MultiInstanceProps({element});
+  group.entries = MultiInstanceProps({ element });
   group.shouldOpen = true;
 }
 
 function MultiInstanceProps(props) {
   const { element } = props;
+  const { businessObject } = element;
 
   const entries = [{
     id: 'loopCardinality',
@@ -42,18 +43,23 @@ function MultiInstanceProps(props) {
     component: InputItem,
     isEdited: isTextFieldEntryEdited
   }, {
+    id: 'isOutputElSynchronized',
+    component: IsOutputElSync,
+    isEdited: isCheckboxEntryEdited
+  }, {
     id: 'loopDataOutputRef',
     component: OutputCollection,
     isEdited: isTextFieldEntryEdited
-  }, {
+  }, (!businessObject.get('isOutputSynced')) ? {
     id: 'dataOutputItem',
     component: OutputItem,
     isEdited: isTextFieldEntryEdited
-  }, {
+  } : {}, {
     id: 'completionCondition',
     component: CompletionCondition,
     isEdited: isTextFieldEntryEdited
   }];
+
   return entries;
 }
 
@@ -69,7 +75,7 @@ function LoopCardinality(props) {
   };
 
   const setValue = value => {
-    const loopCardinality = bpmnFactory.create('bpmn:FormalExpression', {body: value})
+    const loopCardinality = bpmnFactory.create('bpmn:FormalExpression', { body: value })
     setLoopProperty(element, 'loopCardinality', loopCardinality, commandStack);
   };
 
@@ -96,7 +102,7 @@ function InputCollection(props) {
   };
 
   const setValue = value => {
-    const collection = bpmnFactory.create('bpmn:ItemAwareElement', {id: value});
+    const collection = bpmnFactory.create('bpmn:ItemAwareElement', { id: value });
     setLoopProperty(element, 'loopDataInputRef', collection, commandStack);
   };
 
@@ -123,8 +129,18 @@ function InputItem(props) {
   };
 
   const setValue = value => {
-    const item = (typeof(value) !== 'undefined') ? bpmnFactory.create('bpmn:DataInput', {id: value, name: value}) : undefined;
+    const item = (typeof (value) !== 'undefined') ? bpmnFactory.create('bpmn:DataInput', { id: value, name: value }) : undefined;
     setLoopProperty(element, 'inputDataItem', item, commandStack);
+
+    try {
+      const { businessObject } = element;
+      if(businessObject.get('isOutputSynced')){
+        setLoopProperty(element, 'outputDataItem', item, commandStack);
+      }
+    } catch (error) {
+      console.log('Error caught while set value Input item', error)
+    }
+
   };
 
   return TextFieldEntry({
@@ -150,7 +166,7 @@ function OutputCollection(props) {
   };
 
   const setValue = value => {
-    const collection = bpmnFactory.create('bpmn:ItemAwareElement', {id: value});
+    const collection = bpmnFactory.create('bpmn:ItemAwareElement', { id: value });
     setLoopProperty(element, 'loopDataOutputRef', collection, commandStack);
   };
 
@@ -177,7 +193,17 @@ function OutputItem(props) {
   };
 
   const setValue = value => {
-    const item = (typeof(value) !== 'undefined') ? bpmnFactory.create('bpmn:DataOutput', {id: value, name: value}) : undefined;
+    try {
+      const inVal = getLoopProperty(element, 'inputDataItem');
+      if(inVal === value){
+        alert("You have entered the same value for both Input and Output elements without enabling synchronization. Please confirm if this is intended.");
+        return;
+      }
+    } catch (error) {
+      console.log('Error caught while Set Value OutputItem', error);
+    }
+
+    const item = (typeof (value) !== 'undefined') ? bpmnFactory.create('bpmn:DataOutput', { id: value, name: value }) : undefined;
     setLoopProperty(element, 'outputDataItem', item, commandStack);
   };
 
@@ -204,7 +230,7 @@ function CompletionCondition(props) {
   };
 
   const setValue = value => {
-    const completionCondition = bpmnFactory.create('bpmn:FormalExpression', {body: value})
+    const completionCondition = bpmnFactory.create('bpmn:FormalExpression', { body: value })
     setLoopProperty(element, 'completionCondition', completionCondition, commandStack);
   };
 
@@ -216,6 +242,46 @@ function CompletionCondition(props) {
     setValue,
     debounce,
     description: 'Stop executing this task when this condition is met'
+  });
+}
+
+function IsOutputElSync(props) {
+
+  const { element } = props;
+  const translate = useService('translate');
+  const commandStack = useService('commandStack');
+  const bpmnFactory = useService('bpmnFactory');
+
+  const getValue = () => {
+    const { businessObject } = element;
+    const value = (businessObject.get('isOutputSynced')) ? businessObject.get('isOutputSynced') : false;
+    return value;
+  };
+
+  const setValue = value => {
+
+    if(value) {
+      const valIn = getLoopProperty(element, 'inputDataItem');
+      const item = (typeof (valIn) !== 'undefined') ? bpmnFactory.create('bpmn:DataOutput', { id: valIn, name: valIn }) : undefined;
+      setLoopProperty(element, 'outputDataItem', item, commandStack);
+    } else {
+      setLoopProperty(element, 'outputDataItem', undefined, commandStack);
+    }
+
+    commandStack.execute('element.updateProperties', {
+      element,
+      properties: {
+        isOutputSynced: value
+      },
+    });
+  };
+
+  return CheckboxEntry({
+    element,
+    id: 'testBefore',
+    label: translate('Output Element is Synchronized with Input Element'),
+    getValue,
+    setValue,
   });
 }
 
