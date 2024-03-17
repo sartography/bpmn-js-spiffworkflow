@@ -1,14 +1,8 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { MessageSelect } from './MessageSelect';
-import { MessagePayload } from './MessagePayload';
-import { MessageVariable } from './MessageVariable';
-import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
-import { isMessageElement, canReceiveMessage, getRoot, getMessageRefElement } from '../MessageHelpers';
-import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
-import { useService } from 'bpmn-js-properties-panel';
-import { MessageJsonSchemaSelect } from './MessageJsonSchemaSelect';
-import { createCollaborationGroup } from './CollaborationPropertiesProvider';
-import { createMessageGroup } from './TaskEventMessageProvider';
+import { isMessageElement } from '../MessageHelpers';
+
+import { createCollaborationGroup } from './processLevelProvider/CollaborationPropertiesProvider';
+import { createMessageGroup } from './elementLevelProvider/TaskEventMessageProvider';
 
 const LOW_PRIORITY = 500;
 

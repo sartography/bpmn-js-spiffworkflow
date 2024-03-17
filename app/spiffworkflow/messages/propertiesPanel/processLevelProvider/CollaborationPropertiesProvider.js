@@ -3,7 +3,6 @@ import { CorrelationKeysArray } from './CorrelationKeysArray';
 import { CorrelationPropertiesArray } from './CorrelationPropertiesArray';
 import { ListGroup } from '@bpmn-io/properties-panel';
 
-
 /**
  * Adds a group to the properties panel for the script task that allows you
  * to set the script.
@@ -34,6 +33,8 @@ export function createCollaborationGroup(
     },
     {
       id: 'correlation_properties',
+      class: 'correlation_properties',
+      className: 'correlation_properties',
       label: translate('Correlation Properties'),
       isDefault: true,
       component: ListGroup,

@@ -1,17 +1,15 @@
 import { useService } from 'bpmn-js-properties-panel';
 import {
-  SelectEntry,
   isTextFieldEntryEdited,
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
 import {
   getRoot,
-  findCorrelationKeys,
   findCorrelationProperties,
   findCorrelationKeyForCorrelationProperty,
   createNewCorrelationProperty,
-} from '../MessageHelpers';
-import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+} from '../../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 
 /**
  * Allows the creation, or editing of messageCorrelations at the bpmn:sendTask level of a BPMN document.
@@ -25,6 +23,7 @@ export function CorrelationPropertiesArray(props) {
   const correlationPropertyArray = findCorrelationProperties(
     element.businessObject
   );
+
   const items = correlationPropertyArray.map(
     (correlationPropertyModdleElement, index) => {
       const id = `correlation-${index}`;

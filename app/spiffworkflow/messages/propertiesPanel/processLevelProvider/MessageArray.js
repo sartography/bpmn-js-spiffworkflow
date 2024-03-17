@@ -1,7 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import { getRoot, findMessageModdleElements, createNewMessage } from '../MessageHelpers';
-import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+import { getRoot, findMessageModdleElements, createNewMessage } from '../../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 import { MessagePropertiesMultiSelect } from './MessagePropertiesMultiSelect';
 
 /**
@@ -11,8 +11,9 @@ import { MessagePropertiesMultiSelect } from './MessagePropertiesMultiSelect';
  */
 export function MessageArray(props) {
   const { element, moddle, commandStack, translate } = props;
-
   const messageElements = findMessageModdleElements(element.businessObject);
+  const { _eventBus  } = props.elementRegistry;
+
   const items = messageElements.map((messageElement, index) => {
     const id = `messageElement-${index}`;
     return {
@@ -40,6 +41,10 @@ export function MessageArray(props) {
     event.stopPropagation();
     createNewMessage(element, moddle, commandStack);
   }
+
+  _eventBus.on(`spiff.messages.create_new`, (event) => {
+    add(event);
+  });
 
   return { items, add };
 }

@@ -1,6 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
-import { getMessageRefElement, getRoot } from '../MessageHelpers';
+import { getMessageRefElement, getRoot } from '../../MessageHelpers';
 
 export const spiffExtensionOptions = {};
 

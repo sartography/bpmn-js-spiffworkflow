@@ -1,12 +1,15 @@
 import { useService } from "bpmn-js-properties-panel";
 import { HeaderButton, ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
-import { canReceiveMessage, getMessageRefElement, getRoot } from "../MessageHelpers";
+import { canReceiveMessage, getMessageRefElement, getRoot } from "../../MessageHelpers";
 import { CorrelationPropertiesList } from './CorrelationPropertiesList';
 import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
 import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
 import { MessageJsonSchemaSelect } from './MessageJsonSchemaSelect';
 import { MessageVariable } from './MessageVariable';
+import { MessageLaunchEditorButton } from "./MessageLaunchEditorButton";
+import { MatchingCorrelationEntries } from "./MatchingConditionArray";
+import { MatchingCorrelationCheckboxEntry } from "./MatchingCorrelationCheckbox";
 
 /**
  * Adds a group to the properties panel for editing messages for the SendTask
@@ -21,6 +24,8 @@ export function createMessageGroup(
   elementRegistry
 ) {
 
+  const { businessObject } = element;
+
   const entries = [
     {
       id: 'selectMessage',
@@ -30,6 +35,11 @@ export function createMessageGroup(
       moddle,
       commandStack,
     },
+    {
+      id: 'messageLaunchEditorButton',
+      element,
+      component: MessageLaunchEditorButton
+    }
   ];
 
   if (canReceiveMessage(element)) {
@@ -52,29 +62,31 @@ export function createMessageGroup(
     });
   }
 
-  // entries.push({
-  //   id: 'correlationProperties',
-  //   label: translate('Correlation'),
-  //   component: ListGroup,
-  //   ...MessageCorrelationPropertiesArray({
-  //     element,
-  //     moddle,
-  //     commandStack,
-  //     elementRegistry,
-  //     translate,
-  //   }),
-  // });
+  if (canReceiveMessage(element)) {
+    // Given the user the possibility to either enable/disable showing correlations conditions.
+    entries.push({
+      id: 'isMatchingCorrelation',
+      element,
+      moddle,
+      commandStack,
+      component: MatchingCorrelationCheckboxEntry,
+      name: 'enable.correlation',
+      label: translate('Enable Condition Matching'),
+      description: 'Determine when this message should be received based on matching data values.',
+    });
+  }
 
-  entries.push({
-    id: 'isCorrelated',
-    element,
-    moddle,
-    commandStack,
-    component: CorrelationCheckboxEntry,
-    name: 'enable.correlation',
-    label: 'Enable Correlation',
-    description: 'Enable Correlation desc',
-  });
+  // Given the user the possibility to either enable/disable showing correlations.
+  // entries.push({
+  //   id: 'isCorrelated',
+  //   element,
+  //   moddle,
+  //   commandStack,
+  //   component: CorrelationCheckboxEntry,
+  //   name: 'enable.correlation',
+  //   label: translate('Enable Correlation'),
+  //   description: 'You can define specific correlation properties for your message.',
+  // });
 
   var results = [
     {
@@ -85,45 +97,59 @@ export function createMessageGroup(
     }
   ]
 
-  const { businessObject } = element;
+  // Showing Correlation Properties Group if correlation is enabled
+  // if (businessObject.get('isCorrelated')) {
+  //   results.push({
+  //     id: 'correlationProperties',
+  //     label: translate('Correlation Properties'),
+  //     isDefault: true,
+  //     component: ListGroup,
+  //     ...CorrelationPropertiesList({
+  //       element,
+  //       moddle,
+  //       commandStack,
+  //       elementRegistry,
+  //       translate,
+  //     }),
+  //   })
+  // }
 
-  if (businessObject.get('isCorrelated')) {
+  // Adding JsonSchema Group
+  // results.push({
+  //   id: 'messageSchema',
+  //   label: translate('Json-Schema'),
+  //   entries: [
+  //     {
+  //       component: MessageJsonSchemaSelect,
+  //       element,
+  //       name: 'msgJsonSchema',
+  //       label: translate('Define JSON Schema'),
+  //       description: translate('Select a JSON schema for your message'),
+  //       moddle,
+  //       commandStack
+  //     },
+  //     {
+  //       component: LaunchJsonSchemaEditorButton,
+  //       element,
+  //       name: 'messageRef',
+  //       label: translate('Launch Editor')
+  //     }
+  //   ]
+  // })
+
+  // Adding Correlation Conditions Section
+  if (businessObject.get('isMatchingCorrelation') && canReceiveMessage(element)) {
     results.push({
-      id: 'correlation_properties',
-      label: translate('Correlation Properties'),
-      isDefault: true,
-      component: ListGroup,
-      ...CorrelationPropertiesList({
+      id: "correlationConditions",
+      label: translate('Matching Conditions'),
+      ...MatchingCorrelationEntries({
         element,
         moddle,
         commandStack,
-        elementRegistry,
         translate,
-      }),
+      })
     })
   }
-
-  results.push({
-    id: 'messageSchema',
-    label: translate('Json-Schema'),
-    entries: [
-      {
-        component: MessageJsonSchemaSelect,
-        element,
-        name: 'msgJsonSchema',
-        label: translate('Json-schema input'),
-        description: translate('Json-schema description'),
-        moddle,
-        commandStack
-      },
-      {
-        component: LaunchJsonSchemaEditorButton,
-        element,
-        name: 'messageRef',
-        label: translate('Launch Editor')
-      }
-    ]
-  })
 
   return results;
 }

@@ -165,12 +165,17 @@ export function findCorrelationProperties(businessObject, moddle) {
 export function findCorrelationPropertiesByMessage(element) {
 
   let messageId;
+
   const { businessObject } = element;
   const root = getRoot(businessObject);
   const correlationProperties = [];
 
   if (isMessageEvent(element)) {
-    messageId = businessObject.eventDefinitions[0].messageRef.id;
+    if (!businessObject.eventDefinitions || !businessObject.eventDefinitions[0].messageRef) {
+      return [];
+    } else {
+      messageId = businessObject.eventDefinitions[0].messageRef.id;
+    }
   } else if (isMessageElement(element)) {
     if (!businessObject.messageRef) return;
     messageId = businessObject.messageRef.id;
@@ -187,6 +192,7 @@ export function findCorrelationPropertiesByMessage(element) {
       }
     }
   }
+
   return correlationProperties;
 }
 
@@ -338,12 +344,8 @@ function isMessageRefInCorrelationPropertiesRetrivalExpression(correlationProper
 
 }
 
-// MY HELPERS
-
 // Create new correlation property from editor
 export function createNewCorrelationProperty(element, moddle, commandStack, messageRef) {
-
-  // console.log('createNewCorrelationProperty', element, moddle, commandStack);
 
   const rootElement = getRoot(element.businessObject);
   const { rootElements } = rootElement;
@@ -400,8 +402,6 @@ export function createNewCorrelationKey(element, moddle, commandStack, messageRe
 
 // Create new message from editor
 export function createNewMessage(element, moddle, commandStack) {
-
-  // console.log('createNewMessage', element, moddle, commandStack);
 
   if (element.type === 'bpmn:Collaboration' || element.type === 'bpmn:Process') {
 

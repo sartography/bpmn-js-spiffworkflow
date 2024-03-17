@@ -8,16 +8,19 @@ import {
   isMessageElement,
   isMessageEvent,
   isMessageRefUsed,
-} from '../MessageHelpers';
+} from '../../MessageHelpers';
 
 export const spiffExtensionOptions = {};
+
+// define constant for value of creating new message
+const CREATE_NEW_MESSAGE = 'create_new';
 
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
  */
 export function MessageSelect(props) {
   const shapeElement = props.element;
-  const { commandStack, element } = props;
+  const { commandStack, element, moddle } = props;
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
   const bpmnFactory = useService('bpmnFactory');
@@ -31,6 +34,12 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
+
+    if(value === CREATE_NEW_MESSAGE){
+      eventBus.fire(`spiff.messages.create_new`, { eventBus });
+      const opts = getOptions();
+      value = opts[0].value;
+    }
 
     // Define variables
     const messageId = value;
@@ -58,6 +67,7 @@ export function MessageSelect(props) {
 
     // Update messageRef of current Element
     if (isMessageEvent(shapeElement)) {
+      element.businessObject.eventDefinitions[0].set('extensionElements', moddle.create('bpmn:ExtensionElements')); // Clear extension element
       const messageEventDefinition = element.businessObject.eventDefinitions[0];
       messageEventDefinition.messageRef = bpmnMessage;
       // call this to update the other elements in the props panel like payload
@@ -67,6 +77,7 @@ export function MessageSelect(props) {
         properties: {}
       });
     } else if (isMessageElement(shapeElement)) {
+      element.businessObject.set('extensionElements', moddle.create('bpmn:ExtensionElements')); // Clear extension element
       element.businessObject.messageRef = bpmnMessage;
       commandStack.execute('element.updateProperties', {
         element: element,
@@ -81,7 +92,6 @@ export function MessageSelect(props) {
     if (oldMessageRef && !isMessageRefUsed(definitions, oldMessageRef)) {
       const rootElements = definitions.get('rootElements');
       const oldMessageIndex = rootElements.findIndex(element => element.$type === 'bpmn:Message' && element.id === oldMessageRef.id);
-
       if (oldMessageIndex !== -1) {
         rootElements.splice(oldMessageIndex, 1);
         definitions.rootElements = rootElements;
@@ -130,7 +140,7 @@ export function MessageSelect(props) {
 
   requestOptions(eventBus);
 
-  const getOptions = (_value) => {
+  const getOptions = () => {
     const messages = findMessageModdleElements(shapeElement.businessObject);
     const options = [];
     for (const message of messages) {
@@ -148,8 +158,11 @@ export function MessageSelect(props) {
         });
       });
     }
-    const uniqueArray = removeDuplicatesByLabel(options);
 
+    const uniqueArray = removeDuplicatesByLabel(options);
+    if(uniqueArray && uniqueArray.length === 0){
+      uniqueArray.push({ value: CREATE_NEW_MESSAGE, label: 'Create new Message' });
+    }
     return uniqueArray;
   };
 

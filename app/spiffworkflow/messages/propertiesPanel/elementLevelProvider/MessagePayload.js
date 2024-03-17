@@ -1,21 +1,22 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextAreaEntry } from '@bpmn-io/properties-panel';
-import { getMessageElementForShapeElement } from '../MessageHelpers';
+import { getMessageElementForShapeElement, isMessageEvent } from '../../MessageHelpers';
 
 /**
  * Allows the creation, or editing of messagePayload at the bpmn:sendTask level of a BPMN document.
  */
 export function MessagePayload(props) {
   const shapeElement = props.element;
+  const { moddle, element, commandStack } = props;
   const debounce = useService('debounceInput');
   const messageElement = getMessageElementForShapeElement(shapeElement);
   const disabled = !messageElement;
 
   const getMessagePayloadObject = () => {
-    if (messageElement) {
-      const { extensionElements } = messageElement;
+    if (element) {
+      const { extensionElements } = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0] : element.businessObject;
       if (extensionElements) {
-        return messageElement.extensionElements
+        return extensionElements
           .get('values')
           .filter(function getInstanceOfType(e) {
             return e.$instanceOf('spiffworkflow:MessagePayload');
@@ -34,26 +35,33 @@ export function MessagePayload(props) {
   };
 
   const setValue = (value) => {
+    var extensions = (isMessageEvent(element))
+      ? element.businessObject.eventDefinitions[0].get('extensionElements') || moddle.create('bpmn:ExtensionElements')
+      : element.businessObject.get('extensionElements') || moddle.create('bpmn:ExtensionElements');
     let messagePayloadObject = getMessagePayloadObject();
     if (!messagePayloadObject) {
-      messagePayloadObject = messageElement.$model.create(
+      messagePayloadObject = moddle.create(
         'spiffworkflow:MessagePayload'
       );
-      if (!messageElement.extensionElements) {
-        messageElement.extensionElements = messageElement.$model.create(
-          'bpmn:ExtensionElements'
-        );
-      }
-      messageElement.extensionElements.get('values').push(messagePayloadObject);
+      extensions.get('values').push(messagePayloadObject);
     }
     messagePayloadObject.value = value;
+
+    (isMessageEvent(element))
+      ? element.businessObject.eventDefinitions[0].set('extensionElements', extensions)
+      : element.businessObject.set('extensionElements', extensions);
+
+    commandStack.execute('element.updateProperties', {
+      element,
+      properties: {},
+    });
   };
 
   return (
     <TextAreaEntry
       id="messagePayload"
       element={shapeElement}
-      description="The payload of the message."
+      description="Enter a JSON object to define the message payload directly or provide the variable name that holds the payload data."
       label="Payload"
       disabled={disabled}
       getValue={getValue}
