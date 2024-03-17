@@ -343,8 +343,6 @@ function isMessageRefInCorrelationPropertiesRetrivalExpression(correlationProper
 // Create new correlation property from editor
 export function createNewCorrelationProperty(element, moddle, commandStack, messageRef) {
 
-  // console.log('createNewCorrelationProperty', element, moddle, commandStack);
-
   const rootElement = getRoot(element.businessObject);
   const { rootElements } = rootElement;
 
@@ -400,8 +398,6 @@ export function createNewCorrelationKey(element, moddle, commandStack, messageRe
 
 // Create new message from editor
 export function createNewMessage(element, moddle, commandStack) {
-
-  // console.log('createNewMessage', element, moddle, commandStack);
 
   if (element.type === 'bpmn:Collaboration' || element.type === 'bpmn:Process') {
 

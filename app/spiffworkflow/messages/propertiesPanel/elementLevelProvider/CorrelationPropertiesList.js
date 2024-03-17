@@ -1,19 +1,16 @@
 import {
-  SelectEntry,
   isTextFieldEntryEdited,
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
 import {
   getRoot,
-  findCorrelationKeys,
   findCorrelationKeyForCorrelationProperty,
   findCorrelationPropertiesByMessage,
   isMessageEvent,
-  isMessageElement,
   createNewCorrelationProperty,
   getMessageRefElement
-} from '../MessageHelpers';
-import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+} from '../../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 import { useService } from 'bpmn-js-properties-panel';
 
 /**

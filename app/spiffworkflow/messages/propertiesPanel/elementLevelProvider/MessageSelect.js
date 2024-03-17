@@ -8,9 +8,12 @@ import {
   isMessageElement,
   isMessageEvent,
   isMessageRefUsed,
-} from '../MessageHelpers';
+} from '../../MessageHelpers';
 
 export const spiffExtensionOptions = {};
+
+// define constant for value of creating new message
+const CREATE_NEW_MESSAGE = 'create_new';
 
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
@@ -31,6 +34,12 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
+
+    if(value === CREATE_NEW_MESSAGE){
+      eventBus.fire(`spiff.messages.create_new`, { eventBus });
+      const opts = getOptions();
+      value = opts[0].value;
+    }
 
     // Define variables
     const messageId = value;
@@ -81,7 +90,6 @@ export function MessageSelect(props) {
     if (oldMessageRef && !isMessageRefUsed(definitions, oldMessageRef)) {
       const rootElements = definitions.get('rootElements');
       const oldMessageIndex = rootElements.findIndex(element => element.$type === 'bpmn:Message' && element.id === oldMessageRef.id);
-
       if (oldMessageIndex !== -1) {
         rootElements.splice(oldMessageIndex, 1);
         definitions.rootElements = rootElements;
@@ -130,7 +138,7 @@ export function MessageSelect(props) {
 
   requestOptions(eventBus);
 
-  const getOptions = (_value) => {
+  const getOptions = () => {
     const messages = findMessageModdleElements(shapeElement.businessObject);
     const options = [];
     for (const message of messages) {
@@ -148,8 +156,11 @@ export function MessageSelect(props) {
         });
       });
     }
-    const uniqueArray = removeDuplicatesByLabel(options);
 
+    const uniqueArray = removeDuplicatesByLabel(options);
+    if(uniqueArray && uniqueArray.length === 0){
+      uniqueArray.push({ value: CREATE_NEW_MESSAGE, label: 'Create new Message' });
+    }
     return uniqueArray;
   };
 

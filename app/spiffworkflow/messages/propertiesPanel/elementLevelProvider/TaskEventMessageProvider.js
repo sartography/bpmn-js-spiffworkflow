@@ -1,6 +1,6 @@
 import { useService } from "bpmn-js-properties-panel";
 import { HeaderButton, ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
-import { canReceiveMessage, getMessageRefElement, getRoot } from "../MessageHelpers";
+import { canReceiveMessage, getMessageRefElement, getRoot } from "../../MessageHelpers";
 import { CorrelationPropertiesList } from './CorrelationPropertiesList';
 import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
@@ -20,6 +20,8 @@ export function createMessageGroup(
   commandStack,
   elementRegistry
 ) {
+
+  const { businessObject } = element;
 
   const entries = [
     {
@@ -52,19 +54,7 @@ export function createMessageGroup(
     });
   }
 
-  // entries.push({
-  //   id: 'correlationProperties',
-  //   label: translate('Correlation'),
-  //   component: ListGroup,
-  //   ...MessageCorrelationPropertiesArray({
-  //     element,
-  //     moddle,
-  //     commandStack,
-  //     elementRegistry,
-  //     translate,
-  //   }),
-  // });
-
+  // Given the user the possibility to either enable/disable showing correlations.
   entries.push({
     id: 'isCorrelated',
     element,
@@ -72,8 +62,8 @@ export function createMessageGroup(
     commandStack,
     component: CorrelationCheckboxEntry,
     name: 'enable.correlation',
-    label: 'Enable Correlation',
-    description: 'Enable Correlation desc',
+    label: translate('Enable Correlation'),
+    description: 'You can define specific correlation properties for your message.',
   });
 
   var results = [
@@ -85,11 +75,10 @@ export function createMessageGroup(
     }
   ]
 
-  const { businessObject } = element;
-
+  // Showing Correlation Properties Group if correlation is enabled
   if (businessObject.get('isCorrelated')) {
     results.push({
-      id: 'correlation_properties',
+      id: 'correlationProperties',
       label: translate('Correlation Properties'),
       isDefault: true,
       component: ListGroup,
@@ -103,6 +92,7 @@ export function createMessageGroup(
     })
   }
 
+  // Adding JsonSchema Group
   results.push({
     id: 'messageSchema',
     label: translate('Json-Schema'),
@@ -111,8 +101,8 @@ export function createMessageGroup(
         component: MessageJsonSchemaSelect,
         element,
         name: 'msgJsonSchema',
-        label: translate('Json-schema input'),
-        description: translate('Json-schema description'),
+        label: translate('Define JSON Schema'),
+        description: translate('Select a JSON schema for your message'),
         moddle,
         commandStack
       },

@@ -1,6 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextAreaEntry } from '@bpmn-io/properties-panel';
-import { getMessageElementForShapeElement } from '../MessageHelpers';
+import { getMessageElementForShapeElement } from '../../MessageHelpers';
 
 /**
  * Allows the creation, or editing of messagePayload at the bpmn:sendTask level of a BPMN document.

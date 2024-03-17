@@ -1,6 +1,6 @@
 import { html } from 'htm/preact';
 import { useService } from 'bpmn-js-properties-panel';
-import { getCorrelationPropertiesIDsFiltredByMessageRef, setMessageRefToListofCorrelationProperties } from '../MessageHelpers';
+import { getCorrelationPropertiesIDsFiltredByMessageRef, setMessageRefToListofCorrelationProperties } from '../../MessageHelpers';
 
 import NiceSelect from 'nice-select2/dist/js/nice-select2';
 

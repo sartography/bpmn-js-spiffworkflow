@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0qmxumb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core"
+  xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0qmxumb"
+  targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0"
+  modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
   <bpmn:collaboration id="my_collaboration">
     <bpmn:participant id="buddy" name="Buddy" processRef="process_buddy" />
     <bpmn:participant id="Person" name="Person" processRef="random_person_process" />
     <bpmn:participant id="Participant_1tlkvw1" name="Tom Petty" processRef="Process_04o9jmt" />
-    <bpmn:messageFlow id="love_letter_flow" name="Love Letter Flow" sourceRef="ActivitySendLetter" targetRef="Event_0ym6ptw" />
+    <bpmn:messageFlow id="love_letter_flow" name="Love Letter Flow" sourceRef="ActivitySendLetter"
+      targetRef="Event_0ym6ptw" />
     <bpmn:messageFlow id="Flow_10ya1ap" sourceRef="Activity_0ra5uc1" targetRef="Participant_1tlkvw1" />
     <bpmn:messageFlow id="Flow_0vonyt2" sourceRef="Participant_1tlkvw1" targetRef="Event_06829ki" />
     <bpmn:messageFlow id="Flow_0wwbhd6" sourceRef="Event_0e1t8xh" targetRef="EventReceiveLetter" />
@@ -75,7 +83,8 @@
     </bpmn:intermediateCatchEvent>
     <bpmn:sequenceFlow id="Flow_1f0m6hd" sourceRef="Activity_0ra5uc1" targetRef="Event_06829ki" />
     <bpmn:sequenceFlow id="Flow_1ai45pq" sourceRef="EventReceiveLetter" targetRef="Activity_0ra5uc1" />
-    <bpmn:sequenceFlow id="Flow_0tp8uut" sourceRef="ActivitySendLetter" targetRef="EventReceiveLetter" />
+    <bpmn:sequenceFlow id="Flow_0tp8uut" sourceRef="ActivitySendLetter"
+      targetRef="EventReceiveLetter" />
     <bpmn:sequenceFlow id="Flow_1bl6jeh" sourceRef="StartEvent_1" targetRef="ActivitySendLetter" />
     <bpmn:sequenceFlow id="Flow_0rygg2d" sourceRef="Event_06829ki" targetRef="Event_01h5zqa" />
   </bpmn:process>
@@ -165,7 +174,8 @@
       <bpmndi:BPMNShape id="Event_12u2p44_di" bpmnElement="Event_0e1t8xh">
         <dc:Bounds x="412" y="512" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_1tlkvw1_di" bpmnElement="Participant_1tlkvw1" isHorizontal="true">
+      <bpmndi:BPMNShape id="Participant_1tlkvw1_di" bpmnElement="Participant_1tlkvw1"
+        isHorizontal="true">
         <dc:Bounds x="129" y="80" width="721" height="60" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>

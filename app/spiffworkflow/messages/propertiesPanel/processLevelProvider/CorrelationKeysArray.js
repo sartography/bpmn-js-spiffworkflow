@@ -1,7 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SimpleEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
-import { createNewCorrelationKey, findCorrelationKeys, getRoot } from '../MessageHelpers';
-import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+import { createNewCorrelationKey, findCorrelationKeys, getRoot } from '../../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
