@@ -65,7 +65,7 @@ export function createMessageGroup(
   if (canReceiveMessage(element)) {
     // Given the user the possibility to either enable/disable showing correlations conditions.
     entries.push({
-      id: 'isMatchingCorrelation',
+      id: 'spiffworkflow:isMatchingCorrelation',
       element,
       moddle,
       commandStack,
@@ -138,7 +138,7 @@ export function createMessageGroup(
   // })
 
   // Adding Correlation Conditions Section
-  if (businessObject.get('isMatchingCorrelation') && canReceiveMessage(element)) {
+  if (businessObject.get('spiffworkflow:isMatchingCorrelation') && canReceiveMessage(element)) {
     results.push({
       id: "correlationConditions",
       label: translate('Matching Conditions'),

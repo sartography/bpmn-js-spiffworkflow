@@ -13,7 +13,7 @@ export function MatchingCorrelationCheckboxEntry(props) {
     const debounce = useService('debounceInput');
 
     const getValue = () => {
-        const value = (businessObject.get('isMatchingCorrelation')) ? businessObject.get('isMatchingCorrelation') : false;
+        const value = (businessObject.get('spiffworkflow:isMatchingCorrelation')) ? businessObject.get('spiffworkflow:isMatchingCorrelation') : false;
         return value;
     }
 
@@ -21,7 +21,7 @@ export function MatchingCorrelationCheckboxEntry(props) {
         commandStack.execute('element.updateProperties', {
             element,
             properties: {
-                isMatchingCorrelation: value
+                'spiffworkflow:isMatchingCorrelation': value
             },
         });
     };
