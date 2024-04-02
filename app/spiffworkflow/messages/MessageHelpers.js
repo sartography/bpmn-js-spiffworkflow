@@ -307,6 +307,65 @@ export function createOrUpdateCorrelationProperties(bpmnFactory, commandStack, e
 
 }
 
+export function createOrUpdateCorrelationPropertiesV2(bpmnFactory, commandStack, element, propertiesConfig, messageId) {
+
+  let definitions = getRoot(element.businessObject);
+
+  console.log('propertiesConfig', propertiesConfig)
+
+  if (propertiesConfig) {
+    // Iterate over each property configuration
+    propertiesConfig.forEach(propConfig => {
+      let correlationProperty = findCorrelationPropertyById(definitions, propConfig.identifier);
+      const msgElement = findMessageElement(element.businessObject, messageId);
+
+      console.log('correlationProperty', correlationProperty, propConfig);
+
+      if (correlationProperty === null) {
+        correlationProperty = bpmnFactory.create(
+          'bpmn:CorrelationProperty'
+        );
+        correlationProperty.id = propConfig.identifier;
+        correlationProperty.name = propConfig.identifier;
+        correlationProperty.correlationPropertyRetrievalExpression = [];
+      }
+
+      correlationProperty.correlationPropertyRetrievalExpression = (!correlationProperty.correlationPropertyRetrievalExpression) ? [] : correlationProperty.correlationPropertyRetrievalExpression;
+      
+      const existingExpressionIndex = correlationProperty.correlationPropertyRetrievalExpression.findIndex(retrievalExpr =>
+        retrievalExpr.messageRef && retrievalExpr.messageRef.id === messageId
+      );
+      
+      if (existingExpressionIndex === -1) {
+        const retrievalExpression = bpmnFactory.create('bpmn:CorrelationPropertyRetrievalExpression');
+        const formalExpression = bpmnFactory.create('bpmn:FormalExpression');
+        formalExpression.body = (propConfig.retrieval_expression) ? propConfig.retrieval_expression : '';
+        retrievalExpression.messagePath = formalExpression;
+        retrievalExpression.messageRef = msgElement;
+        correlationProperty.correlationPropertyRetrievalExpression.push(retrievalExpression);
+      }
+
+      const existingIndex = definitions.rootElements.findIndex(element =>
+        element.id === correlationProperty.id && element.$type === correlationProperty.$type);
+
+      if (existingIndex !== -1) {
+        // Update existing correlationProperty
+        definitions.rootElements[existingIndex] = correlationProperty;
+      } else {
+        // Add new correlationProperty
+        definitions.rootElements.push(correlationProperty);
+      }
+
+      commandStack.execute('element.updateProperties', {
+        element,
+        properties: {},
+      });
+     
+    });
+  }
+
+}
+
 export function findCorrelationPropertyById(definitions, id) {
   let foundCorrelationProperty = null;
   definitions.rootElements.forEach(rootElement => {

@@ -193,66 +193,117 @@ bpmnModeler.on('spiff.data_stores.requested', (event) => {
   });
 });
 
+// bpmnModeler.on('spiff.messages.requested', (event) => {
+//   event.eventBus.fire('spiff.messages.returned', {
+//     configuration: {
+//       "messages": [
+//         {
+//           "id": "order_ready",
+//           // "name": "Order Ready"
+//         },
+//         {
+//           "id": "end_of_day_receipts",
+//           // "name": "End Of Day Receipts"
+//         },
+//         {
+//           "id": "food_is_ready",
+//           // "name": "Food Is Ready"
+//         }
+//       ],
+//       "correlation_keys": [
+//         {
+//           "correlation_properties": [
+//             "franchise_id",
+//             "table_number"
+//           ],
+//           "id": "order"
+//         },
+//         {
+//           "correlation_properties": [
+//             "franchise_id"
+//           ],
+//           "id": "franchise"
+//         }
+//       ],
+//       "correlation_properties": [
+//         {
+//           "id": "table_number",
+//           "retrieval_expressions": [
+//             {
+//               "formal_expression": "table_number",
+//               "message_ref": "order_ready"
+//             },
+//             {
+//               "formal_expression": "table_number",
+//               "message_ref": "food_is_ready"
+//             }
+//           ]
+//         },
+//         {
+//           "id": "franchise_id",
+//           "retrieval_expressions": [
+//             {
+//               "formal_expression": "franchise['id']",
+//               "message_ref": "end_of_day_receipts"
+//             },
+//             {
+//               "formal_expression": "franchise_id",
+//               "message_ref": "order_ready"
+//             },
+//             {
+//               "formal_expression": "franchise_id",
+//               "message_ref": "food_is_ready"
+//             }
+//           ]
+//         }
+//       ]
+//     }
+//   });
+// });
+
 bpmnModeler.on('spiff.messages.requested', (event) => {
   event.eventBus.fire('spiff.messages.returned', {
     configuration: {
       "messages": [
         {
-          "id": "order_ready",
-          // "name": "Order Ready"
+          "identifier": "basic_message",
+          "location": "examples/1-basic-concepts",
+          "schema": {},
+          "correlation_properties": []
         },
         {
-          "id": "end_of_day_receipts",
-          // "name": "End Of Day Receipts"
+          "identifier": "end_of_day_receipts",
+          "location": "examples",
+          "schema": {},
+          "correlation_properties": []
         },
         {
-          "id": "food_is_ready",
-          // "name": "Food Is Ready"
-        }
-      ],
-      "correlation_keys": [
-        {
+          "identifier": "order_ready",
+          "location": "examples",
+          "schema": {},
           "correlation_properties": [
-            "franchise_id",
-            "table_number"
-          ],
-          "id": "order"
-        },
-        {
-          "correlation_properties": [
-            "franchise_id"
-          ],
-          "id": "franchise"
-        }
-      ],
-      "correlation_properties": [
-        {
-          "id": "table_number",
-          "retrieval_expressions": [
             {
-              "formal_expression": "table_number",
-              "message_ref": "order_ready"
+              "identifier": "table_number",
+              "retrieval_expression": "table_number"
             },
             {
-              "formal_expression": "table_number",
-              "message_ref": "food_is_ready"
+              "identifier": "franchise_id",
+              "retrieval_expression": "franchise_id"
             }
           ]
         },
         {
-          "id": "franchise_id",
-          "retrieval_expressions": [
+          "identifier": "table_seated",
+          "location": "examples",
+          "schema": {},
+          "correlation_properties": [
             {
-              "formal_expression": "franchise['id']",
-              "message_ref": "end_of_day_receipts"
+              "identifier": "table_number",
+              "retrieval_expression": "table_number-v2"
             },
             {
-              "formal_expression": "franchise_id",
-              "message_ref": "order_ready"
-            },
-            {
-              "formal_expression": "franchise_id",
-              "message_ref": "food_is_ready"
+              "identifier": "franchise_id",
+              "retrieval_expression": "franchise_id-v2"
             }
           ]
         }
@@ -261,14 +312,14 @@ bpmnModeler.on('spiff.messages.requested', (event) => {
   });
 });
 
-bpmnModeler.on('spiff.message_schemas.requested', (event) => {
-  event.eventBus.fire('spiff.message_schemas.returned', {
-    options: [
-      { schema_id: 's1' },
-      { schema_id: 's2' }
-    ],
-  });
-});
+// bpmnModeler.on('spiff.message_schemas.requested', (event) => {
+//   event.eventBus.fire('spiff.message_schemas.returned', {
+//     options: [
+//       { schema_id: 's1' },
+//       { schema_id: 's2' }
+//     ],
+//   });
+// });
 
 // As call activites might refernce processes across the system
 // it should be possible to search for a paticular call activity.
