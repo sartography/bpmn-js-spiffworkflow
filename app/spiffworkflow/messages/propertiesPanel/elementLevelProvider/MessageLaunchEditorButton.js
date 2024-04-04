@@ -1,5 +1,4 @@
 import { HeaderButton } from '@bpmn-io/properties-panel';
-import { useService } from 'bpmn-js-properties-panel';
 
 /**
  * Sends a notification to the host application saying the user
@@ -7,14 +6,17 @@ import { useService } from 'bpmn-js-properties-panel';
  * update the value and send it back.
  */
 export function MessageLaunchEditorButton(props) {
-    const { element, name, event, listenEvent, listenFunction } = props;
-    const eventBus = useService('eventBus');
+
+    const { element, name, translate } = props;
+
+    const openEditorLabel = (element.businessObject && !element.businessObject.messageRef) ? 'Create message' : 'Edit message'
+
     return HeaderButton({
         className: 'spiffworkflow-properties-panel-button',
-        id: `message_launch_editor_button_${name}`,
+        id: 'message_launch_editor_button',
         onClick: () => {
-            alert("Open message editor")
+            alert(openEditorLabel)
         },
-        children: 'Open message editor',
+        children: translate(openEditorLabel),
     });
 }

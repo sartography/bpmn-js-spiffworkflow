@@ -12,7 +12,6 @@ import { MessagePropertiesMultiSelect } from './MessagePropertiesMultiSelect';
 export function MessageArray(props) {
   const { element, moddle, commandStack, translate } = props;
   const messageElements = findMessageModdleElements(element.businessObject);
-  const { _eventBus  } = props.elementRegistry;
 
   const items = messageElements.map((messageElement, index) => {
     const id = `messageElement-${index}`;
@@ -41,10 +40,6 @@ export function MessageArray(props) {
     event.stopPropagation();
     createNewMessage(element, moddle, commandStack);
   }
-
-  _eventBus.on(`spiff.messages.create_new`, (event) => {
-    add(event);
-  });
 
   return { items, add };
 }

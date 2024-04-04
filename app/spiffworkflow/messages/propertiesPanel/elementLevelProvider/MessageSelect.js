@@ -13,9 +13,6 @@ import {
 
 export const spiffExtensionOptions = {};
 
-// define constant for value of creating new message
-const CREATE_NEW_MESSAGE = 'create_new';
-
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
  */
@@ -35,12 +32,6 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
-
-    if(value === CREATE_NEW_MESSAGE){
-      eventBus.fire(`spiff.messages.create_new`, { eventBus });
-      const opts = getOptions();
-      value = opts[0].value;
-    }
 
     // Define variables
     const messageId = value;
@@ -128,9 +119,6 @@ export function MessageSelect(props) {
 
     // Remove duplicated options
     const uniqueArray = removeDuplicatesByLabel(options);
-    if(uniqueArray && uniqueArray.length === 0){
-      uniqueArray.push({ value: CREATE_NEW_MESSAGE, label: 'Create new Message' });
-    }
     return uniqueArray;
   };
 
