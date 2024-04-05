@@ -38,6 +38,7 @@ export function createMessageGroup(
     {
       id: 'messageLaunchEditorButton',
       element,
+      translate,
       component: MessageLaunchEditorButton
     }
   ];

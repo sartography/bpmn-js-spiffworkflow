@@ -311,15 +311,11 @@ export function createOrUpdateCorrelationPropertiesV2(bpmnFactory, commandStack,
 
   let definitions = getRoot(element.businessObject);
 
-  console.log('propertiesConfig', propertiesConfig)
-
   if (propertiesConfig) {
     // Iterate over each property configuration
     propertiesConfig.forEach(propConfig => {
       let correlationProperty = findCorrelationPropertyById(definitions, propConfig.identifier);
       const msgElement = findMessageElement(element.businessObject, messageId);
-
-      console.log('correlationProperty', correlationProperty, propConfig);
 
       if (correlationProperty === null) {
         correlationProperty = bpmnFactory.create(
