@@ -33,7 +33,6 @@ describe('Business Rule Properties Panel', function () {
     })
   );
 
-
   const return_files = (event) => {
     event.eventBus.fire('spiff.dmn_files.returned', {
       options: [
@@ -42,46 +41,54 @@ describe('Business Rule Properties Panel', function () {
         { label: 'Test Decision', value: 'test_decision' },
       ],
     });
-  }
+  };
 
   it('should display a dropdown to select from available decision tables', async function () {
     const modeler = getBpmnJS();
     modeler.get('eventBus').once('spiff.dmn_files.requested', return_files);
     expectSelected('business_rule_task');
     // THEN - a properties panel exists with a section for editing that script
-    const entry = findEntry('extension_spiffworkflow:CalledDecisionId', getPropertiesPanel());
+    const entry = findEntry(
+      'extension_spiffworkflow:CalledDecisionId',
+      getPropertiesPanel()
+    );
     expect(entry, 'No Entry').to.exist;
     const selectList = findSelect(entry);
     expect(selectList, 'No Select').to.exist;
+    modeler.get('eventBus').off('spiff.dmn_files.requested', return_files);
   });
 
   it('should update the spiffworkflow:calledDecisionId tag when you modify the called decision select box', async function () {
     // IF - a script tag is selected, and you change the script in the properties panel
     const modeler = getBpmnJS();
-    modeler.get('eventBus').once('spiff.dmn_files.requested', return_files);
+    modeler.get('eventBus').on('spiff.dmn_files.requested', return_files);
     const businessRuleTask = await expectSelected('business_rule_task');
     const entry = findEntry('extension_CalledDecisionId', getPropertiesPanel());
     const selectList = findSelect(entry);
     changeInput(selectList, 'Decision_Pizza_Price');
 
-    // THEN - the script tag in the BPMN Business object / XML is updated as well.
+    // THEN - the decision id in the BPMN Business object / XML is updated as well.
     const businessObject = getBusinessObject(businessRuleTask);
     expect(businessObject.extensionElements).to.exist;
     const element = businessObject.extensionElements.values[0];
     expect(element.value).to.equal('Decision_Pizza_Price');
+    modeler.get('eventBus').off('spiff.dmn_files.requested', return_files);
   });
 
   it('should load up the xml and the value for the called decision should match the xml', async function () {
+    const modeler = getBpmnJS();
+    modeler.get('eventBus').on('spiff.dmn_files.requested', return_files);
     const businessRuleTask = await expectSelected('business_rule_task');
     const entry = findEntry('extension_CalledDecisionId', getPropertiesPanel());
     const selectList = findSelect(entry);
-    expect(selectList.value, "initial value is wrong").to.equal('test_decision');
+    expect(selectList.value, 'initial value is wrong').to.equal(
+      'test_decision'
+    );
 
-    // THEN - the script tag in the BPMN Business object / XML is updated as well.
     const businessObject = getBusinessObject(businessRuleTask);
     expect(businessObject.extensionElements).to.exist;
     const element = businessObject.extensionElements.values[0];
     expect(element.value).to.equal('test_decision');
+    modeler.get('eventBus').off('spiff.dmn_files.requested', return_files);
   });
-
 });
