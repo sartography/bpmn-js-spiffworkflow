@@ -61,6 +61,16 @@ adjust CSS props so that padding won't add to dimensions.
   margin: 12px;
 }
 
+.bio-properties-panel-description {
+  word-wrap: break-word;
+  width: 350px;
+}
+
+.bio-properties-panel-group-entries > .bio-properties-panel-description {
+  padding-inline: 15px;
+  padding-block: 8px;
+}
+
 /* Darker background on mouse-over */
 .bpmn-js-spiffworkflow-btn:hover {
   background-color: RoyalBlue;

@@ -18,6 +18,7 @@ import EscalationPropertiesProvider from './escalations/propertiesPanel/Escalati
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
 import StandardLoopPropertiesProvider from './loops/propertiesPanel/StandardLoopPropertiesProvider';
 import MultiInstancePropertiesProvider from './loops/propertiesPanel/MultiInstancePropertiesProvider';
+import IoPropertiesProvider from './InputOutput/propertiesProvider/IoPropertiesProvider';
 
 export default {
   __depends__: [RulesModule],
@@ -41,6 +42,7 @@ export default {
     'dataObjectRenderer',
     'multiInstancePropertiesProvider',
     'standardLoopPropertiesProvider',
+    'IoPropertiesProvider'
   ],
   dataObjectInterceptor: ['type', DataObjectInterceptor],
   dataObjectRules: ['type', DataObjectRules],
@@ -61,4 +63,5 @@ export default {
   ioInterceptor: ['type', IoInterceptor],
   multiInstancePropertiesProvider: ['type', MultiInstancePropertiesProvider],
   standardLoopPropertiesProvider: ['type', StandardLoopPropertiesProvider],
+  IoPropertiesProvider: ['type', IoPropertiesProvider]
 };
