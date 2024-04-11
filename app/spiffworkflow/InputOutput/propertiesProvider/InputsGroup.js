@@ -12,7 +12,7 @@ export function createInputsGroup(
   const { businessObject } = element;
 
   const group = {
-    label: translate('Inputs'),
+    label: translate('Input/Output Management'),
     id: 'inputs-properties',
     entries: [],
   };
@@ -22,7 +22,7 @@ export function createInputsGroup(
     id: `infos-input-textField`,
     component: DescriptionEntry,
     value:
-      'ℹ️ When no specific inputs are defined, all process variables are accessible.',
+      'ℹ️ When no specific inputs/ouputs entry is defined, all process variables are accessible.',
     element,
     translate,
     commandStack,
@@ -31,13 +31,14 @@ export function createInputsGroup(
   // add input list component
   group.entries.push({
     id: 'inputParameters',
-    label: translate('Input Parameters'),
+    label: translate('Inputs'),
     component: ListGroup,
     ...InputParametersArray({
       element,
       moddle,
       translate,
-      commandStack
+      commandStack,
+      bpmnFactory
     }),
   });
 
