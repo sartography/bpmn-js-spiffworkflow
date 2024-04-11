@@ -1,7 +1,8 @@
 import { ListGroup, DescriptionEntry } from '@bpmn-io/properties-panel';
 import { InputParametersArray } from './InputParametersArray.js';
+import { OutputParametersArray } from './OutputParametersArray.js';
 
-export function createInputsGroup(
+export function createIoGroup(
   element,
   translate,
   moddle,
@@ -9,20 +10,18 @@ export function createInputsGroup(
   bpmnFactory
 ) {
 
-  const { businessObject } = element;
-
   const group = {
     label: translate('Input/Output Management'),
-    id: 'inputs-properties',
+    id: 'io-properties',
     entries: [],
   };
 
   // add description input
   group.entries.push({
-    id: `infos-input-textField`,
+    id: `infos-textField`,
     component: DescriptionEntry,
     value:
-      'ℹ️ When no specific inputs/ouputs entry is defined, all process variables are accessible.',
+      'ℹ️ When no specific inputs/outputs are defined, all process variables are accessible.',
     element,
     translate,
     commandStack,
@@ -40,6 +39,20 @@ export function createInputsGroup(
       commandStack,
       bpmnFactory
     }),
+  });
+
+  // add output list component
+  group.entries.push({
+    id: 'outputParameters',
+    label: translate('Outputs'),
+    component: ListGroup,
+    ...OutputParametersArray({
+      element,
+      moddle,
+      translate,
+      commandStack,
+      bpmnFactory
+    })
   });
 
   return group;

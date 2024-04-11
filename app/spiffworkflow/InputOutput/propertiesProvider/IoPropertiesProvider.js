@@ -1,7 +1,5 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { createInputsGroup } from './InputsGroup';
-import { createOutputsGroup } from './OutputsGroup';
-import { InputParametersArray } from './InputParametersArray.js';
+import { createIoGroup } from './IoGroup.js';
 
 const LOW_PRIORITY = 500;
 
@@ -16,17 +14,8 @@ export default function IoPropertiesProvider(
   this.getGroups = function getGroupsCallback(element) {
     return function pushGroup(groups) {
       if (isBpmnTask(element)) {
-        // groups.push(
-        //   InputParametersArray(
-        //     element,
-        //     moddle,
-        //     commandStack,
-        //     bpmnFactory,
-        //     translate,
-        //   )
-        // );
         groups.push(
-          createInputsGroup(
+          createIoGroup(
             element,
             translate,
             moddle,
@@ -34,15 +23,6 @@ export default function IoPropertiesProvider(
             bpmnFactory
           )
         );
-        // groups.push(
-        //   createOutputsGroup(
-        //     element,
-        //     translate,
-        //     moddle,
-        //     commandStack,
-        //     bpmnFactory
-        //   )
-        // );
       }
       return groups;
     };
