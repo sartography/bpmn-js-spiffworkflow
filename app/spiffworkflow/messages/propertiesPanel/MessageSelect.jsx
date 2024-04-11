@@ -1,3 +1,4 @@
+import React from 'react';
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import {

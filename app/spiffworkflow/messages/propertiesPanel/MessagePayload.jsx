@@ -1,3 +1,4 @@
+import React from 'react';
 import { useService } from 'bpmn-js-properties-panel';
 import { TextAreaEntry } from '@bpmn-io/properties-panel';
 import { getMessageElementForShapeElement } from '../MessageHelpers';
@@ -37,11 +38,11 @@ export function MessagePayload(props) {
     let messagePayloadObject = getMessagePayloadObject();
     if (!messagePayloadObject) {
       messagePayloadObject = messageElement.$model.create(
-        'spiffworkflow:MessagePayload'
+        'spiffworkflow:MessagePayload',
       );
       if (!messageElement.extensionElements) {
         messageElement.extensionElements = messageElement.$model.create(
-          'bpmn:ExtensionElements'
+          'bpmn:ExtensionElements',
         );
       }
       messageElement.extensionElements.get('values').push(messagePayloadObject);
