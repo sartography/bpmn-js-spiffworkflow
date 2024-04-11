@@ -12,7 +12,7 @@ export function createIoGroup(
 
   const group = {
     label: translate('Input/Output Management'),
-    id: 'io-properties',
+    id: 'ioProperties',
     entries: [],
   };
 
