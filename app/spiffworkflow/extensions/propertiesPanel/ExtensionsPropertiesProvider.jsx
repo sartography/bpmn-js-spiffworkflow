@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   ListGroup,
   CheckboxEntry,
@@ -7,16 +8,20 @@ import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import {
   ServiceTaskParameterArray,
-  ServiceTaskOperatorSelect, ServiceTaskResultTextInput,
+  ServiceTaskOperatorSelect,
+  ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
-import {OPTION_TYPE, spiffExtensionOptions, SpiffExtensionSelect} from './SpiffExtensionSelect';
-import {SpiffExtensionLaunchButton} from './SpiffExtensionLaunchButton';
-import {SpiffExtensionTextArea} from './SpiffExtensionTextArea';
-import {SpiffExtensionTextInput} from './SpiffExtensionTextInput';
-import {SpiffExtensionCheckboxEntry} from './SpiffExtensionCheckboxEntry';
-import {hasEventDefinition} from 'bpmn-js/lib/util/DiUtil';
-import { PropertyDescription } from 'bpmn-js-properties-panel/';
-import {setExtensionValue} from "../extensionHelpers";
+import {
+  OPTION_TYPE,
+  spiffExtensionOptions,
+  SpiffExtensionSelect,
+} from './SpiffExtensionSelect';
+import { SpiffExtensionLaunchButton } from './SpiffExtensionLaunchButton';
+import { SpiffExtensionTextArea } from './SpiffExtensionTextArea';
+import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
+import { SpiffExtensionCheckboxEntry } from './SpiffExtensionCheckboxEntry';
+import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
+import { setExtensionValue } from '../extensionHelpers';
 
 const LOW_PRIORITY = 500;
 
@@ -31,12 +36,14 @@ export default function ExtensionsPropertiesProvider(
     return function (groups) {
       if (is(element, 'bpmn:ScriptTask')) {
         groups.push(
-          createScriptGroup(element, translate, moddle, commandStack)
+          createScriptGroup(element, translate, moddle, commandStack),
         );
       } else if (
         isAny(element, ['bpmn:Task', 'bpmn:CallActivity', 'bpmn:SubProcess'])
       ) {
-        groups.push(preScriptPostScriptGroup(element, translate, moddle, commandStack));
+        groups.push(
+          preScriptPostScriptGroup(element, translate, moddle, commandStack),
+        );
       }
       if (is(element, 'bpmn:UserTask')) {
         groups.push(createUserGroup(element, translate, moddle, commandStack));
@@ -44,7 +51,7 @@ export default function ExtensionsPropertiesProvider(
 
       if (is(element, 'bpmn:BusinessRuleTask')) {
         groups.push(
-          createBusinessRuleGroup(element, translate, moddle, commandStack)
+          createBusinessRuleGroup(element, translate, moddle, commandStack),
         );
       }
       if (
@@ -60,31 +67,29 @@ export default function ExtensionsPropertiesProvider(
         ])
       ) {
         groups.push(
-          createUserInstructionsGroup(element, translate, moddle, commandStack)
+          createUserInstructionsGroup(element, translate, moddle, commandStack),
         );
       }
-      if (
-        isAny(element, [
-          'bpmn:ManualTask',
-          'bpmn:UserTask',
-        ])
-      ) {
+      if (isAny(element, ['bpmn:ManualTask', 'bpmn:UserTask'])) {
         groups.push(
-          createAllowGuestGroup(element, translate, moddle, commandStack)
+          createAllowGuestGroup(element, translate, moddle, commandStack),
         );
       }
       if (
         is(element, 'bpmn:BoundaryEvent') &&
         hasEventDefinition(element, 'bpmn:SignalEventDefinition') &&
-        isAny(element.businessObject.attachedToRef, ['bpmn:ManualTask', 'bpmn:UserTask'])
+        isAny(element.businessObject.attachedToRef, [
+          'bpmn:ManualTask',
+          'bpmn:UserTask',
+        ])
       ) {
         groups.push(
-          createSignalButtonGroup(element, translate, moddle, commandStack)
+          createSignalButtonGroup(element, translate, moddle, commandStack),
         );
       }
       if (is(element, 'bpmn:ServiceTask')) {
         groups.push(
-          createServiceGroup(element, translate, moddle, commandStack)
+          createServiceGroup(element, translate, moddle, commandStack),
         );
       }
 
@@ -154,7 +159,7 @@ function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
     }),
   ];
   const loopCharacteristics = element.businessObject.loopCharacteristics;
-  if (typeof(loopCharacteristics) !== 'undefined') {
+  if (typeof loopCharacteristics !== 'undefined') {
     entries.push({
       id: 'scriptValence',
       component: ScriptValenceCheckbox,
@@ -170,7 +175,6 @@ function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
 }
 
 function ScriptValenceCheckbox(props) {
-
   const { element, commandStack } = props;
 
   const getValue = () => {
@@ -204,16 +208,38 @@ function ScriptValenceCheckbox(props) {
  * @returns entries
  */
 function createUserGroup(element, translate, moddle, commandStack) {
-
-  const updateExtensionProperties = (element, name, value, moddle, commandStack) => {
-    const uiName = value.replace('schema\.json', 'uischema\.json')
-    setExtensionValue(element, 'formJsonSchemaFilename', value, moddle, commandStack);
-    setExtensionValue(element, 'formUiSchemaFilename', uiName, moddle, commandStack);
-    const matches = spiffExtensionOptions[OPTION_TYPE.json_schema_files].filter((opt) => opt.value === value);
+  const updateExtensionProperties = (
+    element,
+    name,
+    value,
+    moddle,
+    commandStack,
+  ) => {
+    const uiName = value.replace('schema.json', 'uischema.json');
+    setExtensionValue(
+      element,
+      'formJsonSchemaFilename',
+      value,
+      moddle,
+      commandStack,
+    );
+    setExtensionValue(
+      element,
+      'formUiSchemaFilename',
+      uiName,
+      moddle,
+      commandStack,
+    );
+    const matches = spiffExtensionOptions[OPTION_TYPE.json_schema_files].filter(
+      (opt) => opt.value === value,
+    );
     if (matches.length === 0) {
-      spiffExtensionOptions[OPTION_TYPE.json_schema_files].push({label: value, value: value});
+      spiffExtensionOptions[OPTION_TYPE.json_schema_files].push({
+        label: value,
+        value: value,
+      });
     }
-  }
+  };
 
   return {
     id: 'user_task_properties',
@@ -239,7 +265,7 @@ function createUserGroup(element, translate, moddle, commandStack) {
         event: 'spiff.file.edit',
         listenEvent: 'spiff.jsonSchema.update',
         listenFunction: updateExtensionProperties,
-        description: translate('Edit the form schema')
+        description: translate('Edit the form schema'),
       },
     ],
   };
@@ -288,12 +314,7 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
  * @param moddle
  * @returns entries
  */
-function createUserInstructionsGroup (
-  element,
-  translate,
-  moddle,
-  commandStack
-) {
+function createUserInstructionsGroup(element, translate, moddle, commandStack) {
   return {
     id: 'instructions',
     label: translate('Instructions'),
@@ -305,7 +326,8 @@ function createUserInstructionsGroup (
         component: SpiffExtensionTextArea,
         name: 'spiffworkflow:InstructionsForEndUser',
         label: 'Instructions',
-        description: 'Displayed above user forms or when this task is executing.',
+        description:
+          'Displayed above user forms or when this task is executing.',
       },
       {
         element,
@@ -317,7 +339,7 @@ function createUserInstructionsGroup (
         event: 'spiff.markdown.edit',
         listenEvent: 'spiff.markdown.update',
         description: translate('Edit the form schema'),
-      }
+      },
     ],
   };
 }
@@ -329,12 +351,7 @@ function createUserInstructionsGroup (
  * @param moddle
  * @returns entries
  */
-function createAllowGuestGroup (
-  element,
-  translate,
-  moddle,
-  commandStack
-) {
+function createAllowGuestGroup(element, translate, moddle, commandStack) {
   return {
     id: 'allow_guest_user',
     label: translate('Guest options'),
@@ -346,7 +363,8 @@ function createAllowGuestGroup (
         component: SpiffExtensionCheckboxEntry,
         name: 'spiffworkflow:AllowGuest',
         label: 'Guest can complete this task',
-        description: 'Allow a guest user to complete this task without logging in. They will not be allowed to do anything but submit this task. If another task directly follows it that allows guest access, they could also complete that task.',
+        description:
+          'Allow a guest user to complete this task without logging in. They will not be allowed to do anything but submit this task. If another task directly follows it that allows guest access, they could also complete that task.',
       },
       {
         element,
@@ -355,7 +373,8 @@ function createAllowGuestGroup (
         component: SpiffExtensionTextArea,
         name: 'spiffworkflow:GuestConfirmation',
         label: 'Guest confirmation',
-        description: 'This is markdown that is displayed to the user after they complete the task. If this is filled out then the user will not be able to complete additional tasks without a new link to the next task.',
+        description:
+          'This is markdown that is displayed to the user after they complete the task. If this is filled out then the user will not be able to complete additional tasks without a new link to the next task.',
       },
       {
         element,
@@ -366,7 +385,7 @@ function createAllowGuestGroup (
         label: translate('Launch Editor'),
         event: 'spiff.markdown.edit',
         listenEvent: 'spiff.markdown.update',
-      }
+      },
     ],
   };
 }
@@ -379,15 +398,14 @@ function createAllowGuestGroup (
  * @param moddle
  * @returns entries
  */
-function createSignalButtonGroup (
-  element,
-  translate,
-  moddle,
-  commandStack
-) {
-  let description =
-    <p style={{maxWidth : "330px"}}> If attached to a user/manual task, setting this value will display a button which a user can click to immediately fire this signal event.
+function createSignalButtonGroup(element, translate, moddle, commandStack) {
+  let description = (
+    <p style={{ maxWidth: '330px' }}>
+      {' '}
+      If attached to a user/manual task, setting this value will display a
+      button which a user can click to immediately fire this signal event.
     </p>
+  );
   return {
     id: 'signal_button',
     label: translate('Button'),
@@ -399,12 +417,11 @@ function createSignalButtonGroup (
         component: SpiffExtensionTextInput,
         name: 'spiffworkflow:SignalButtonLabel',
         label: 'Button Label',
-        description: description
+        description: description,
       },
     ],
   };
 }
-
 
 /**
  * Create a group on the main panel with a text box (for choosing the dmn to connect)
@@ -441,7 +458,7 @@ function createServiceGroup(element, translate, moddle, commandStack) {
           element,
           moddle,
           translate,
-          commandStack
+          commandStack,
         }),
       },
     ],

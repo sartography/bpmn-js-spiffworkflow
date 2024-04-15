@@ -83,7 +83,7 @@ export function findCorrelationKeyForCorrelationProperty(shapeElement, moddle) {
 }
 
 export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
-  shapeElement
+  shapeElement,
 ) {
   const formalExpressions = [];
   const messageRefElement = getMessageRefElement(shapeElement);
@@ -95,7 +95,7 @@ export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
           const retrievalExpression =
             getRetrievalExpressionFromCorrelationProperty(
               childElement,
-              messageRefElement
+              messageRefElement,
             );
           if (retrievalExpression) {
             const formalExpression = {
@@ -128,7 +128,7 @@ export function getMessageElementForShapeElement(shapeElement) {
 
 function getRetrievalExpressionFromCorrelationProperty(
   correlationProperty,
-  message
+  message,
 ) {
   if (correlationProperty.correlationPropertyRetrievalExpression) {
     for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
@@ -174,7 +174,8 @@ export function findCorrelationKeys(businessObject, moddle) {
       if (rootElement.$type === 'bpmn:Collaboration') {
         const currentKeys = rootElement.correlationKeys;
         for (const correlationKey in currentKeys) {
-          const currentCorrelation = rootElement.correlationKeys[correlationKey];
+          const currentCorrelation =
+            rootElement.correlationKeys[correlationKey];
           correlationKeys.push(currentCorrelation);
         }
       }
