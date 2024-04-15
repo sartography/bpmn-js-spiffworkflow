@@ -1,6 +1,10 @@
+import React from 'react';
 import { useService } from 'bpmn-js-properties-panel';
 import { TextAreaEntry } from '@bpmn-io/properties-panel';
-import { getMessageElementForShapeElement, isMessageEvent } from '../../MessageHelpers';
+import {
+  getMessageElementForShapeElement,
+  isMessageEvent,
+} from '../../MessageHelpers';
 
 /**
  * Allows the creation, or editing of messagePayload at the bpmn:sendTask level of a BPMN document.
@@ -14,7 +18,9 @@ export function MessagePayload(props) {
 
   const getMessagePayloadObject = () => {
     if (element) {
-      const { extensionElements } = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0] : element.businessObject;
+      const { extensionElements } = isMessageEvent(element)
+        ? element.businessObject.eventDefinitions[0]
+        : element.businessObject;
       if (extensionElements) {
         return extensionElements
           .get('values')
@@ -35,20 +41,23 @@ export function MessagePayload(props) {
   };
 
   const setValue = (value) => {
-    var extensions = (isMessageEvent(element))
-      ? element.businessObject.eventDefinitions[0].get('extensionElements') || moddle.create('bpmn:ExtensionElements')
-      : element.businessObject.get('extensionElements') || moddle.create('bpmn:ExtensionElements');
+    var extensions = isMessageEvent(element)
+      ? element.businessObject.eventDefinitions[0].get('extensionElements') ||
+        moddle.create('bpmn:ExtensionElements')
+      : element.businessObject.get('extensionElements') ||
+        moddle.create('bpmn:ExtensionElements');
     let messagePayloadObject = getMessagePayloadObject();
     if (!messagePayloadObject) {
-      messagePayloadObject = moddle.create(
-        'spiffworkflow:MessagePayload'
-      );
+      messagePayloadObject = moddle.create('spiffworkflow:MessagePayload');
       extensions.get('values').push(messagePayloadObject);
     }
     messagePayloadObject.value = value;
 
-    (isMessageEvent(element))
-      ? element.businessObject.eventDefinitions[0].set('extensionElements', extensions)
+    isMessageEvent(element)
+      ? element.businessObject.eventDefinitions[0].set(
+          'extensionElements',
+          extensions
+        )
       : element.businessObject.set('extensionElements', extensions);
 
     commandStack.execute('element.updateProperties', {
