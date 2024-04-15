@@ -1,9 +1,6 @@
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
-import {
-  getExtensionValue,
-  setExtensionValue,
-} from '../extensionHelpers';
+import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
 
 export const spiffExtensionOptions = {};
 
@@ -43,13 +40,6 @@ export function SpiffExtensionSelect(props) {
     setExtensionValue(element, name, value, moddle, commandStack);
   };
 
-  if (
-    !(optionType in spiffExtensionOptions) ||
-    spiffExtensionOptions[optionType] === null
-  ) {
-    spiffExtensionOptions[optionType] = null;
-    requestOptions(eventBus, element, commandStack, optionType);
-  }
   const getOptions = () => {
     const optionList = [];
     optionList.push({
@@ -69,6 +59,11 @@ export function SpiffExtensionSelect(props) {
     }
     return optionList;
   };
+
+  // always call this code and let the caller determine how to deal with it.
+  // this is to avoid state loading issues with react where it doesn't clear out the variable.
+  spiffExtensionOptions[optionType] = null;
+  requestOptions(eventBus, element, commandStack, optionType);
 
   return SelectEntry({
     id: `extension_${name}`,

@@ -1,6 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import { isDataStoreReferenced, removeDataStore } from '../DataStoreHelpers';
+import { getRoot } from '../../helpers';
 
 export const OPTION_TYPE = {
   data_stores: 'data_stores',
@@ -33,7 +34,7 @@ export function DataStoreSelect(props) {
 
     const process = businessObject.$parent;
     
-    const definitions = process.$parent;
+    const definitions = getRoot(businessObject);
     if (!definitions.get('rootElements')) {
       definitions.set('rootElements', []);
     }
@@ -92,14 +93,6 @@ export function DataStoreSelect(props) {
     }
   };
 
-  if (
-    !(optionType in spiffExtensionOptions) ||
-    spiffExtensionOptions[optionType] === null
-  ) {
-    spiffExtensionOptions[optionType] = null;
-    requestOptions(eventBus, element, commandStack, optionType);
-  }
-
   const getOptions = () => {
     const optionList = [];
     optionList.push({
@@ -119,6 +112,15 @@ export function DataStoreSelect(props) {
     }
     return optionList;
   };
+
+  
+  if (
+    !(optionType in spiffExtensionOptions) ||
+    spiffExtensionOptions[optionType] === null
+  ) {
+    spiffExtensionOptions[optionType] = null;
+    requestOptions(eventBus, element, commandStack, optionType);
+  }
 
   return SelectEntry({
     id,
