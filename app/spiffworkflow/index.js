@@ -18,7 +18,7 @@ import EscalationPropertiesProvider from './escalations/propertiesPanel/Escalati
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
 import StandardLoopPropertiesProvider from './loops/propertiesPanel/StandardLoopPropertiesProvider';
 import MultiInstancePropertiesProvider from './loops/propertiesPanel/MultiInstancePropertiesProvider';
-import CallActivityInterceptor from './callActivity/CallActivityInterceptopr';
+import CallActivityInterceptor from './callActivity/CallActivityInterceptor';
 
 export default {
   __depends__: [RulesModule],

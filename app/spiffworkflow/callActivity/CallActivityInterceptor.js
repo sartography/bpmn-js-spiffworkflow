@@ -19,6 +19,10 @@ export default class CallActivityInterceptor extends CommandInterceptor {
                         var button = domify('<button class="bjs-drilldown">' + ARROW_DOWN_SVG + '</button>');
                         button.addEventListener('click', function () {
                             const processId = getCalledElementValue(element);
+                            if(!processId || processId === ''){
+                                alert('Please select a process model first');
+                                return;
+                            }
                             eventBus.fire('spiff.callactivity.edit', {
                                 element,
                                 processId,

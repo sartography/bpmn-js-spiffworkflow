@@ -1,4 +1,4 @@
-import CallActivityInterceptor from './CallActivityInterceptopr';
+import CallActivityInterceptor from './CallActivityInterceptor';
 import CallActivityPropertiesProvider from './propertiesPanel/CallActivityPropertiesProvider';
 
 export default {
