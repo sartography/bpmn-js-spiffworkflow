@@ -23,7 +23,7 @@ describe('BPMN Input / Output Variables', function () {
 
     // We Select a userTask element
     const shapeElement = await expectSelected('Activity_1hmit5k');
-    expect(shapeElement, "I can't find ManualTask element").to.exist;
+    expect(shapeElement, "I can't find User Task element").to.exist;
 
     // Expect shapeElement.businessObject.ioSpecification to be undefined
     expect(shapeElement.businessObject.ioSpecification).to.be.undefined;
@@ -41,7 +41,7 @@ describe('BPMN Input / Output Variables', function () {
 
     // We Select a userTask element
     const shapeElement = await expectSelected('Activity_1hmit5k');
-    expect(shapeElement, "I can't find Uset Task element").to.exist;
+    expect(shapeElement, "I can't find User Task element").to.exist;
 
     // Expect shapeElement.businessObject.ioSpecification to be undefined
     expect(shapeElement.businessObject.ioSpecification).to.be.undefined;
