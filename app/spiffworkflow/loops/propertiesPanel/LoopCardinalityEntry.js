@@ -3,7 +3,7 @@
 /* eslint-disable import/order */
 
 import { useService } from "bpmn-js-properties-panel";
-import { getLoopProperty, setLoopProperty } from "../helpers";
+import { getLoopProperty, removeLoopProperty, setLoopProperty } from "../helpers";
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
 
 export function LoopCardinality(props) {
@@ -18,6 +18,11 @@ export function LoopCardinality(props) {
     };
 
     const setValue = (value) => {
+        if (!value || value === '') {
+            // If value is empty or undefined, remove loopCardinality from XML
+            removeLoopProperty(element, 'loopCardinality', commandStack);
+            return;
+        }
         const loopCardinality = bpmnFactory.create('bpmn:FormalExpression', {
             body: value,
         });

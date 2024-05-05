@@ -16,8 +16,8 @@ import SignalPropertiesProvider from './signals/propertiesPanel/SignalProperties
 import ErrorPropertiesProvider from './errors/propertiesPanel/ErrorPropertiesProvider';
 import EscalationPropertiesProvider from './escalations/propertiesPanel/EscalationPropertiesProvider';
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
-import StandardLoopPropertiesProvider from './loops/propertiesPanel/StandardLoopPropertiesProvider';
-import MultiInstancePropertiesProvider from './loops/propertiesPanel/MultiInstancePropertiesProvider';
+import StandardLoopPropertiesProvider from './loops/StandardLoopPropertiesProvider';
+import MultiInstancePropertiesProvider from './loops/MultiInstancePropertiesProvider';
 
 export default {
   __depends__: [RulesModule],

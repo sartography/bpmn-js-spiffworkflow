@@ -3,7 +3,7 @@
 /* eslint-disable import/order */
 
 import { useService } from "bpmn-js-properties-panel";
-import { getLoopProperty, setLoopProperty } from "../helpers";
+import { getLoopProperty, removeLoopProperty, setLoopProperty } from "../helpers";
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
 
 export function InputCollection(props) {
@@ -18,6 +18,11 @@ export function InputCollection(props) {
     };
 
     const setValue = (value) => {
+        if (!value || value === '') {
+            // If value is empty or undefined, remove loopDataInputRef from XML
+            removeLoopProperty(element, 'loopDataInputRef', commandStack);
+            return;
+        }
         const collection = bpmnFactory.create('bpmn:ItemAwareElement', {
             id: value,
         });
