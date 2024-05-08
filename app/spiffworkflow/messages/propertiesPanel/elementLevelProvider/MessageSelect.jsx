@@ -1,3 +1,4 @@
+import React from 'react';
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import {
@@ -32,7 +33,6 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
-
     // Define variables
     const messageId = value;
     const { businessObject } = element;
@@ -44,32 +44,42 @@ export function MessageSelect(props) {
     }
 
     // Retrieve Message
-    let bpmnMessage = definitions.get('rootElements').find(element =>
-      element.$type === 'bpmn:Message' && (element.id === messageId || element.name === messageId)
-    );
+    let bpmnMessage = definitions
+      .get('rootElements')
+      .find(
+        (element) =>
+          element.$type === 'bpmn:Message' &&
+          (element.id === messageId || element.name === messageId),
+      );
 
     // If the Message doesn't exist, create new one
     if (!bpmnMessage) {
       bpmnMessage = bpmnFactory.create('bpmn:Message', {
         id: messageId,
-        name: messageId
+        name: messageId,
       });
       definitions.get('rootElements').push(bpmnMessage);
     }
 
     // Update messageRef of current Element
     if (isMessageEvent(shapeElement)) {
-      element.businessObject.eventDefinitions[0].set('extensionElements', moddle.create('bpmn:ExtensionElements')); // Clear extension element
+      element.businessObject.eventDefinitions[0].set(
+        'extensionElements',
+        moddle.create('bpmn:ExtensionElements'),
+      ); // Clear extension element
       const messageEventDefinition = element.businessObject.eventDefinitions[0];
       messageEventDefinition.messageRef = bpmnMessage;
       // call this to update the other elements in the props panel like payload
       commandStack.execute('element.updateModdleProperties', {
         element: element,
         moddleElement: element.businessObject,
-        properties: {}
+        properties: {},
       });
     } else if (isMessageElement(shapeElement)) {
-      element.businessObject.set('extensionElements', moddle.create('bpmn:ExtensionElements')); // Clear extension element
+      element.businessObject.set(
+        'extensionElements',
+        moddle.create('bpmn:ExtensionElements'),
+      ); // Clear extension element
       element.businessObject.messageRef = bpmnMessage;
       commandStack.execute('element.updateProperties', {
         element: element,
@@ -78,25 +88,36 @@ export function MessageSelect(props) {
     }
 
     // Add Correlation Properties of for the new message
-    const msgObject = (spiffExtensionOptions['spiff.messages']) ? spiffExtensionOptions['spiff.messages'].find(msg => msg.identifier === messageId) : undefined;
-    createOrUpdateCorrelationPropertiesV2(bpmnFactory, commandStack, element, msgObject['correlation_properties'], messageId);
+    const msgObject = spiffExtensionOptions['spiff.messages']
+      ? spiffExtensionOptions['spiff.messages'].find(
+          (msg) => msg.identifier === messageId,
+        )
+      : undefined;
+    createOrUpdateCorrelationPropertiesV2(
+      bpmnFactory,
+      commandStack,
+      element,
+      msgObject['correlation_properties'],
+      messageId,
+    );
 
     // Remove previous message in case it's not used anymore
     if (oldMessageRef && !isMessageRefUsed(definitions, oldMessageRef)) {
       const rootElements = definitions.get('rootElements');
-      const oldMessageIndex = rootElements.findIndex(element => element.$type === 'bpmn:Message' && element.id === oldMessageRef.id);
+      const oldMessageIndex = rootElements.findIndex(
+        (element) =>
+          element.$type === 'bpmn:Message' && element.id === oldMessageRef.id,
+      );
       if (oldMessageIndex !== -1) {
         rootElements.splice(oldMessageIndex, 1);
         definitions.rootElements = rootElements;
       }
     }
-
   };
 
   requestOptions(eventBus);
 
   const getOptions = () => {
-
     // Load messages from XML
     const options = [];
     const messages = findMessageModdleElements(shapeElement.businessObject);
@@ -145,7 +166,7 @@ function requestOptions(eventBus) {
 
 function removeDuplicatesByLabel(array) {
   const seen = new Map();
-  return array.filter(item => {
+  return array.filter((item) => {
     return seen.has(item.label) ? false : seen.set(item.label, true);
   });
 }
