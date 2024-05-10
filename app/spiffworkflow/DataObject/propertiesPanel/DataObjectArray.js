@@ -13,6 +13,7 @@ import {
   idToHumanReadableName,
   findDataObject,
 } from '../DataObjectHelpers';
+import { processId } from '../../helpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -146,7 +147,7 @@ function DataObjectTextField(props) {
         element,
         moddleElement: dataObject,
         properties: {
-          id: value,
+          id: processId(value),
           // name: doName
         },
       });
