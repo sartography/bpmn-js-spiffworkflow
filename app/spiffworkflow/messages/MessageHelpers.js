@@ -328,11 +328,11 @@ export function createOrUpdateCorrelationPropertiesV2(bpmnFactory, commandStack,
       }
 
       correlationProperty.correlationPropertyRetrievalExpression = (!correlationProperty.correlationPropertyRetrievalExpression) ? [] : correlationProperty.correlationPropertyRetrievalExpression;
-      
+
       const existingExpressionIndex = correlationProperty.correlationPropertyRetrievalExpression.findIndex(retrievalExpr =>
         retrievalExpr.messageRef && retrievalExpr.messageRef.id === messageId
       );
-      
+
       if (existingExpressionIndex === -1) {
         const retrievalExpression = bpmnFactory.create('bpmn:CorrelationPropertyRetrievalExpression');
         const formalExpression = bpmnFactory.create('bpmn:FormalExpression');
@@ -357,7 +357,7 @@ export function createOrUpdateCorrelationPropertiesV2(bpmnFactory, commandStack,
         element,
         properties: {},
       });
-     
+
     });
   }
 
@@ -523,4 +523,129 @@ export function getCorrelationPropertiesIDsFiltredByMessageRef(businessObject, m
     }
   }
   return IDs;
+}
+
+export function setParentCorrelationKeysV2(definitions, bpmnFactory, element, moddle) {
+
+  // Retrieve all correlation properties
+  let correlationProperties = findCorrelationProperties(element.businessObject, moddle)
+  correlationProperties = (!correlationProperties) ? [] : correlationProperties;
+
+  // Create parent correlation key that contain all correlation properties
+  console.log('Definitions', definitions);
+  let collaboration = definitions.get('rootElements').find((element) => element.$type === 'bpmn:Collaboration');
+  let hasCollaboration = (collaboration) ? true : false;
+
+  if (hasCollaboration) {
+    let correlationKey = collaboration
+      .get('correlationKeys')
+      .find(
+        (element) =>
+          element.$type === 'bpmn:CorrelationKey' &&
+          (element.name === 'MainCorrelationKey'),
+      );
+
+    // If the correlationKey doesn't exist, create new one
+    if (!correlationKey) {
+      const newCorrelationKey = moddle.ids.nextPrefixed(
+        'CorrelationKey_'
+      );
+      correlationKey = bpmnFactory.create('bpmn:CorrelationKey', {
+        id: newCorrelationKey,
+        name: 'MainCorrelationKey',
+      });
+    }
+
+    correlationProperties.forEach(cP => {
+      const cPElment = bpmnFactory.create('bpmn:CorrelationProperty', {
+        id: cP.id,
+        name: cP.name
+      });
+      // Add correlation properties to the correlation key
+      correlationKey.get('correlationPropertyRef').push(cPElment);
+    });
+    collaboration.get('correlationKeys').push(correlationKey);
+  } else {
+    // Handle if Process has no collaboratio
+    let correlationKey = definitions
+      .get('rootElements')
+      .find(
+        (element) =>
+          element.$type === 'bpmn:CorrelationKey' &&
+          (element.name === 'MainCorrelationKey'),
+      );
+
+    // If the correlationKey doesn't exist, create new one
+    if (!correlationKey) {
+      const newCorrelationKey = moddle.ids.nextPrefixed(
+        'CorrelationKey_'
+      );
+      correlationKey = bpmnFactory.create('bpmn:CorrelationKey', {
+        id: newCorrelationKey,
+        name: 'MainCorrelationKey',
+      });
+    }
+
+    correlationProperties.forEach(cP => {
+      const cPElment = bpmnFactory.create('bpmn:CorrelationProperty', {
+        id: cP.id,
+        name: cP.name
+      });
+      // Add correlation properties to the correlation key
+      correlationKey.get('correlationPropertyRef').push(cPElment);
+    });
+    definitions.get('rootElements').push(correlationKey);
+  }
+
+}
+
+export function setParentCorrelationKeys(definitions, bpmnFactory, element, moddle) {
+  // Retrieve all correlation properties
+  let correlationProperties = findCorrelationProperties(element.businessObject, moddle);
+  correlationProperties = correlationProperties || [];
+
+  let mainCorrelationKey = findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle);
+
+  // Clear existing ones
+  mainCorrelationKey.get('correlationPropertyRef').length = 0;
+
+  // Sync correlation properties
+  correlationProperties.forEach(cP => {
+    const cPElement = bpmnFactory.create('bpmn:CorrelationProperty', {
+      id: cP.id,
+      name: cP.name
+    });
+    mainCorrelationKey.get('correlationPropertyRef').push(cPElement);
+  });
+
+  // check if process has collaboration
+  let collaboration = definitions.get('rootElements').find(element => element.$type === 'bpmn:Collaboration');
+
+  if (collaboration) {
+    const existingKey = collaboration.get('correlationKeys').find(key => key.name === 'MainCorrelationKey');
+    if (!existingKey) {
+      collaboration.get('correlationKeys').push(mainCorrelationKey);
+    }
+  } else {
+    // Handle case where no collaboration is found
+    const existingKey = definitions.get('rootElements').find(key => key.$type === 'bpmn:CorrelationKey' && key.name === 'MainCorrelationKey');
+    if (!existingKey) {
+      definitions.get('rootElements').push(mainCorrelationKey);
+    }
+  }
+}
+
+function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
+
+  let mainCorrelationKey = definitions.get('rootElements').find(element => element.$type === 'bpmn:CorrelationKey' && element.name === 'MainCorrelationKey');
+
+  if (!mainCorrelationKey) {
+    const newCorrelationKeyId = moddle.ids.nextPrefixed('CorrelationKey_');
+    mainCorrelationKey = bpmnFactory.create('bpmn:CorrelationKey', {
+      id: newCorrelationKeyId,
+      name: 'MainCorrelationKey'
+    });
+  }
+
+  return mainCorrelationKey;
 }

@@ -48,21 +48,22 @@ export function createCollaborationGroup(
     }
   ];
 
-  if (element.type === 'bpmn:Collaboration') {
-    results.push({
-      id: 'correlation_keys',
-      label: translate('Correlation Keys'),
-      isDefault: true,
-      component: ListGroup,
-      ...CorrelationKeysArray({
-        element,
-        moddle,
-        commandStack,
-        elementRegistry,
-        translate,
-      }),
-    })
-  }
+  // Hide Correlation Keys
+  // if (element.type === 'bpmn:Collaboration') {
+  //   results.push({
+  //     id: 'correlation_keys',
+  //     label: translate('Correlation Keys'),
+  //     isDefault: true,
+  //     component: ListGroup,
+  //     ...CorrelationKeysArray({
+  //       element,
+  //       moddle,
+  //       commandStack,
+  //       elementRegistry,
+  //       translate,
+  //     }),
+  //   })
+  // }
 
   return results;
 }

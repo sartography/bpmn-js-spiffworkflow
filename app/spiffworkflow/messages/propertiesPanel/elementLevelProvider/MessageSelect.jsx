@@ -10,6 +10,7 @@ import {
   isMessageElement,
   isMessageEvent,
   isMessageRefUsed,
+  setParentCorrelationKeys,
 } from '../../MessageHelpers';
 
 export const spiffExtensionOptions = {};
@@ -90,16 +91,19 @@ export function MessageSelect(props) {
     // Add Correlation Properties of for the new message
     const msgObject = spiffExtensionOptions['spiff.messages']
       ? spiffExtensionOptions['spiff.messages'].find(
-          (msg) => msg.identifier === messageId,
-        )
+        (msg) => msg.identifier === messageId,
+      )
       : undefined;
-    createOrUpdateCorrelationPropertiesV2(
-      bpmnFactory,
-      commandStack,
-      element,
-      msgObject['correlation_properties'],
-      messageId,
-    );
+
+    if (msgObject) {
+      createOrUpdateCorrelationPropertiesV2(
+        bpmnFactory,
+        commandStack,
+        element,
+        msgObject['correlation_properties'],
+        messageId,
+      );
+    }
 
     // Remove previous message in case it's not used anymore
     if (oldMessageRef && !isMessageRefUsed(definitions, oldMessageRef)) {
@@ -113,9 +117,16 @@ export function MessageSelect(props) {
         definitions.rootElements = rootElements;
       }
     }
+
+    // Update Correlation key if Process has collaboration
+    try {
+      setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
+    } catch (error) {
+      console.error('Error Caught while synchronizing Correlation key', error);
+    }
   };
 
-  requestOptions(eventBus);
+  requestOptions(eventBus, bpmnFactory, element, moddle);
 
   const getOptions = () => {
     // Load messages from XML
@@ -157,9 +168,19 @@ export function MessageSelect(props) {
   );
 }
 
-function requestOptions(eventBus) {
+function requestOptions(eventBus, bpmnFactory, element, moddle) {
   eventBus.on(`spiff.messages.returned`, (event) => {
     spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
+    // Update Correlation key
+    try {
+      let definitions = getRoot(element.businessObject);
+      if (!definitions.get('rootElements')) {
+        definitions.set('rootElements', []);
+      }
+      setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
+    } catch (error) {
+      console.error('Error Caught while synchronizing Correlation key', error);
+    }
   });
   eventBus.fire(`spiff.messages.requested`, { eventBus });
 }
