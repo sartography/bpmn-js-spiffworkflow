@@ -15,17 +15,18 @@ export default function MessagesPropertiesProvider(
 ) {
   this.getGroups = function getGroupsCallback(element) {
     return function pushGroup(groups) {
-      if (is(element, 'bpmn:Collaboration') || is(element, 'bpmn:Process')) {
-        groups.push(
-          ...createCollaborationGroup(
-            element,
-            translate,
-            moddle,
-            commandStack,
-            elementRegistry
-          )
-        );
-      } else if (isMessageElement(element)) {
+      // if (is(element, 'bpmn:Collaboration') || is(element, 'bpmn:Process')) {
+      //   groups.push(
+      //     ...createCollaborationGroup(
+      //       element,
+      //       translate,
+      //       moddle,
+      //       commandStack,
+      //       elementRegistry
+      //     )
+      //   );
+      // } else 
+      if (isMessageElement(element)) {
         const messageIndex = findEntry(groups, 'message');
         if (messageIndex) {
           groups.splice(messageIndex, 1);
