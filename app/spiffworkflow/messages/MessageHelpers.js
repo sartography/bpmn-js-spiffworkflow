@@ -34,7 +34,8 @@ export function isMessageElement(shapeElement) {
 
 export function isMessageEvent(shapeElement) {
   try {
-    const { eventDefinitions } = shapeElement.businessObject;
+    const bo = (shapeElement.businessObject) ? shapeElement.businessObject : shapeElement;
+    const { eventDefinitions } = bo;
     if (eventDefinitions && eventDefinitions[0]) {
       return eventDefinitions[0].$type === 'bpmn:MessageEventDefinition';
     }
@@ -374,18 +375,23 @@ export function findCorrelationPropertyById(definitions, id) {
 }
 
 export function isMessageRefUsed(definitions, messageRef) {
-  definitions.rootElements.forEach(rootElement => {
-    if (rootElement.$type == 'bpmn:Process') {
+  if (!definitions.rootElements) {
+    return true;
+  }
+
+  for (const rootElement of definitions.rootElements) {
+    if (rootElement.$type === 'bpmn:Process') {
       const process = rootElement;
-      process.flowElements.forEach(element => {
-        if (isMessageElement(element)) {
-          if (element.messageRef === messageRef) {
-            return true;
-          }
+      for (const element of process.flowElements) {
+        if ( isMessageElement(element) && (element.messageRef && element.messageRef.id === messageRef)) {
+          return true;
+        } else if ( isMessageEvent(element) && (element.eventDefinitions && element.eventDefinitions[0] && element.eventDefinitions[0].messageRef.id === messageRef) ) {
+          return true;
         }
-      });
+      }
     }
-  });
+  }
+
   return false;
 }
 
@@ -648,4 +654,39 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
   }
 
   return mainCorrelationKey;
+}
+
+export function synCorrleationProperties(element, definitions, moddle) {
+  const { businessObject } = element;
+  const correlationProps = findCorrelationProperties(businessObject, moddle);
+
+  const expressionsToDelete = [];
+
+  correlationProps.forEach(cProperty => {
+    let isUsed = false;
+    cProperty.correlationPropertyRetrievalExpression.forEach(cpExpression => {
+      const msgRef = findMessageElement(businessObject, cpExpression.messageRef.id);
+      isUsed = (!msgRef) ? false : true;
+      // if unused  false, delete retrival expression
+      if (!isUsed) {
+        expressionsToDelete.push(cpExpression);
+      }
+    })
+
+    // Delete the retrieval expressions that are not used
+    expressionsToDelete.forEach((expression) => {
+      const index = cProperty.correlationPropertyRetrievalExpression.indexOf(expression);
+      if (index > -1) {
+        cProperty.correlationPropertyRetrievalExpression.splice(index, 1);
+      }
+    });
+
+    // If Unused, delete the correlation property
+    if (!isUsed) {
+      const index = definitions.get('rootElements').indexOf(cProperty);
+      if (index > -1) {
+        definitions.rootElements.splice(index, 1);
+      }
+    }
+  });
 }

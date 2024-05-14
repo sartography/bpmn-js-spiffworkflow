@@ -11,6 +11,7 @@ import {
   isMessageEvent,
   isMessageRefUsed,
   setParentCorrelationKeys,
+  synCorrleationProperties,
 } from '../../MessageHelpers';
 
 export const spiffExtensionOptions = {};
@@ -34,10 +35,11 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
+    console.log('Set Value', value)
     // Define variables
     const messageId = value;
     const { businessObject } = element;
-    const oldMessageRef = businessObject.messageRef;
+    let oldMessageRef = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0].messageRef: businessObject.messageRef;
 
     let definitions = getRoot(element.businessObject);
     if (!definitions.get('rootElements')) {
@@ -105,25 +107,33 @@ export function MessageSelect(props) {
       );
     }
 
-    // Remove previous message in case it's not used anymore
-    if (oldMessageRef && !isMessageRefUsed(definitions, oldMessageRef)) {
-      const rootElements = definitions.get('rootElements');
-      const oldMessageIndex = rootElements.findIndex(
-        (element) =>
-          element.$type === 'bpmn:Message' && element.id === oldMessageRef.id,
-      );
-      if (oldMessageIndex !== -1) {
-        rootElements.splice(oldMessageIndex, 1);
-        definitions.rootElements = rootElements;
+    if (oldMessageRef) {
+      
+      // Remove previous message in case it's not used anymore
+      const isOldMessageUsed = isMessageRefUsed(definitions, oldMessageRef.id);
+      if (!isOldMessageUsed) {
+        const rootElements = definitions.get('rootElements');
+        const oldMessageIndex = rootElements.findIndex(
+          (element) =>
+            element.$type === 'bpmn:Message' && element.id === oldMessageRef.id,
+        );
+        if (oldMessageIndex !== -1) {
+          rootElements.splice(oldMessageIndex, 1);
+          definitions.rootElements = rootElements;
+        }
       }
-    }
 
+      // Automatic deletion of previous message correlation properties
+      synCorrleationProperties(element, definitions, moddle);
+    }
+    
     // Update Correlation key if Process has collaboration
     try {
       setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
     } catch (error) {
       console.error('Error Caught while synchronizing Correlation key', error);
     }
+
   };
 
   requestOptions(eventBus, bpmnFactory, element, moddle);
@@ -171,7 +181,7 @@ export function MessageSelect(props) {
 function requestOptions(eventBus, bpmnFactory, element, moddle) {
   eventBus.on(`spiff.messages.returned`, (event) => {
     spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
-    // Update Correlation key
+    // Update Correlation key on Getting messages req
     try {
       let definitions = getRoot(element.businessObject);
       if (!definitions.get('rootElements')) {
