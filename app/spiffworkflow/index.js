@@ -19,6 +19,7 @@ import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallA
 import StandardLoopPropertiesProvider from './loops/propertiesPanel/StandardLoopPropertiesProvider';
 import MultiInstancePropertiesProvider from './loops/propertiesPanel/MultiInstancePropertiesProvider';
 import CallActivityInterceptor from './callActivity/CallActivityInterceptor';
+import MessageInterceptor from './messages/MessageInterceptor';
 
 export default {
   __depends__: [RulesModule],
@@ -32,6 +33,7 @@ export default {
     'conditionsPropertiesProvider',
     'extensionsPropertiesProvider',
     'messagesPropertiesProvider',
+    'messageInterceptor',
     'signalPropertiesProvider',
     'errorPropertiesProvider',
     'escalationPropertiesProvider',
@@ -57,6 +59,7 @@ export default {
   errorPropertiesProvider: ['type', ErrorPropertiesProvider],
   escalationPropertiesProvider: ['type', EscalationPropertiesProvider],
   messagesPropertiesProvider: ['type', MessagesPropertiesProvider],
+  messageInterceptor: ['type', MessageInterceptor],
   callActivityPropertiesProvider: ['type', CallActivityPropertiesProvider],
   ioPalette: ['type', IoPalette],
   ioRules: ['type', IoRules],

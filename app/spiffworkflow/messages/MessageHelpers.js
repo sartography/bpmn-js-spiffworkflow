@@ -14,13 +14,27 @@ export function getRoot(businessObject, moddle) {
     }
   } else {
     // todo: Do we want businessObject to be a shape or moddle object?
-    if (businessObject.$type === 'bpmn:Definitions') {
+    if (businessObject && businessObject.$type === 'bpmn:Definitions') {
       return businessObject;
     }
-    if (typeof businessObject.$parent !== 'undefined') {
+    if (businessObject && typeof businessObject.$parent !== 'undefined') {
       return getRoot(businessObject.$parent);
     }
   }
+  return businessObject;
+}
+
+
+export function getAbsoluteRoot(businessObject, moddle) {
+
+  // todo: Do we want businessObject to be a shape or moddle object?
+  if (businessObject.$type === 'bpmn:Definitions') {
+    return businessObject;
+  }
+  if (typeof businessObject.$parent !== 'undefined') {
+    return getRoot(businessObject.$parent);
+  }
+
   return businessObject;
 }
 
@@ -236,8 +250,13 @@ export function findMessageModdleElements(businessObject) {
   return messages;
 }
 
-export function findMessageElement(businessObject, messageId) {
-  const root = getRoot(businessObject);
+export function findMessageElement(businessObject, messageId, definitions) {
+  let root = getRoot(businessObject);
+
+  // This case is to handle root for deleted elements
+  if(!root && definitions){
+    root = definitions;
+  }
 
   if (root.rootElements) {
     for (const rootElement of root.rootElements) {
@@ -383,11 +402,11 @@ export function isMessageRefUsed(definitions, messageRef) {
     if (rootElement.$type === 'bpmn:Process') {
       const process = rootElement;
       for (const element of process.flowElements) {
-        if ( isMessageElement(element) && (element.messageRef && element.messageRef.id === messageRef)) {
+        if (isMessageEvent(element) && (element.eventDefinitions && element.eventDefinitions[0] && element.eventDefinitions[0].messageRef.id === messageRef)) {
           return true;
-        } else if ( isMessageEvent(element) && (element.eventDefinitions && element.eventDefinitions[0] && element.eventDefinitions[0].messageRef.id === messageRef) ) {
+        } else if (isMessageElement(element) && (element.messageRef && element.messageRef.id === messageRef)) {
           return true;
-        }
+        } 
       }
     }
   }
@@ -531,80 +550,6 @@ export function getCorrelationPropertiesIDsFiltredByMessageRef(businessObject, m
   return IDs;
 }
 
-export function setParentCorrelationKeysV2(definitions, bpmnFactory, element, moddle) {
-
-  // Retrieve all correlation properties
-  let correlationProperties = findCorrelationProperties(element.businessObject, moddle)
-  correlationProperties = (!correlationProperties) ? [] : correlationProperties;
-
-  // Create parent correlation key that contain all correlation properties
-  console.log('Definitions', definitions);
-  let collaboration = definitions.get('rootElements').find((element) => element.$type === 'bpmn:Collaboration');
-  let hasCollaboration = (collaboration) ? true : false;
-
-  if (hasCollaboration) {
-    let correlationKey = collaboration
-      .get('correlationKeys')
-      .find(
-        (element) =>
-          element.$type === 'bpmn:CorrelationKey' &&
-          (element.name === 'MainCorrelationKey'),
-      );
-
-    // If the correlationKey doesn't exist, create new one
-    if (!correlationKey) {
-      const newCorrelationKey = moddle.ids.nextPrefixed(
-        'CorrelationKey_'
-      );
-      correlationKey = bpmnFactory.create('bpmn:CorrelationKey', {
-        id: newCorrelationKey,
-        name: 'MainCorrelationKey',
-      });
-    }
-
-    correlationProperties.forEach(cP => {
-      const cPElment = bpmnFactory.create('bpmn:CorrelationProperty', {
-        id: cP.id,
-        name: cP.name
-      });
-      // Add correlation properties to the correlation key
-      correlationKey.get('correlationPropertyRef').push(cPElment);
-    });
-    collaboration.get('correlationKeys').push(correlationKey);
-  } else {
-    // Handle if Process has no collaboratio
-    let correlationKey = definitions
-      .get('rootElements')
-      .find(
-        (element) =>
-          element.$type === 'bpmn:CorrelationKey' &&
-          (element.name === 'MainCorrelationKey'),
-      );
-
-    // If the correlationKey doesn't exist, create new one
-    if (!correlationKey) {
-      const newCorrelationKey = moddle.ids.nextPrefixed(
-        'CorrelationKey_'
-      );
-      correlationKey = bpmnFactory.create('bpmn:CorrelationKey', {
-        id: newCorrelationKey,
-        name: 'MainCorrelationKey',
-      });
-    }
-
-    correlationProperties.forEach(cP => {
-      const cPElment = bpmnFactory.create('bpmn:CorrelationProperty', {
-        id: cP.id,
-        name: cP.name
-      });
-      // Add correlation properties to the correlation key
-      correlationKey.get('correlationPropertyRef').push(cPElment);
-    });
-    definitions.get('rootElements').push(correlationKey);
-  }
-
-}
-
 export function setParentCorrelationKeys(definitions, bpmnFactory, element, moddle) {
   // Retrieve all correlation properties
   let correlationProperties = findCorrelationProperties(element.businessObject, moddle);
@@ -659,13 +604,12 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
 export function synCorrleationProperties(element, definitions, moddle) {
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
-
   const expressionsToDelete = [];
 
   correlationProps.forEach(cProperty => {
     let isUsed = false;
     cProperty.correlationPropertyRetrievalExpression.forEach(cpExpression => {
-      const msgRef = findMessageElement(businessObject, cpExpression.messageRef.id);
+      const msgRef = findMessageElement(businessObject, cpExpression.messageRef.id, definitions);
       isUsed = (!msgRef) ? false : true;
       // if unused  false, delete retrival expression
       if (!isUsed) {

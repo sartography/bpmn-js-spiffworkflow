@@ -35,7 +35,7 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
-    console.log('Set Value', value)
+    
     // Define variables
     const messageId = value;
     const { businessObject } = element;
@@ -182,15 +182,15 @@ function requestOptions(eventBus, bpmnFactory, element, moddle) {
   eventBus.on(`spiff.messages.returned`, (event) => {
     spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
     // Update Correlation key on Getting messages req
-    try {
-      let definitions = getRoot(element.businessObject);
-      if (!definitions.get('rootElements')) {
-        definitions.set('rootElements', []);
-      }
-      setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
-    } catch (error) {
-      console.error('Error Caught while synchronizing Correlation key', error);
-    }
+    // try {
+    //   let definitions = getRoot(element.businessObject);
+    //   if (!definitions.get('rootElements')) {
+    //     definitions.set('rootElements', []);
+    //   }
+    //   setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
+    // } catch (error) {
+    //   console.error('Error Caught while synchronizing Correlation key', error);
+    // }
   });
   eventBus.fire(`spiff.messages.requested`, { eventBus });
 }

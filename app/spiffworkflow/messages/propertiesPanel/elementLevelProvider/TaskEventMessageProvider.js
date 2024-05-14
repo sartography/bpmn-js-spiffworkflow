@@ -100,19 +100,19 @@ export function createMessageGroup(
 
   // Showing Correlation Properties Group if correlation is enabled
   // if (businessObject.get('isCorrelated')) {
-    results.push({
-      id: 'correlationProperties',
-      label: translate('Correlation Properties'),
-      isDefault: true,
-      component: ListGroup,
-      ...CorrelationPropertiesList({
-        element,
-        moddle,
-        commandStack,
-        elementRegistry,
-        translate,
-      }),
-    })
+    // results.push({
+    //   id: 'correlationProperties',
+    //   label: translate('Correlation Properties'),
+    //   isDefault: true,
+    //   component: ListGroup,
+    //   ...CorrelationPropertiesList({
+    //     element,
+    //     moddle,
+    //     commandStack,
+    //     elementRegistry,
+    //     translate,
+    //   }),
+    // })
   // }
 
   // Adding JsonSchema Group
