@@ -402,7 +402,7 @@ export function isMessageRefUsed(definitions, messageRef) {
     if (rootElement.$type === 'bpmn:Process') {
       const process = rootElement;
       for (const element of process.flowElements) {
-        if (isMessageEvent(element) && (element.eventDefinitions && element.eventDefinitions[0] && element.eventDefinitions[0].messageRef.id === messageRef)) {
+        if (isMessageEvent(element) && (element.eventDefinitions && element.eventDefinitions[0] && element.eventDefinitions[0].messageRef && element.eventDefinitions[0].messageRef.id === messageRef)) {
           return true;
         } else if (isMessageElement(element) && (element.messageRef && element.messageRef.id === messageRef)) {
           return true;
@@ -602,28 +602,31 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
 }
 
 export function synCorrleationProperties(element, definitions, moddle) {
+  
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
   const expressionsToDelete = [];
 
-  correlationProps.forEach(cProperty => {
+  for(let cProperty of correlationProps){
     let isUsed = false;
-    cProperty.correlationPropertyRetrievalExpression.forEach(cpExpression => {
+    for(const cpExpression of cProperty.correlationPropertyRetrievalExpression){
       const msgRef = findMessageElement(businessObject, cpExpression.messageRef.id, definitions);
-      isUsed = (!msgRef) ? false : true;
+      isUsed = (msgRef) ? true : (isUsed);
       // if unused  false, delete retrival expression
-      if (!isUsed) {
+      if (!msgRef) {
         expressionsToDelete.push(cpExpression);
       }
-    })
+    }
 
     // Delete the retrieval expressions that are not used
-    expressionsToDelete.forEach((expression) => {
+    for(const expression of expressionsToDelete){
       const index = cProperty.correlationPropertyRetrievalExpression.indexOf(expression);
       if (index > -1) {
         cProperty.correlationPropertyRetrievalExpression.splice(index, 1);
+        const cPropertyIndex = definitions.get('rootElements').indexOf(cProperty);
+        definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
       }
-    });
+    }
 
     // If Unused, delete the correlation property
     if (!isUsed) {
@@ -632,5 +635,5 @@ export function synCorrleationProperties(element, definitions, moddle) {
         definitions.rootElements.splice(index, 1);
       }
     }
-  });
+  }
 }
