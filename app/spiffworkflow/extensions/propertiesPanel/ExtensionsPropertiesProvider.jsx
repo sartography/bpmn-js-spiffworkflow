@@ -23,7 +23,7 @@ import { SpiffExtensionCheckboxEntry } from './SpiffExtensionCheckboxEntry';
 import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { setExtensionValue } from '../extensionHelpers';
 
-const LOW_PRIORITY = 500;
+const HIGH_PRIORITY = 1500;
 
 export default function ExtensionsPropertiesProvider(
   propertiesPanel,
@@ -86,7 +86,56 @@ export default function ExtensionsPropertiesProvider(
         groups.push(
           createSignalButtonGroup(element, translate, moddle, commandStack),
         );
+      } else if (is(element, 'bpmn:BoundaryEvent') && (hasEventDefinition(element, 'bpmn:ErrorEventDefinition') || hasEventDefinition(element, 'bpmn:EscalationEventDefinition'))) {
+        console.log('Here Element', element, JSON.stringify(groups));
+        const { businessObject } = element;
+        const eventDefinition = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0] : undefined;
+      
+        const modifiedGroups = JSON.parse(JSON.stringify(groups));
+      
+        modifiedGroups.forEach(group => {
+          if (eventDefinition && hasEventDefinition(element, 'bpmn:EscalationEventDefinition') && !eventDefinition.escalationRef) {
+            if (group.id === 'escalation-group') {
+              group.entries = [];
+            }
+          } else if (eventDefinition && hasEventDefinition(element, 'bpmn:ErrorEventDefinition') && !eventDefinition.errorRef) {
+            if (group.id === 'error') {
+              group.entries = [];
+            }
+          }
+        });
+      
+        console.log('Modified dxgroups:', JSON.stringify(modifiedGroups));
+        return modifiedGroups;
       }
+      
+      // else if (is(element, 'bpmn:BoundaryEvent') && (hasEventDefinition(element, 'bpmn:ErrorEventDefinition') || hasEventDefinition(element, 'bpmn:EscalationEventDefinition'))) {
+      //   console.log('Here Element', element, JSON.stringify(groups));
+      //   const { businessObject } = element;
+      //   const eventDefinition = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0] : undefined;
+
+      //   if (eventDefinition && hasEventDefinition(element, 'bpmn:EscalationEventDefinition') && !eventDefinition.escalationRef) {
+      //     const escalationGroupIndex = groups.findIndex(group => group.id === 'escalation-group');
+      //     if (escalationGroupIndex !== -1) {
+      //       const idsToRemove = ['escalation-code', 'escalation-variable'];
+      //       groups[escalationGroupIndex] = {
+      //         ...groups[escalationGroupIndex],
+      //         entries: groups[escalationGroupIndex].entries.filter(entry => !idsToRemove.includes(entry.id))
+      //       };
+      //     }
+      //   } else if (eventDefinition && hasEventDefinition(element, 'bpmn:ErrorEventDefinition') && !eventDefinition.errorRef) {
+      //     const errorGroupIndex = groups.findIndex(group => group.id === 'error');
+      //     console.log('errorGroupIndex', errorGroupIndex);
+      //     if (errorGroupIndex !== -1) {
+      //       groups[errorGroupIndex] = {
+      //         ...groups[errorGroupIndex],
+      //         entries: []
+      //       };
+      //       console.log('Modified groups:000', groups);
+      //       return groups;
+      //     }
+      //   }
+      // }
       if (is(element, 'bpmn:ServiceTask')) {
         groups.push(
           createServiceGroup(element, translate, moddle, commandStack),
@@ -96,7 +145,7 @@ export default function ExtensionsPropertiesProvider(
       return groups;
     };
   };
-  propertiesPanel.registerProvider(LOW_PRIORITY, this);
+  propertiesPanel.registerProvider(HIGH_PRIORITY, this);
 }
 
 ExtensionsPropertiesProvider.$inject = [
