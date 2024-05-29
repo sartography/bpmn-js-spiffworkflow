@@ -25,13 +25,14 @@ export function SpiffExtensionTextInput(props) {
     moddle,
     name,
     label,
-    description,
-    businessObject,
+    description
   } = props;
   const debounce = useService('debounceInput');
+  const { businessObject } = element;
 
   const getValue = () => {
-    return getExtensionValue(businessObject, name);
+    const value = getExtensionValue(businessObject, name);
+    return value;
   };
 
   const setValue = (value) => {
