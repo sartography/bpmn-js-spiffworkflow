@@ -41,7 +41,11 @@ export function MessagePayload(props) {
       return messagePayloadObject.value;
     } else {
       // Check : for old models where payload exists on message level
-      const { messageRef } = element.businessObject;
+      const bo = isMessageEvent(element)
+        ? element.businessObject.eventDefinitions[0]
+        : element.businessObject;
+
+      const { messageRef } = bo;
       if (messageRef) {
         const { extensionElements } = messageRef;
         const payloadResp = extensionElements
