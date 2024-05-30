@@ -21,12 +21,15 @@ export function MessagePayload(props) {
       const { extensionElements } = isMessageEvent(element)
         ? element.businessObject.eventDefinitions[0]
         : element.businessObject;
+
       if (extensionElements) {
-        return extensionElements
+        let payloadResp = extensionElements
           .get('values')
           .filter(function getInstanceOfType(e) {
             return e.$instanceOf('spiffworkflow:MessagePayload');
           })[0];
+
+        return payloadResp;
       }
     }
     return null;
@@ -36,16 +39,34 @@ export function MessagePayload(props) {
     const messagePayloadObject = getMessagePayloadObject();
     if (messagePayloadObject) {
       return messagePayloadObject.value;
+    } else {
+      // Check : for old models where payload exists on message level
+      const { messageRef } = element.businessObject;
+      if (messageRef) {
+        const { extensionElements } = messageRef;
+        const payloadResp = extensionElements
+          .get('values')
+          .filter(function getInstanceOfType(e) {
+            return e.$instanceOf('spiffworkflow:MessagePayload');
+          })[0];
+
+        if (payloadResp) {
+          setValue(payloadResp.value);
+          return payloadResp.value;
+        }
+      }
     }
     return '';
   };
 
   const setValue = (value) => {
+
     var extensions = isMessageEvent(element)
       ? element.businessObject.eventDefinitions[0].get('extensionElements') ||
-        moddle.create('bpmn:ExtensionElements')
+      moddle.create('bpmn:ExtensionElements')
       : element.businessObject.get('extensionElements') ||
-        moddle.create('bpmn:ExtensionElements');
+      moddle.create('bpmn:ExtensionElements');
+
     let messagePayloadObject = getMessagePayloadObject();
     if (!messagePayloadObject) {
       messagePayloadObject = moddle.create('spiffworkflow:MessagePayload');
@@ -55,9 +76,9 @@ export function MessagePayload(props) {
 
     isMessageEvent(element)
       ? element.businessObject.eventDefinitions[0].set(
-          'extensionElements',
-          extensions
-        )
+        'extensionElements',
+        extensions
+      )
       : element.businessObject.set('extensionElements', extensions);
 
     commandStack.execute('element.updateProperties', {
