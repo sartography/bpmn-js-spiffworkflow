@@ -139,7 +139,8 @@ export function createMessageGroup(
   // })
 
   // Adding Correlation Conditions Section
-  if (businessObject.get('spiffworkflow:isMatchingCorrelation') && canReceiveMessage(element)) {
+  const isMatchingCorrelation = businessObject.get('spiffworkflow:isMatchingCorrelation');
+  if (isMatchingCorrelation && isMatchingCorrelation !== "false" && canReceiveMessage(element)) {
     results.push({
       id: "correlationConditions",
       label: translate('Matching Conditions'),
