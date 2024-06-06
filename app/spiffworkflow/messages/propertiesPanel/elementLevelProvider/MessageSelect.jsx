@@ -35,11 +35,11 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
-    
+
     // Define variables
     const messageId = value;
     const { businessObject } = element;
-    let oldMessageRef = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0].messageRef: businessObject.messageRef;
+    let oldMessageRef = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0].messageRef : businessObject.messageRef;
 
     let definitions = getRoot(element.businessObject);
     if (!definitions.get('rootElements')) {
@@ -108,7 +108,7 @@ export function MessageSelect(props) {
     }
 
     if (oldMessageRef) {
-      
+
       // Remove previous message in case it's not used anymore
       const isOldMessageUsed = isMessageRefUsed(definitions, oldMessageRef.id);
       if (!isOldMessageUsed) {
@@ -126,7 +126,7 @@ export function MessageSelect(props) {
       // Automatic deletion of previous message correlation properties
       synCorrleationProperties(element, definitions, moddle);
     }
-    
+
     // Update Correlation key if Process has collaboration
     try {
       setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
@@ -183,6 +183,19 @@ function requestOptions(eventBus, bpmnFactory, element, moddle) {
     spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
   });
   eventBus.fire(`spiff.messages.requested`, { eventBus });
+  // eventBus.fire(`spiff.add_message.requested`, { eventBus });
+  eventBus.on(`spiff.add_message.returned`, (event) => {
+    const cProperties = Object.entries(event.correlation_properties).map(([identifier, properties]) => ({
+      identifier,
+      retrieval_expression: properties.retrieval_expressions[0]
+    }));
+    let newMsg = {
+      identifier: event.name,
+      correlation_properties: cProperties
+    };
+    spiffExtensionOptions['spiff.messages'] = (Array.isArray(spiffExtensionOptions['spiff.messages']) && spiffExtensionOptions['spiff.messages']) ? spiffExtensionOptions['spiff.messages']: [];
+    spiffExtensionOptions['spiff.messages'].push(newMsg)
+  });
 }
 
 function removeDuplicatesByLabel(array) {

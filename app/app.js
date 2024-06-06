@@ -312,14 +312,23 @@ bpmnModeler.on('spiff.messages.requested', (event) => {
   });
 });
 
-// bpmnModeler.on('spiff.message_schemas.requested', (event) => {
-//   event.eventBus.fire('spiff.message_schemas.returned', {
-//     options: [
-//       { schema_id: 's1' },
-//       { schema_id: 's2' }
-//     ],
-//   });
-// });
+bpmnModeler.on('spiff.add_message.requested', (event) => {
+  event.eventBus.fire('spiff.add_message.returned', {
+    name: 'msgName',
+    correlation_properties: {
+      "c1": {
+          "retrieval_expressions": [
+              "c1x"
+          ]
+      },
+      "c2": {
+          "retrieval_expressions": [
+              "cxxxx1x"
+          ]
+      }
+    }
+  });
+});
 
 // As call activites might refernce processes across the system
 // it should be possible to search for a paticular call activity.
