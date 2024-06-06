@@ -136,6 +136,20 @@ export function MessageSelect(props) {
 
   };
 
+  eventBus.on(`spiff.add_message.returned`, (event) => {
+    const cProperties = Object.entries(event.correlation_properties).map(([identifier, properties]) => ({
+      identifier,
+      retrieval_expression: properties.retrieval_expressions[0]
+    }));
+    let newMsg = {
+      identifier: event.name,
+      correlation_properties: cProperties
+    };
+    spiffExtensionOptions['spiff.messages'] = (Array.isArray(spiffExtensionOptions['spiff.messages']) && spiffExtensionOptions['spiff.messages']) ? spiffExtensionOptions['spiff.messages'] : [];
+    spiffExtensionOptions['spiff.messages'].push(newMsg);
+    setValue(event.name);
+  });
+
   requestOptions(eventBus, bpmnFactory, element, moddle);
 
   const getOptions = () => {
@@ -183,19 +197,6 @@ function requestOptions(eventBus, bpmnFactory, element, moddle) {
     spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
   });
   eventBus.fire(`spiff.messages.requested`, { eventBus });
-  eventBus.on(`spiff.add_message.returned`, (event) => {
-    const cProperties = Object.entries(event.correlation_properties).map(([identifier, properties]) => ({
-      identifier,
-      retrieval_expression: properties.retrieval_expressions[0]
-    }));
-    let newMsg = {
-      identifier: event.name,
-      correlation_properties: cProperties
-    };
-    spiffExtensionOptions['spiff.messages'] = (Array.isArray(spiffExtensionOptions['spiff.messages']) && spiffExtensionOptions['spiff.messages']) ? spiffExtensionOptions['spiff.messages'] : [];
-    spiffExtensionOptions['spiff.messages'].push(newMsg);
-    setValue(event.name);
-  });
 }
 
 function removeDuplicatesByLabel(array) {
