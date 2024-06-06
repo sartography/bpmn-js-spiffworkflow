@@ -51,6 +51,11 @@ adjust CSS props so that padding won't add to dimensions.
   padding-right: 2px;
 }
 
+/* .properties-panel-parent {
+  border-left: unset !important;
+  overflow: unset !important;
+} */
+
 /* Style buttons */
 .bpmn-js-spiffworkflow-btn {
   background-color: DodgerBlue;
@@ -64,7 +69,7 @@ adjust CSS props so that padding won't add to dimensions.
 
 .bio-properties-panel-description {
   word-wrap: break-word;
-  width: 350px;
+  max-width: 350px;
 }
 
 .bio-properties-panel-group-entries > .bio-properties-panel-description {
@@ -128,6 +133,7 @@ adjust CSS props so that padding won't add to dimensions.
   font-size: 0.9em;
   color: #333;
 }
+
 .d-grid {
   display: grid !important;
 }

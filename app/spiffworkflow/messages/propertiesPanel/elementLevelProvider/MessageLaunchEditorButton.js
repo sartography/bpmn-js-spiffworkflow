@@ -20,6 +20,9 @@ export function MessageLaunchEditorButton(props) {
   if (messageRef && messageRef.id) {
     messageId = messageRef.id;
   }
+  if (messageRef && messageRef.name && messageRef.name !== messageId) {
+    messageId = messageRef.name;
+  }
   return HeaderButton({
     className: 'spiffworkflow-properties-panel-button',
     id: `message_launch_message_editor_button`,

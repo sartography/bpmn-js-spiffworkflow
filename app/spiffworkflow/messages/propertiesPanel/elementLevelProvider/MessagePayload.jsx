@@ -21,14 +21,12 @@ export function MessagePayload(props) {
       const { extensionElements } = isMessageEvent(element)
         ? element.businessObject.eventDefinitions[0]
         : element.businessObject;
-
-      if (extensionElements) {
+      if (extensionElements && extensionElements.get('values')) {
         let payloadResp = extensionElements
           .get('values')
           .filter(function getInstanceOfType(e) {
             return e.$instanceOf('spiffworkflow:MessagePayload');
           })[0];
-
         return payloadResp;
       }
     }
@@ -48,11 +46,11 @@ export function MessagePayload(props) {
       const { messageRef } = bo;
       if (messageRef) {
         const { extensionElements } = messageRef;
-        const payloadResp = extensionElements
+        const payloadResp = (extensionElements) ? extensionElements
           .get('values')
           .filter(function getInstanceOfType(e) {
             return e.$instanceOf('spiffworkflow:MessagePayload');
-          })[0];
+          })[0] : undefined;
 
         if (payloadResp) {
           setValue(payloadResp.value);
