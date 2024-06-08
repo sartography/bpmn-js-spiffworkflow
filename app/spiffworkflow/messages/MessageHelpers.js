@@ -254,7 +254,7 @@ export function findMessageElement(businessObject, messageId, definitions) {
   let root = getRoot(businessObject);
 
   // This case is to handle root for deleted elements
-  if(!root && definitions){
+  if (!root && definitions) {
     root = definitions;
   }
 
@@ -406,7 +406,7 @@ export function isMessageRefUsed(definitions, messageRef) {
           return true;
         } else if (isMessageElement(element) && (element.messageRef && element.messageRef.id === messageRef)) {
           return true;
-        } 
+        }
       }
     }
   }
@@ -551,6 +551,7 @@ export function getCorrelationPropertiesIDsFiltredByMessageRef(businessObject, m
 }
 
 export function setParentCorrelationKeys(definitions, bpmnFactory, element, moddle) {
+  console.log('Updating correlation Keys');
   // Retrieve all correlation properties
   let correlationProperties = findCorrelationProperties(element.businessObject, moddle);
   correlationProperties = correlationProperties || [];
@@ -573,12 +574,25 @@ export function setParentCorrelationKeys(definitions, bpmnFactory, element, modd
   let collaboration = definitions.get('rootElements').find(element => element.$type === 'bpmn:Collaboration');
 
   if (collaboration) {
+    // Remove existing correlation keys other than the main correlation key
+    collaboration.get('correlationKeys').forEach((key, index) => {
+      if (key.name !== 'MainCorrelationKey') {
+        collaboration.get('correlationKeys').splice(index, 1);
+      }
+    });
+
     const existingKey = collaboration.get('correlationKeys').find(key => key.name === 'MainCorrelationKey');
     if (!existingKey) {
       collaboration.get('correlationKeys').push(mainCorrelationKey);
     }
   } else {
     // Handle case where no collaboration is found
+    definitions.get('rootElements').forEach((element, index) => {
+      if (element.$type === 'bpmn:CorrelationKey' && element.name !== 'MainCorrelationKey') {
+        definitions.get('rootElements').splice(index, 1);
+      }
+    }); 
+
     const existingKey = definitions.get('rootElements').find(key => key.$type === 'bpmn:CorrelationKey' && key.name === 'MainCorrelationKey');
     if (!existingKey) {
       definitions.get('rootElements').push(mainCorrelationKey);
@@ -602,14 +616,14 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
 }
 
 export function synCorrleationProperties(element, definitions, moddle) {
-  
+
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
   const expressionsToDelete = [];
 
-  for(let cProperty of correlationProps){
+  for (let cProperty of correlationProps) {
     let isUsed = false;
-    for(const cpExpression of cProperty.correlationPropertyRetrievalExpression){
+    for (const cpExpression of cProperty.correlationPropertyRetrievalExpression) {
       const msgRef = findMessageElement(businessObject, cpExpression.messageRef.id, definitions);
       isUsed = (msgRef) ? true : (isUsed);
       // if unused  false, delete retrival expression
@@ -619,7 +633,7 @@ export function synCorrleationProperties(element, definitions, moddle) {
     }
 
     // Delete the retrieval expressions that are not used
-    for(const expression of expressionsToDelete){
+    for (const expression of expressionsToDelete) {
       const index = cProperty.correlationPropertyRetrievalExpression.indexOf(expression);
       if (index > -1) {
         cProperty.correlationPropertyRetrievalExpression.splice(index, 1);
