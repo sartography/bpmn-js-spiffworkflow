@@ -40,9 +40,8 @@ export function MessageSelect(props) {
     const messageId = value;
     const { businessObject } = element;
     let oldMessageRef = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0].messageRef : businessObject.messageRef;
-
     let definitions = getRoot(element.businessObject);
-    if (!definitions.get('rootElements')) {
+    if (!definitions || !definitions.get('rootElements')) {
       definitions.set('rootElements', []);
     }
 
