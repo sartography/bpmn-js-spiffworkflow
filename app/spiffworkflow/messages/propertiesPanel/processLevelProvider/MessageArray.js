@@ -1,7 +1,8 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import { getRoot, findMessageModdleElements } from '../MessageHelpers';
-import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+import { getRoot, findMessageModdleElements, createNewMessage } from '../../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
+import { MessagePropertiesMultiSelect } from './MessagePropertiesMultiSelect';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -10,8 +11,8 @@ import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
  */
 export function MessageArray(props) {
   const { element, moddle, commandStack, translate } = props;
-
   const messageElements = findMessageModdleElements(element.businessObject);
+
   const items = messageElements.map((messageElement, index) => {
     const id = `messageElement-${index}`;
     return {
@@ -22,6 +23,7 @@ export function MessageArray(props) {
         element,
         messageElement,
         commandStack,
+        moddle,
         translate,
       }),
       autoFocusEntry: id,
@@ -36,19 +38,7 @@ export function MessageArray(props) {
 
   function add(event) {
     event.stopPropagation();
-    if (element.type === 'bpmn:Collaboration') {
-      const newMessageElement = moddle.create('bpmn:Message');
-      const messageId = moddle.ids.nextPrefixed('Message_');
-      newMessageElement.id = messageId;
-      newMessageElement.name = messageId;
-      const rootElement = getRoot(element.businessObject);
-      const { rootElements } = rootElement;
-      rootElements.push(newMessageElement);
-      commandStack.execute('element.updateProperties', {
-        element,
-        properties: {},
-      });
-    }
+    createNewMessage(element, moddle, commandStack);
   }
 
   return { items, add };
@@ -94,7 +84,7 @@ function removeFactory(props) {
 }
 
 function messageGroup(props) {
-  const { messageElement, commandStack, translate, idPrefix } = props;
+  const { messageElement, commandStack, moddle, translate, idPrefix } = props;
   return [
     {
       id: `${idPrefix}-name`,
@@ -103,6 +93,14 @@ function messageGroup(props) {
       commandStack,
       translate,
     },
+    {
+      id: `${idPrefix}-properties`,
+      component: MessagePropertiesSelectField,
+      messageElement,
+      commandStack,
+      moddle,
+      translate,
+    }
   ];
 }
 
@@ -159,5 +157,20 @@ function MessageNameTextField(props) {
     getValue,
     setValue,
     debounce,
+  });
+}
+
+function MessagePropertiesSelectField(props) {
+  const { id, element, moddle, translate, messageElement } = props;
+
+  const debounce = useService('debounceInput');
+
+  return MessagePropertiesMultiSelect({
+    element,
+    id: `${id}-properties-input`,
+    label: translate('Properties'),
+    debounce,
+    messageElement,
+    moddle
   });
 }

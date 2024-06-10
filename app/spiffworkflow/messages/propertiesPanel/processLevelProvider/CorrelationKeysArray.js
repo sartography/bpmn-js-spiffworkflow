@@ -1,7 +1,7 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SimpleEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
-import { findCorrelationKeys, getRoot } from '../MessageHelpers';
-import { removeFirstInstanceOfItemFromArrayInPlace } from '../../helpers';
+import { createNewCorrelationKey, findCorrelationKeys, getRoot } from '../../MessageHelpers';
+import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -12,6 +12,7 @@ export function CorrelationKeysArray(props) {
   const { element, moddle, commandStack } = props;
 
   const correlationKeyElements = findCorrelationKeys(element.businessObject);
+  
   const items = correlationKeyElements.map((correlationKeyElement, index) => {
     const id = `correlationGroup-${index}`;
     return {
@@ -35,18 +36,7 @@ export function CorrelationKeysArray(props) {
 
   function add(event) {
     event.stopPropagation();
-    if (element.type === 'bpmn:Collaboration') {
-      const newCorrelationKeyElement = moddle.create('bpmn:CorrelationKey');
-      newCorrelationKeyElement.name =
-        moddle.ids.nextPrefixed('CorrelationKey_');
-      const currentCorrelationKeyElements =
-        element.businessObject.get('correlationKeys');
-      currentCorrelationKeyElements.push(newCorrelationKeyElement);
-      commandStack.execute('element.updateProperties', {
-        element,
-        properties: {}
-      });
-    }
+    createNewCorrelationKey(element, moddle, commandStack);
   }
 
   return { items, add };
@@ -70,11 +60,6 @@ function removeFactory(props) {
   };
 }
 
-// <bpmn:correlationKey name="lover"> <--- The correlationGroup
-//   <bpmn:correlationPropertyRef>lover_name</bpmn:correlationPropertyRef>
-//   <bpmn:correlationPropertyRef>lover_instrument</bpmn:correlationPropertyRef>
-// </bpmn:correlationKey>
-// <bpmn:correlationKey name="singer" />
 function correlationGroup(props) {
   const { idPrefix, correlationKeyElement, commandStack } = props;
   const entries = [

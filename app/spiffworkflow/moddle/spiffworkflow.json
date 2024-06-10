@@ -50,6 +50,26 @@
       ]
     },
     {
+      "name": "ProcessVariableCorrelation",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "propertyId",
+          "type": "String",
+          "xml": {
+            "serialize": "property"
+          }
+        },
+        {
+          "name": "expression",
+          "type": "String",
+          "xml": {
+            "serialize": "property"
+          }
+        }
+      ]
+    },
+    {
       "name": "CalledDecisionId",
       "superClass": [ "Element" ],
       "properties": [

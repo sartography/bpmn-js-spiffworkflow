@@ -152,6 +152,7 @@ bpmnModeler.on('spiff.callactivity.edit', (newEvent) => {
 bpmnModeler.on('spiff.file.edit', (newEvent) => {
   console.log('Open new window to edit file: ', newEvent.value);
 });
+
 bpmnModeler.on('spiff.dmn.edit', (newEvent) => {
   console.log('Open new window to edit DMN table: ', newEvent.value);
 });
@@ -167,6 +168,10 @@ bpmnModeler.on('spiff.json_schema_files.requested', (event) => {
       { label: 'credit_card_form.json', value: 'credit_card_form.json' },
     ],
   });
+});
+
+bpmnModeler.on('spiff.msg_json_schema_files.requested', (event) => {
+  console.log('Open new window to edit Message json schema: ');
 });
 
 bpmnModeler.on('spiff.dmn_files.requested', (event) => {
@@ -188,6 +193,75 @@ bpmnModeler.on('spiff.data_stores.requested', (event) => {
   });
 });
 
+bpmnModeler.on('spiff.messages.requested', (event) => {
+  event.eventBus.fire('spiff.messages.returned', {
+    configuration: {
+      "messages": [
+        {
+          "identifier": "basic_message",
+          "location": "examples/1-basic-concepts",
+          "schema": {},
+          "correlation_properties": []
+        },
+        {
+          "identifier": "end_of_day_receipts",
+          "location": "examples",
+          "schema": {},
+          "correlation_properties": []
+        },
+        {
+          "identifier": "order_ready",
+          "location": "examples",
+          "schema": {},
+          "correlation_properties": [
+            {
+              "identifier": "table_number",
+              "retrieval_expression": "table_number"
+            },
+            {
+              "identifier": "franchise_id",
+              "retrieval_expression": "franchise_id"
+            }
+          ]
+        },
+        {
+          "identifier": "table_seated",
+          "location": "examples",
+          "schema": {},
+          "correlation_properties": [
+            {
+              "identifier": "table_number",
+              "retrieval_expression": "table_number-v2"
+            },
+            {
+              "identifier": "franchise_id",
+              "retrieval_expression": "franchise_id-v2"
+            }
+          ]
+        }
+      ]
+    }
+  });
+});
+
+bpmnModeler.on('spiff.add_message.requested', (event) => {
+  event.eventBus.fire('spiff.add_message.returned', {
+    name: 'msgName',
+    correlation_properties: {
+      "c1": {
+          "retrieval_expressions": [
+              "c1x"
+          ]
+      },
+      "c2": {
+          "retrieval_expressions": [
+              "cxxxx1x"
+          ]
+      }
+    }
+  });
+});
+
 // As call activites might refernce processes across the system
 // it should be possible to search for a paticular call activity.
 bpmnModeler.on('spiff.callactivity.search', (event) => {
@@ -206,7 +280,7 @@ bpmnModeler.on('import.parse.complete', event => {
   refs.forEach(ref => {
     const props = {
       id: ref.id,
-      name: ref.id ? typeof(ref.name) === 'undefined': ref.name,
+      name: ref.id ? typeof (ref.name) === 'undefined' : ref.name,
     };
     let elem = bpmnModeler._moddle.create(desc, props);
     elem.$parent = ref.element;
@@ -214,7 +288,7 @@ bpmnModeler.on('import.parse.complete', event => {
   });
 });
 
-bpmnModeler.importXML(diagramXML).then(() => {});
+bpmnModeler.importXML(diagramXML).then(() => { });
 
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
