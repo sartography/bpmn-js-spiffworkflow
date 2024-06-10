@@ -1,6 +1,9 @@
 import { HeaderButton } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
-import { findCorrelationProperties, findCorrelationPropertiesAndRetrievalExpressionsForMessage, findCorrelationPropertiesByMessage, getMessageRefElement } from "../../MessageHelpers";
+import {
+  findCorrelationPropertiesAndRetrievalExpressionsForMessage,
+  getMessageRefElement,
+} from '../../MessageHelpers';
 
 /**
  * Sends a notification to the host application saying the user
@@ -16,10 +19,12 @@ export function MessageLaunchEditorButton(props) {
   const eventBus = useService('eventBus');
 
   const messageRef = getMessageRefElement(element);
-  const correlationProperties = findCorrelationPropertiesAndRetrievalExpressionsForMessage(element);
-  const parsedCorrelationProperties = correlationProperties.map(item => ({
+  const correlationProperties =
+    findCorrelationPropertiesAndRetrievalExpressionsForMessage(element);
+  const parsedCorrelationProperties = correlationProperties.map((item) => ({
     id: item.correlationPropertyModdleElement.id,
-    retrievalExpression: item.correlationPropertyRetrievalExpressionModdleElement.messagePath.body
+    retrievalExpression:
+      item.correlationPropertyRetrievalExpressionModdleElement.messagePath.body,
   }));
 
   let messageId = null;
@@ -36,7 +41,7 @@ export function MessageLaunchEditorButton(props) {
       eventBus.fire(sendEvent, {
         value: {
           messageId,
-          correlation_properties: parsedCorrelationProperties
+          correlation_properties: parsedCorrelationProperties,
         },
         eventBus,
         listenEvent,
