@@ -40,9 +40,8 @@ export function MessageSelect(props) {
     const messageId = value;
     const { businessObject } = element;
     let oldMessageRef = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0].messageRef : businessObject.messageRef;
-
     let definitions = getRoot(element.businessObject);
-    if (!definitions.get('rootElements')) {
+    if (!definitions || !definitions.get('rootElements')) {
       definitions.set('rootElements', []);
     }
 
@@ -136,7 +135,7 @@ export function MessageSelect(props) {
 
   };
 
-  eventBus.on(`spiff.add_message.returned`, (event) => {
+  eventBus.on('spiff.add_message.returned', (event) => {
     const cProperties = Object.entries(event.correlation_properties).map(([identifier, properties]) => ({
       identifier,
       retrieval_expression: properties.retrieval_expressions[0]
