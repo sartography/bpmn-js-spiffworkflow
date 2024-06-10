@@ -23,7 +23,7 @@ import {
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
 import { fireEvent } from '@testing-library/preact';
-import { inject } from 'bpmn-js/test/helper';
+import { getBpmnJS, inject } from 'bpmn-js/test/helper';
 import { findCorrelationProperties, findMessageModdleElements } from '../../app/spiffworkflow/messages/MessageHelpers';
 
 describe('Messages should work', function () {
@@ -48,6 +48,24 @@ describe('Messages should work', function () {
       },
     })
   );
+
+  const new_message_event = (eventBus) => {
+    eventBus.fire('spiff.add_message.returned', {
+      name: 'msgName',
+      correlation_properties: {
+        "c1": {
+          "retrieval_expressions": [
+            "c1x"
+          ]
+        },
+        "c2": {
+          "retrieval_expressions": [
+            "cxxxx1x"
+          ]
+        }
+      }
+    });
+  };
 
   it('should show a Message Properties group when a send task is selected', async function () {
     // Select the send Task
@@ -120,7 +138,45 @@ describe('Messages should work', function () {
 
   }));
 
-  // // OLD Features
+  it('should be able to add new message and correlation properties on add_message_event', async function () {
+
+    const modeler = getBpmnJS();
+
+    // Select message element
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
+
+    const entry = findEntry('selectMessage', getPropertiesPanel());
+    expect(entry).to.exist;
+
+    // Expect to find two existing messages
+    let selector = findSelect(entry);
+    expect(selector.options.length).to.equal(2);
+
+    // Fire add new message event
+    modeler.get('eventBus').on('spiff.add_message.requested', (event) => {
+      new_message_event(modeler.get('eventBus'))
+    });
+    modeler.get('eventBus').fire('spiff.add_message.requested');
+
+    const sendShapecc = await expectSelected('ActivitySendLetter');
+    expect(sendShapecc, "Can't find Send Task").to.exist;
+
+    const updatedEntry = findEntry('selectMessage', getPropertiesPanel());
+    expect(updatedEntry).to.exist;
+
+    const updatedSelector = findSelect(updatedEntry);
+    expect(updatedSelector.options.length).to.equal(3);
+    expect(updatedSelector.options[2].value).to.equal('msgName');
+
+  });
+
+  it('should be able to generate default Correlation keys on changing message', async function () {
+
+  })
+
+
+  // 🔶🔶 OLD Features
 
   // // it('should show the correlations inside the message group', async function () {
   // //   // Select the second Task
