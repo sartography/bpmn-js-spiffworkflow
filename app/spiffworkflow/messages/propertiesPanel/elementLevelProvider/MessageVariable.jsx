@@ -27,16 +27,6 @@ export function MessageVariable(props) {
         return variableResp;
       }
     }
-    // if (element) {
-    //   const { extensionElements } = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0] : element.businessObject;
-    //   if (extensionElements) {
-    //     return extensionElements
-    //       .get('values')
-    //       .filter(function getInstanceOfType(e) {
-    //         return e.$instanceOf('spiffworkflow:MessageVariable');
-    //       })[0];
-    //   }
-    // }
     return null;
   };
 
