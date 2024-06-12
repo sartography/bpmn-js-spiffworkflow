@@ -15,15 +15,28 @@ export function MessageVariable(props) {
 
   const getMessageVariableObject = () => {
     if (element) {
-      const { extensionElements } = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0] : element.businessObject;
-      if (extensionElements) {
-        return extensionElements
+      const { extensionElements } = isMessageEvent(element)
+        ? element.businessObject.eventDefinitions[0]
+        : element.businessObject;
+      if (extensionElements && extensionElements.get('values')) {
+        let variableResp = extensionElements
           .get('values')
           .filter(function getInstanceOfType(e) {
             return e.$instanceOf('spiffworkflow:MessageVariable');
           })[0];
+        return variableResp;
       }
     }
+    // if (element) {
+    //   const { extensionElements } = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0] : element.businessObject;
+    //   if (extensionElements) {
+    //     return extensionElements
+    //       .get('values')
+    //       .filter(function getInstanceOfType(e) {
+    //         return e.$instanceOf('spiffworkflow:MessageVariable');
+    //       })[0];
+    //   }
+    // }
     return null;
   };
 
@@ -31,6 +44,26 @@ export function MessageVariable(props) {
     const messageVariableObject = getMessageVariableObject();
     if (messageVariableObject) {
       return messageVariableObject.value;
+    } else {
+      // Check : for old models where messageVariable exists on message level
+      const bo = isMessageEvent(element)
+        ? element.businessObject.eventDefinitions[0]
+        : element.businessObject;
+
+      const { messageRef } = bo;
+      if (messageRef) {
+        const { extensionElements } = messageRef;
+        const messageResp = (extensionElements) ? extensionElements
+          .get('values')
+          .filter(function getInstanceOfType(e) {
+            return e.$instanceOf('spiffworkflow:MessageVariable');
+          })[0] : undefined;
+
+        if (messageResp) {
+          setValue(messageResp.value);
+          return messageResp.value;
+        }
+      }
     }
     return '';
   };
