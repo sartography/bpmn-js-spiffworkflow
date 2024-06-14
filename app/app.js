@@ -249,14 +249,10 @@ bpmnModeler.on('spiff.add_message.requested', (event) => {
     name: 'msgName',
     correlation_properties: {
       "c1": {
-          "retrieval_expressions": [
-              "c1x"
-          ]
+        "retrieval_expressions": "c1_expression"
       },
       "c2": {
-          "retrieval_expressions": [
-              "cxxxx1x"
-          ]
+        "retrieval_expressions": "c2_expression"
       }
     }
   });

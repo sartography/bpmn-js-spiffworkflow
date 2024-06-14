@@ -136,10 +136,13 @@ export function MessageSelect(props) {
   };
 
   eventBus.on('spiff.add_message.returned', (event) => {
+    console.log('spiff.add_message.returned ', event);
+
     const cProperties = Object.entries(event.correlation_properties).map(([identifier, properties]) => ({
       identifier,
-      retrieval_expression: properties.retrieval_expressions[0]
+      retrieval_expression: properties.retrieval_expressions
     }));
+    console.log('CProperties ', cProperties);
     let newMsg = {
       identifier: event.name,
       correlation_properties: cProperties
