@@ -39,16 +39,11 @@ export function MessageLaunchEditorButton(props) {
     id: `message_launch_message_editor_button`,
     onClick: () => {
 
-      console.log('On Click');
       // eventBus.fire('spiff.add_message.requested', { eventBus });
-
-      console.log('fire Click ' + sendEvent, {
-        messageId,
-        correlation_properties: parsedCorrelationProperties,
-      });
 
       eventBus.fire(sendEvent, {
         value: {
+          elementId: element.id,
           messageId,
           correlation_properties: parsedCorrelationProperties,
         },

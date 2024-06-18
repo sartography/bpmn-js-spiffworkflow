@@ -16,12 +16,15 @@ import {
 
 export const spiffExtensionOptions = {};
 
+let ELEMENT_ID;
+
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
  */
 export function MessageSelect(props) {
-  const shapeElement = props.element;
-  const { commandStack, element, moddle } = props;
+  let shapeElement = props.element;
+  const { commandStack, moddle, elementRegistry } = props;
+  let { element } = props;
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
   const bpmnFactory = useService('bpmnFactory');
@@ -36,11 +39,19 @@ export function MessageSelect(props) {
 
   const setValue = async (value) => {
 
+    if (ELEMENT_ID) {
+      // ⚠️⚠️ Not sure if we can keep this
+      // This condition verify if Setvalue trigger is about the same element triggered from spifarena
+      const nwElement = elementRegistry.get(ELEMENT_ID);
+      shapeElement = (nwElement) ? nwElement : shapeElement;
+      element = (nwElement) ? nwElement : element;
+    }
+
     // Define variables
     const messageId = value;
     const { businessObject } = element;
     let oldMessageRef = (businessObject.eventDefinitions) ? businessObject.eventDefinitions[0].messageRef : businessObject.messageRef;
-    let definitions = getRoot(element.businessObject);
+    let definitions = getRoot(businessObject);
     if (!definitions || !definitions.get('rootElements')) {
       definitions.set('rootElements', []);
     }
@@ -61,6 +72,8 @@ export function MessageSelect(props) {
         name: messageId,
       });
       definitions.get('rootElements').push(bpmnMessage);
+    } else if (bpmnMessage.id !== bpmnMessage.name) {
+      bpmnMessage.id = bpmnMessage.name;
     }
 
     // Update messageRef of current Element
@@ -110,6 +123,7 @@ export function MessageSelect(props) {
 
       // Remove previous message in case it's not used anymore
       const isOldMessageUsed = isMessageRefUsed(definitions, oldMessageRef.id);
+
       if (!isOldMessageUsed) {
         const rootElements = definitions.get('rootElements');
         const oldMessageIndex = rootElements.findIndex(
@@ -123,7 +137,7 @@ export function MessageSelect(props) {
       }
 
       // Automatic deletion of previous message correlation properties
-      synCorrleationProperties(element, definitions, moddle);
+      synCorrleationProperties(element, definitions, moddle, msgObject);
     }
 
     // Update Correlation key if Process has collaboration
@@ -135,20 +149,33 @@ export function MessageSelect(props) {
 
   };
 
-  eventBus.on('spiff.add_message.returned', (event) => {
-    console.log('spiff.add_message.returned ', event);
+  eventBus.on('spiff.add_message.returned', async (event) => {
+
+    // Check if the received element matches the current element
+    if (event.elementId !== element.id) {
+      ELEMENT_ID = event.elementId;
+    }
 
     const cProperties = Object.entries(event.correlation_properties).map(([identifier, properties]) => ({
       identifier,
-      retrieval_expression: properties.retrieval_expressions
+      retrieval_expression: Array.isArray(properties.retrieval_expressions) ? properties.retrieval_expressions[0] : properties.retrieval_expressions
     }));
-    console.log('CProperties ', cProperties);
+
     let newMsg = {
       identifier: event.name,
       correlation_properties: cProperties
     };
+
     spiffExtensionOptions['spiff.messages'] = (Array.isArray(spiffExtensionOptions['spiff.messages']) && spiffExtensionOptions['spiff.messages']) ? spiffExtensionOptions['spiff.messages'] : [];
-    spiffExtensionOptions['spiff.messages'].push(newMsg);
+    const messageIndex = spiffExtensionOptions['spiff.messages'].findIndex(
+      (msg) => msg.identifier === newMsg.identifier
+    );
+    if (messageIndex !== -1) {
+      spiffExtensionOptions['spiff.messages'][messageIndex] = newMsg;
+    } else {
+      spiffExtensionOptions['spiff.messages'].push(newMsg);
+    }
+
     setValue(event.name);
   });
 

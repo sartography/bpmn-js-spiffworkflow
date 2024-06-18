@@ -245,15 +245,30 @@ bpmnModeler.on('spiff.messages.requested', (event) => {
 });
 
 bpmnModeler.on('spiff.add_message.requested', (event) => {
+  // event.eventBus.fire('spiff.add_message.returned', {
+  //   name: 'test_message',
+  //   correlation_properties: {
+  //     "c1": {
+  //       "retrieval_expressions": "c1_expression"
+  //     },
+  //     "c2": {
+  //       "retrieval_expressions": "c2_expression"
+  //     }
+  //   }
+  //   element: {}
+  // });
   event.eventBus.fire('spiff.add_message.returned', {
-    name: 'msgName',
+    name: 'test_message',
     correlation_properties: {
       "c1": {
-        "retrieval_expressions": "c1_expression"
+        "retrieval_expressions": ["c1_expression"]
       },
       "c2": {
-        "retrieval_expressions": "c2_expression"
+        "retrieval_expressions": ["c2_expression"]
       }
+    },
+    element: {
+      name: 'elementName'
     }
   });
 });
