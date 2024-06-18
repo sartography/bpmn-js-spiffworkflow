@@ -38,8 +38,12 @@ export function MessageLaunchEditorButton(props) {
     className: 'spiffworkflow-properties-panel-button',
     id: `message_launch_message_editor_button`,
     onClick: () => {
+
+      // eventBus.fire('spiff.add_message.requested', { eventBus });
+
       eventBus.fire(sendEvent, {
         value: {
+          elementId: element.id,
           messageId,
           correlation_properties: parsedCorrelationProperties,
         },

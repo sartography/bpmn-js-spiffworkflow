@@ -34,6 +34,7 @@ export function createMessageGroup(
       isEdited: isTextFieldEntryEdited,
       moddle,
       commandStack,
+      elementRegistry
     },
     {
       id: 'messageLaunchEditorButton',
