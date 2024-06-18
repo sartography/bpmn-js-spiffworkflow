@@ -33,7 +33,7 @@ export default function ExtensionsPropertiesProvider(
   elementRegistry,
 ) {
   this.getGroups = function (element) {
-    return function (groups) {
+    return function(groups) {
       if (is(element, 'bpmn:ScriptTask')) {
         groups.push(
           createScriptGroup(element, translate, moddle, commandStack),
@@ -87,6 +87,7 @@ export default function ExtensionsPropertiesProvider(
           createSignalButtonGroup(element, translate, moddle, commandStack),
         );
       }
+      
       if (is(element, 'bpmn:ServiceTask')) {
         groups.push(
           createServiceGroup(element, translate, moddle, commandStack),

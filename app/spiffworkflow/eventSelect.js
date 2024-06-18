@@ -8,6 +8,7 @@ import {
   isTextFieldEntryEdited
 } from '@bpmn-io/properties-panel';
 import { getRoot } from './helpers';
+import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 
 function hasEventType(element, eventType) {
   const events = element.businessObject.eventDefinitions;
@@ -52,7 +53,16 @@ function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
       },
     ];
 
-    if (includeCode) {
+    const boundaryCondition = 
+      is(element, 'bpmn:BoundaryEvent') &&
+      ((hasEventDefinition(element, 'bpmn:ErrorEventDefinition') &&
+        element.businessObject.eventDefinitions[0].errorRef) ||
+        (hasEventDefinition(element, 'bpmn:EscalationEventDefinition') &&
+          element.businessObject.eventDefinitions[0].escalationRef) ||
+        (hasEventDefinition(element, 'bpmn:SignalEventDefinition') &&
+          element.businessObject.eventDefinitions[0].signalRef));
+
+    if (includeCode && boundaryCondition) {
       const codeField = getCodeTextField(eventDetails, `${label} Code`);
       entries.push({
         id: `${idPrefix}-code`,
@@ -64,8 +74,7 @@ function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
       });
     }
 
-
-    if (isCatchingEvent(element)) {
+    if (isCatchingEvent(element) && boundaryCondition) {
       entries.push({
         id: `${idPrefix}-variable`,
         element,
