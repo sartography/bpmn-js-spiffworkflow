@@ -63,7 +63,6 @@ export function MessageVariable(props) {
   };
 
   const setValue = (value) => {
-    console.log('Set Value of message variable', value);
     var extensions = isMessageEvent(element)
       ? element.businessObject.eventDefinitions[0].get('extensionElements') ||
         moddle.create('bpmn:ExtensionElements')

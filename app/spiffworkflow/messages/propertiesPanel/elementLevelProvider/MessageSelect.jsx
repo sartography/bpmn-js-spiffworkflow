@@ -39,8 +39,6 @@ export function MessageSelect(props) {
 
   const setValue = async (value) => {
 
-    console.log('Set Value', value);
-
     const messageId = value;
     const { businessObject } = element;
     const oldMessageRef = businessObject.eventDefinitions?.[0].messageRef || businessObject.messageRef;
@@ -70,7 +68,6 @@ export function MessageSelect(props) {
     updateElementMessageRef(element, bpmnMessage, moddle, commandStack);
   
     const messageObject = findMessageObject(messageId);
-    console.log('msgObject', messageObject);
   
     if (messageObject) {
       createOrUpdateCorrelationPropertiesV2(
@@ -95,8 +92,6 @@ export function MessageSelect(props) {
   };
 
   eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, async (event) => {
-
-    console.log('On SPIFF_ADD_MESSAGE_RETURNED_EVENT', event);
 
     // Check if the received element matches the current element
     if (event.elementId !== element.id) {
@@ -197,7 +192,7 @@ function createMessage(bpmnFactory, messageId) {
 }
 
 function updateElementMessageRef(element, bpmnMessage, moddle, commandStack) {
-  if (isMessageEvent(element)) {
+  if (isMessageEvent(element) && element.businessObject) {
     const messageEventDefinition = element.businessObject.eventDefinitions[0];
     messageEventDefinition.extensionElements = (messageEventDefinition.extensionElements) ? messageEventDefinition.extensionElements : moddle.create('bpmn:ExtensionElements');
     messageEventDefinition.messageRef = bpmnMessage;
@@ -206,7 +201,7 @@ function updateElementMessageRef(element, bpmnMessage, moddle, commandStack) {
       moddleElement: element.businessObject,
       properties: {},
     });
-  } else if (isMessageElement(element)) {
+  } else if (isMessageElement(element)  && element.businessObject) {
     element.businessObject.extensionElements = (element.businessObject.extensionElements) ? element.businessObject.extensionElements : moddle.create('bpmn:ExtensionElements');
     element.businessObject.messageRef = bpmnMessage;
     commandStack.execute('element.updateProperties', {
@@ -241,7 +236,7 @@ function cleanupOldMessage(definitions, oldMessageId) {
     const oldMessageIndex = rootElements.findIndex(
       (element) => element.$type === 'bpmn:Message' && element.id === oldMessageId,
     );
-    if (oldMessageIndex !== -1) {
+    if (rootElements && oldMessageIndex !== -1) {
       rootElements.splice(oldMessageIndex, 1);
       definitions.rootElements = rootElements;
     }
