@@ -246,34 +246,34 @@ bpmnModeler.on('spiff.messages.requested', (event) => {
 });
 
 bpmnModeler.on(SPIFF_ADD_MESSAGE_REQUESTED_EVENT, (event) => {
-  // event.eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
-  //   name: 'test_message1',
-  //   correlation_properties: {
-  //     "c1": {
-  //       "retrieval_expression": "c1_expression"
-  //     },
-  //     "c2": {
-  //       "retrieval_expression": "c2_expression"
-  //     }
-  //   },
-  //   element: {
-  //     id: 'my_user_task'
-  //   }
-  // });
   event.eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
-    name: 'test_message2',
+    name: 'test_message1',
     correlation_properties: {
       "c1": {
-        "retrieval_expression": ["c1_expression"]
+        "retrieval_expression": "c1_expression"
       },
       "c2": {
-        "retrieval_expression": ["c2_expression"]
+        "retrieval_expression": "c2_expression"
       }
     },
     element: {
-      name: 'my_user_task'
+      id: 'my_user_task'
     }
   });
+  // event.eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
+  //   name: 'test_message2',
+  //   correlation_properties: {
+  //     "c1": {
+  //       "retrieval_expression": ["c1_expression"]
+  //     },
+  //     "c2": {
+  //       "retrieval_expression": ["c2_expression"]
+  //     }
+  //   },
+  //   element: {
+  //     name: 'my_user_task'
+  //   }
+  // });
 });
 
 // As call activites might refernce processes across the system

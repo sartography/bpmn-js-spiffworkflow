@@ -38,6 +38,9 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
+
+    console.log('Set Value', value);
+
     const messageId = value;
     const { businessObject } = element;
     const oldMessageRef = businessObject.eventDefinitions?.[0].messageRef || businessObject.messageRef;
@@ -92,6 +95,8 @@ export function MessageSelect(props) {
   };
 
   eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, async (event) => {
+
+    console.log('On SPIFF_ADD_MESSAGE_RETURNED_EVENT', event);
 
     // Check if the received element matches the current element
     if (event.elementId !== element.id) {
@@ -194,7 +199,7 @@ function createMessage(bpmnFactory, messageId) {
 function updateElementMessageRef(element, bpmnMessage, moddle, commandStack) {
   if (isMessageEvent(element)) {
     const messageEventDefinition = element.businessObject.eventDefinitions[0];
-    messageEventDefinition.extensionElements = moddle.create('bpmn:ExtensionElements');
+    messageEventDefinition.extensionElements = (messageEventDefinition.extensionElements) ? messageEventDefinition.extensionElements : moddle.create('bpmn:ExtensionElements');
     messageEventDefinition.messageRef = bpmnMessage;
     commandStack.execute('element.updateModdleProperties', {
       element: element,
@@ -202,7 +207,7 @@ function updateElementMessageRef(element, bpmnMessage, moddle, commandStack) {
       properties: {},
     });
   } else if (isMessageElement(element)) {
-    element.businessObject.extensionElements = moddle.create('bpmn:ExtensionElements');
+    element.businessObject.extensionElements = (element.businessObject.extensionElements) ? element.businessObject.extensionElements : moddle.create('bpmn:ExtensionElements');
     element.businessObject.messageRef = bpmnMessage;
     commandStack.execute('element.updateProperties', {
       element: element,
