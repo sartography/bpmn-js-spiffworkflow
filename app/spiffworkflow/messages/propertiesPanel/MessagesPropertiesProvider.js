@@ -1,7 +1,7 @@
-import { is } from 'bpmn-js/lib/util/ModelUtil';
+// import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { isMessageElement } from '../MessageHelpers';
 
-import { createCollaborationGroup } from './processLevelProvider/CollaborationPropertiesProvider';
+// import { createCollaborationGroup } from './processLevelProvider/CollaborationPropertiesProvider';
 import { createMessageGroup } from './elementLevelProvider/TaskEventMessageProvider';
 
 const LOW_PRIORITY = 500;

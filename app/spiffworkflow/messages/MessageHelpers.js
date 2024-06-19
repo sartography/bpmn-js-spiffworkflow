@@ -416,6 +416,11 @@ export function createOrUpdateCorrelationPropertiesV2(
         correlationProperty.correlationPropertyRetrievalExpression.push(
           retrievalExpression
         );
+      } else {
+        const existingRetrievalExpression = correlationProperty.correlationPropertyRetrievalExpression[existingExpressionIndex];
+        const existingFormalExpression = existingRetrievalExpression.messagePath;
+        console.log('Updating Formal Expression"', propConfig);
+        existingFormalExpression.body = propConfig.retrieval_expression ? propConfig.retrieval_expression : '';
       }
 
       const existingIndex = definitions.rootElements.findIndex(
@@ -803,10 +808,10 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
       isUsed = (msgRef && msgObject && cpExpression.messageRef.id !== msgObject.identifier) ? true : isUsed;
       // if unused  false, delete retrival expression
       if (!msgRef) {
-        console.log('Delete expression', cpExpression);
+        console.log('Delete expression #1', cpExpression);
         expressionsToDelete.push(cpExpression);
       } else if (msgObject && !msgObject.correlation_properties.some(obj => obj.identifier === cProperty.id)) {
-        console.log('Delete expression', cpExpression);
+        console.log('Delete expression #2', cpExpression);
         expressionsToDelete.push(cpExpression);
       }
 
@@ -821,6 +826,7 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
         const cPropertyIndex = definitions
           .get('rootElements')
           .indexOf(cProperty);
+        console.log('Delete expression #3', expression);
         definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
       }
     }

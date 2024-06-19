@@ -6,6 +6,7 @@ import {
 import diagramXML from '../test/spec/bpmn/user_form.bpmn';
 import spiffworkflow from './spiffworkflow';
 import setupFileOperations from './fileOperations';
+import { SPIFF_ADD_MESSAGE_REQUESTED_EVENT, SPIFF_ADD_MESSAGE_RETURNED_EVENT } from './spiffworkflow/constants';
 
 const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
@@ -244,31 +245,33 @@ bpmnModeler.on('spiff.messages.requested', (event) => {
   });
 });
 
-bpmnModeler.on('spiff.add_message.requested', (event) => {
-  // event.eventBus.fire('spiff.add_message.returned', {
-  //   name: 'test_message',
+bpmnModeler.on(SPIFF_ADD_MESSAGE_REQUESTED_EVENT, (event) => {
+  // event.eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
+  //   name: 'test_message1',
   //   correlation_properties: {
   //     "c1": {
-  //       "retrieval_expressions": "c1_expression"
+  //       "retrieval_expression": "c1_expression"
   //     },
   //     "c2": {
-  //       "retrieval_expressions": "c2_expression"
+  //       "retrieval_expression": "c2_expression"
   //     }
+  //   },
+  //   element: {
+  //     id: 'my_user_task'
   //   }
-  //   element: {}
   // });
-  event.eventBus.fire('spiff.add_message.returned', {
-    name: 'test_message',
+  event.eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
+    name: 'test_message2',
     correlation_properties: {
       "c1": {
-        "retrieval_expressions": ["c1_expression"]
+        "retrieval_expression": ["c1_expression"]
       },
       "c2": {
-        "retrieval_expressions": ["c2_expression"]
+        "retrieval_expression": ["c2_expression"]
       }
     },
     element: {
-      name: 'elementName'
+      name: 'my_user_task'
     }
   });
 });
