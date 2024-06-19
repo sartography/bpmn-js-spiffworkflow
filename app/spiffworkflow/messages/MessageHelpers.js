@@ -796,6 +796,7 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
 export function synCorrleationProperties(element, definitions, moddle, msgObject) {
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
+  console.log('correlationProps #1', JSON.stringify(correlationProps));
   const expressionsToDelete = [];
   for (let cProperty of correlationProps) {
     let isUsed = false;
@@ -807,14 +808,23 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
       );
       isUsed = (msgRef && msgObject && cpExpression.messageRef.id !== msgObject.identifier) ? true : isUsed;
       // if unused  false, delete retrival expression
+      console.log('Checking expression #2', msgObject, correlationProps, cProperty, cpExpression);
       if (!msgRef) {
         console.log('Delete expression #1', cpExpression);
         expressionsToDelete.push(cpExpression);
-      } else if (msgObject && !msgObject.correlation_properties.some(obj => obj.identifier === cProperty.id)) {
-        console.log('Delete expression #2', cpExpression);
-        expressionsToDelete.push(cpExpression);
-      }
-
+      } 
+      // else if (msgObject && !msgObject.correlation_properties.some(prop => correlationProps.some(obj => obj.id === prop.identifier))) {
+      //   console.log('Delete expression #2', msgObject, cProperty, cpExpression);
+      //   expressionsToDelete.push(cpExpression);
+      // } 
+      // else if (cpExpression.$parent && !msgObject.correlation_properties.some(obj => obj.identifier === cpExpression.$parent.correlationPropertyRetrievalExpression)) { 
+      //   console.log('Delete expression #2', msgObject, cProperty, cpExpression);
+      //   expressionsToDelete.push(cpExpression);
+      // } 
+      // else if (Array.isArray(cpExpression.$parent.correlationPropertyRetrievalExpression) && cpExpression.$parent.correlationPropertyRetrievalExpression.length > 0) {
+      //   console.log('Delete expression #2', msgObject, cProperty, cpExpression);
+      //   expressionsToDelete.push(cpExpression);
+      // }
     }
 
     // Delete the retrieval expressions that are not used
