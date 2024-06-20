@@ -419,7 +419,6 @@ export function createOrUpdateCorrelationPropertiesV2(
       } else {
         const existingRetrievalExpression = correlationProperty.correlationPropertyRetrievalExpression[existingExpressionIndex];
         const existingFormalExpression = existingRetrievalExpression.messagePath;
-        console.log('Updating Formal Expression"', propConfig);
         existingFormalExpression.body = propConfig.retrieval_expression ? propConfig.retrieval_expression : '';
       }
 
@@ -809,23 +808,9 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
       );
       isUsed = (msgRef && msgObject && cpExpression.messageRef.id !== msgObject.identifier) ? true : isUsed;
       // if unused  false, delete retrival expression
-      // console.log('Checking expression #2', msgObject, correlationProps, cProperty, cpExpression);
       if (!msgRef) {
-        console.log('Delete expression #1', cpExpression);
         expressionsToDelete.push(cpExpression);
       } 
-      // else if (msgObject && !msgObject.correlation_properties.some(prop => correlationProps.some(obj => obj.id === prop.identifier))) {
-      //   console.log('Delete expression #2', msgObject, cProperty, cpExpression);
-      //   expressionsToDelete.push(cpExpression);
-      // } 
-      // else if (cpExpression.$parent && !msgObject.correlation_properties.some(obj => obj.identifier === cpExpression.$parent.correlationPropertyRetrievalExpression)) { 
-      //   console.log('Delete expression #2', msgObject, cProperty, cpExpression);
-      //   expressionsToDelete.push(cpExpression);
-      // } 
-      // else if (Array.isArray(cpExpression.$parent.correlationPropertyRetrievalExpression) && cpExpression.$parent.correlationPropertyRetrievalExpression.length > 0) {
-      //   console.log('Delete expression #2', msgObject, cProperty, cpExpression);
-      //   expressionsToDelete.push(cpExpression);
-      // }
     }
 
     // Delete the retrieval expressions that are not used
@@ -837,7 +822,6 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
         const cPropertyIndex = definitions
           .get('rootElements')
           .indexOf(cProperty);
-        console.log('Delete expression #3', expression);
         definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
       }
     }
@@ -847,7 +831,6 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
     if (!propertyToBeDeleted) {
       const index = definitions.get('rootElements').indexOf(cProperty);
       if (index > -1) {
-        console.log('Delete property', cProperty);
         definitions.rootElements.splice(index, 1);
       }
     }
