@@ -45,7 +45,6 @@ export function MessageSelect(props) {
     const definitions = getRoot(businessObject);
 
     if (ELEMENT_ID) {
-      // ⚠️⚠️ Not sure if we can keep this
       // This condition verify if Setvalue trigger is about the same element triggered from spifarena
       const nwElement = elementRegistry.get(ELEMENT_ID);
       shapeElement = (nwElement) ? nwElement : shapeElement;
