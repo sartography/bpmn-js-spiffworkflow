@@ -38,51 +38,52 @@ export function MessageSelect(props) {
   };
 
   const setValue = async (value) => {
-
     const messageId = value;
     const { businessObject } = element;
-    const oldMessageRef = businessObject.eventDefinitions?.[0].messageRef || businessObject.messageRef;
+    const oldMessageRef =
+      businessObject.eventDefinitions?.[0].messageRef ||
+      businessObject.messageRef;
     const definitions = getRoot(businessObject);
 
     if (ELEMENT_ID) {
       // This condition verify if Setvalue trigger is about the same element triggered from spifarena
       const nwElement = elementRegistry.get(ELEMENT_ID);
-      shapeElement = (nwElement) ? nwElement : shapeElement;
-      element = (nwElement) ? nwElement : element;
+      shapeElement = nwElement ? nwElement : shapeElement;
+      element = nwElement ? nwElement : element;
     }
-  
+
     if (!definitions?.rootElements) {
       definitions.rootElements = [];
     }
-  
+
     let bpmnMessage = findMessageById(definitions, messageId);
-  
+
     if (!bpmnMessage) {
       bpmnMessage = createMessage(bpmnFactory, messageId);
       definitions.rootElements.push(bpmnMessage);
     } else if (bpmnMessage.id !== bpmnMessage.name) {
       bpmnMessage.id = bpmnMessage.name;
     }
-  
+
     updateElementMessageRef(element, bpmnMessage, moddle, commandStack);
-  
+
     const messageObject = findMessageObject(messageId);
-  
+
     if (messageObject) {
       createOrUpdateCorrelationPropertiesV2(
         bpmnFactory,
         commandStack,
         element,
         messageObject.correlation_properties,
-        messageId,
+        messageId
       );
     }
-  
+
     if (oldMessageRef) {
       cleanupOldMessage(definitions, oldMessageRef.id);
       synCorrleationProperties(element, definitions, moddle, messageObject);
     }
-  
+
     try {
       setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
     } catch (error) {
@@ -91,23 +92,30 @@ export function MessageSelect(props) {
   };
 
   eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, async (event) => {
-
     // Check if the received element matches the current element
     if (event.elementId !== element.id) {
       ELEMENT_ID = event.elementId;
     }
 
-    const cProperties = Object.entries(event.correlation_properties).map(([identifier, properties]) => ({
-      identifier,
-      retrieval_expression: (Array.isArray(properties.retrieval_expression))? properties.retrieval_expression[0] : properties.retrieval_expression
-    }));
+    const cProperties = Object.entries(event.correlation_properties).map(
+      ([identifier, properties]) => ({
+        identifier,
+        retrieval_expression: Array.isArray(properties.retrieval_expression)
+          ? properties.retrieval_expression[0]
+          : properties.retrieval_expression,
+      })
+    );
 
     let newMsg = {
       identifier: event.name,
-      correlation_properties: cProperties
+      correlation_properties: cProperties,
     };
 
-    spiffExtensionOptions['spiff.messages'] = (Array.isArray(spiffExtensionOptions['spiff.messages']) && spiffExtensionOptions['spiff.messages']) ? spiffExtensionOptions['spiff.messages'] : [];
+    spiffExtensionOptions['spiff.messages'] =
+      Array.isArray(spiffExtensionOptions['spiff.messages']) &&
+      spiffExtensionOptions['spiff.messages']
+        ? spiffExtensionOptions['spiff.messages']
+        : [];
     const messageIndex = spiffExtensionOptions['spiff.messages'].findIndex(
       (msg) => msg.identifier === newMsg.identifier
     );
@@ -179,7 +187,7 @@ function findMessageById(definitions, messageId) {
   return definitions.rootElements?.find(
     (element) =>
       element.$type === 'bpmn:Message' &&
-      (element.id === messageId || element.name === messageId),
+      (element.id === messageId || element.name === messageId)
   );
 }
 
@@ -193,15 +201,21 @@ function createMessage(bpmnFactory, messageId) {
 function updateElementMessageRef(element, bpmnMessage, moddle, commandStack) {
   if (isMessageEvent(element) && element.businessObject) {
     const messageEventDefinition = element.businessObject.eventDefinitions[0];
-    messageEventDefinition.extensionElements = (messageEventDefinition.extensionElements) ? messageEventDefinition.extensionElements : moddle.create('bpmn:ExtensionElements');
+    messageEventDefinition.extensionElements =
+      messageEventDefinition.extensionElements
+        ? messageEventDefinition.extensionElements
+        : moddle.create('bpmn:ExtensionElements');
     messageEventDefinition.messageRef = bpmnMessage;
     commandStack.execute('element.updateModdleProperties', {
       element: element,
       moddleElement: element.businessObject,
       properties: {},
     });
-  } else if (isMessageElement(element)  && element.businessObject) {
-    element.businessObject.extensionElements = (element.businessObject.extensionElements) ? element.businessObject.extensionElements : moddle.create('bpmn:ExtensionElements');
+  } else if (isMessageElement(element) && element.businessObject) {
+    element.businessObject.extensionElements = element.businessObject
+      .extensionElements
+      ? element.businessObject.extensionElements
+      : moddle.create('bpmn:ExtensionElements');
     element.businessObject.messageRef = bpmnMessage;
     commandStack.execute('element.updateProperties', {
       element: element,
@@ -211,18 +225,19 @@ function updateElementMessageRef(element, bpmnMessage, moddle, commandStack) {
 }
 
 function findMessageObject(messageId) {
-
   const messageObject = spiffExtensionOptions['spiff.messages']?.find(
     (msg) => msg.identifier === messageId
   );
 
   if (messageObject) {
     return {
-      "identifier": messageObject.identifier,
-      "correlation_properties": messageObject.correlation_properties.map(prop => ({
-        "identifier": prop.identifier,
-        "retrieval_expression": prop.retrieval_expression
-      }))
+      identifier: messageObject.identifier,
+      correlation_properties: messageObject.correlation_properties.map(
+        (prop) => ({
+          identifier: prop.identifier,
+          retrieval_expression: prop.retrieval_expression,
+        })
+      ),
     };
   } else {
     return null;
@@ -233,7 +248,8 @@ function cleanupOldMessage(definitions, oldMessageId) {
   if (!isMessageRefUsed(definitions, oldMessageId)) {
     const rootElements = definitions.rootElements;
     const oldMessageIndex = rootElements.findIndex(
-      (element) => element.$type === 'bpmn:Message' && element.id === oldMessageId,
+      (element) =>
+        element.$type === 'bpmn:Message' && element.id === oldMessageId
     );
     if (rootElements && oldMessageIndex !== -1) {
       rootElements.splice(oldMessageIndex, 1);

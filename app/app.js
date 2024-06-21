@@ -6,7 +6,10 @@ import {
 import diagramXML from '../test/spec/bpmn/user_form.bpmn';
 import spiffworkflow from './spiffworkflow';
 import setupFileOperations from './fileOperations';
-import { SPIFF_ADD_MESSAGE_REQUESTED_EVENT, SPIFF_ADD_MESSAGE_RETURNED_EVENT } from './spiffworkflow/constants';
+import {
+  SPIFF_ADD_MESSAGE_REQUESTED_EVENT,
+  SPIFF_ADD_MESSAGE_RETURNED_EVENT,
+} from './spiffworkflow/constants';
 
 const modelerEl = document.getElementById('modeler');
 const panelEl = document.getElementById('panel');
@@ -188,8 +191,13 @@ bpmnModeler.on('spiff.dmn_files.requested', (event) => {
 bpmnModeler.on('spiff.data_stores.requested', (event) => {
   event.eventBus.fire('spiff.data_stores.returned', {
     options: [
-      { id: 'countriesID', type: 'json', name: 'Countries', clz: 'JSONDataStore' },
-      { id: 'foodsID', type: 'kkv', name: 'Foods', clz: 'JSONDataStore' }
+      {
+        id: 'countriesID',
+        type: 'json',
+        name: 'Countries',
+        clz: 'JSONDataStore',
+      },
+      { id: 'foodsID', type: 'kkv', name: 'Foods', clz: 'JSONDataStore' },
     ],
   });
 });
@@ -197,51 +205,51 @@ bpmnModeler.on('spiff.data_stores.requested', (event) => {
 bpmnModeler.on('spiff.messages.requested', (event) => {
   event.eventBus.fire('spiff.messages.returned', {
     configuration: {
-      "messages": [
+      messages: [
         {
-          "identifier": "basic_message",
-          "location": "examples/1-basic-concepts",
-          "schema": {},
-          "correlation_properties": []
+          identifier: 'basic_message',
+          location: 'examples/1-basic-concepts',
+          schema: {},
+          correlation_properties: [],
         },
         {
-          "identifier": "end_of_day_receipts",
-          "location": "examples",
-          "schema": {},
-          "correlation_properties": []
+          identifier: 'end_of_day_receipts',
+          location: 'examples',
+          schema: {},
+          correlation_properties: [],
         },
         {
-          "identifier": "order_ready",
-          "location": "examples",
-          "schema": {},
-          "correlation_properties": [
+          identifier: 'order_ready',
+          location: 'examples',
+          schema: {},
+          correlation_properties: [
             {
-              "identifier": "table_number",
-              "retrieval_expression": "table_number"
+              identifier: 'table_number',
+              retrieval_expression: 'table_number',
             },
             {
-              "identifier": "franchise_id",
-              "retrieval_expression": "franchise_id"
-            }
-          ]
+              identifier: 'franchise_id',
+              retrieval_expression: 'franchise_id',
+            },
+          ],
         },
         {
-          "identifier": "table_seated",
-          "location": "examples",
-          "schema": {},
-          "correlation_properties": [
+          identifier: 'table_seated',
+          location: 'examples',
+          schema: {},
+          correlation_properties: [
             {
-              "identifier": "table_number",
-              "retrieval_expression": "table_number-v2"
+              identifier: 'table_number',
+              retrieval_expression: 'table_number-v2',
             },
             {
-              "identifier": "franchise_id",
-              "retrieval_expression": "franchise_id-v2"
-            }
-          ]
-        }
-      ]
-    }
+              identifier: 'franchise_id',
+              retrieval_expression: 'franchise_id-v2',
+            },
+          ],
+        },
+      ],
+    },
   });
 });
 
@@ -249,37 +257,23 @@ bpmnModeler.on(SPIFF_ADD_MESSAGE_REQUESTED_EVENT, (event) => {
   event.eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
     name: 'test_message1',
     correlation_properties: {
-      "c1": {
-        "retrieval_expression": "c1_expression"
+      c1: {
+        retrieval_expression: 'c1_expression',
       },
-      "c2": {
-        "retrieval_expression": "c2_expression"
-      }
+      c2: {
+        retrieval_expression: 'c2_expression',
+      },
     },
     element: {
-      id: 'my_user_task'
-    }
+      id: 'my_user_task',
+    },
   });
-  // event.eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
-  //   name: 'test_message2',
-  //   correlation_properties: {
-  //     "c1": {
-  //       "retrieval_expression": ["c1_expression"]
-  //     },
-  //     "c2": {
-  //       "retrieval_expression": ["c2_expression"]
-  //     }
-  //   },
-  //   element: {
-  //     name: 'my_user_task'
-  //   }
-  // });
 });
 
 // As call activites might refernce processes across the system
 // it should be possible to search for a paticular call activity.
 bpmnModeler.on('spiff.callactivity.search', (event) => {
-  console.log("Firing call activity update", event.element)
+  console.log('Firing call activity update', event.element);
   event.eventBus.fire('spiff.callactivity.update', {
     value: 'searched_bpmn_id',
     element: event.element,
@@ -288,13 +282,19 @@ bpmnModeler.on('spiff.callactivity.search', (event) => {
 
 /* This restores unresolved references that camunda removes */
 
-bpmnModeler.on('import.parse.complete', event => {
-  const refs = event.references.filter(r => r.property === 'bpmn:loopDataInputRef' || r.property === 'bpmn:loopDataOutputRef');
-  const desc = bpmnModeler._moddle.registry.getEffectiveDescriptor('bpmn:ItemAwareElement');
-  refs.forEach(ref => {
+bpmnModeler.on('import.parse.complete', (event) => {
+  const refs = event.references.filter(
+    (r) =>
+      r.property === 'bpmn:loopDataInputRef' ||
+      r.property === 'bpmn:loopDataOutputRef'
+  );
+  const desc = bpmnModeler._moddle.registry.getEffectiveDescriptor(
+    'bpmn:ItemAwareElement'
+  );
+  refs.forEach((ref) => {
     const props = {
       id: ref.id,
-      name: ref.id ? typeof (ref.name) === 'undefined' : ref.name,
+      name: ref.id ? typeof ref.name === 'undefined' : ref.name,
     };
     let elem = bpmnModeler._moddle.create(desc, props);
     elem.$parent = ref.element;
@@ -302,7 +302,7 @@ bpmnModeler.on('import.parse.complete', event => {
   });
 });
 
-bpmnModeler.importXML(diagramXML).then(() => { });
+bpmnModeler.importXML(diagramXML).then(() => {});
 
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
