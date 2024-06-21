@@ -153,7 +153,7 @@ function getRetrievalExpressionFromCorrelationProperty(
     for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
       if (
         retrievalExpression.$type ===
-        'bpmn:CorrelationPropertyRetrievalExpression' &&
+          'bpmn:CorrelationPropertyRetrievalExpression' &&
         retrievalExpression.messageRef &&
         retrievalExpression.messageRef.id === message.id
       ) {
@@ -416,6 +416,16 @@ export function createOrUpdateCorrelationPropertiesV2(
         correlationProperty.correlationPropertyRetrievalExpression.push(
           retrievalExpression
         );
+      } else {
+        const existingRetrievalExpression =
+          correlationProperty.correlationPropertyRetrievalExpression[
+            existingExpressionIndex
+          ];
+        const existingFormalExpression =
+          existingRetrievalExpression.messagePath;
+        existingFormalExpression.body = propConfig.retrieval_expression
+          ? propConfig.retrieval_expression
+          : '';
       }
 
       const existingIndex = definitions.rootElements.findIndex(
@@ -496,8 +506,8 @@ function isMessageRefInCorrelationPropertiesRetrivalExpression(
 ) {
   return correlationProperty.correlationPropertyRetrievalExpression
     ? correlationProperty.correlationPropertyRetrievalExpression.some(
-      (expr) => expr.messageRef === messageRef
-    )
+        (expr) => expr.messageRef === messageRef
+      )
     : false;
 }
 
@@ -617,11 +627,11 @@ export function setMessageRefToListofCorrelationProperties(
         retrievalExpression.messageRef = messageRef;
         rootElement.correlationPropertyRetrievalExpression
           ? rootElement.correlationPropertyRetrievalExpression.push(
-            retrievalExpression
-          )
+              retrievalExpression
+            )
           : (rootElement.correlationPropertyRetrievalExpression = [
-            retrievalExpression,
-          ]);
+              retrievalExpression,
+            ]);
       } else if (
         rootElement.$type === 'bpmn:CorrelationProperty' &&
         !correlationPropertyIDs.includes(rootElement.id) &&
@@ -684,7 +694,6 @@ export function setParentCorrelationKeys(
   element,
   moddle
 ) {
-
   // Retrieve all correlation properties
   let correlationProperties = findCorrelationProperties(
     element.businessObject,
@@ -716,7 +725,6 @@ export function setParentCorrelationKeys(
     .find((element) => element.$type === 'bpmn:Collaboration');
 
   if (collaboration) {
-
     // Remove existing correlation keys other than the main correlation key
     collaboration.get('correlationKeys').forEach((key, index) => {
       if (key.name !== 'MainCorrelationKey') {
@@ -734,7 +742,9 @@ export function setParentCorrelationKeys(
       // Replace the existing key with mainCorrelationKey
       const index = collaboration.get('correlationKeys').indexOf(existingKey);
       if (index !== -1) {
-        collaboration.get('correlationKeys').splice(index, 1, mainCorrelationKey);
+        collaboration
+          .get('correlationKeys')
+          .splice(index, 1, mainCorrelationKey);
       }
     }
   } else {
@@ -788,10 +798,16 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
   return mainCorrelationKey;
 }
 
-export function synCorrleationProperties(element, definitions, moddle, msgObject) {
+export function synCorrleationProperties(
+  element,
+  definitions,
+  moddle,
+  msgObject
+) {
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
   const expressionsToDelete = [];
+
   for (let cProperty of correlationProps) {
     let isUsed = false;
     for (const cpExpression of cProperty.correlationPropertyRetrievalExpression) {
@@ -800,16 +816,16 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
         cpExpression.messageRef.id,
         definitions
       );
-      isUsed = (msgRef && msgObject && cpExpression.messageRef.id !== msgObject.identifier) ? true : isUsed;
+      isUsed =
+        msgRef &&
+        msgObject &&
+        cpExpression.messageRef.id !== msgObject.identifier
+          ? true
+          : isUsed;
       // if unused  false, delete retrival expression
       if (!msgRef) {
-        console.log('Delete expression', cpExpression);
-        expressionsToDelete.push(cpExpression);
-      } else if (msgObject && !msgObject.correlation_properties.some(obj => obj.identifier === cProperty.id)) {
-        console.log('Delete expression', cpExpression);
         expressionsToDelete.push(cpExpression);
       }
-
     }
 
     // Delete the retrieval expressions that are not used
@@ -826,11 +842,16 @@ export function synCorrleationProperties(element, definitions, moddle, msgObject
     }
 
     // If Unused, delete the correlation property
-    const propertyToBeDeleted = (isUsed || msgObject && msgObject.correlation_properties && msgObject.correlation_properties.some(obj => obj.identifier === cProperty.id));
+    const propertyToBeDeleted =
+      isUsed ||
+      (msgObject &&
+        msgObject.correlation_properties &&
+        msgObject.correlation_properties.some(
+          (obj) => obj.identifier === cProperty.id
+        ));
     if (!propertyToBeDeleted) {
       const index = definitions.get('rootElements').indexOf(cProperty);
       if (index > -1) {
-        console.log('Delete property', cProperty);
         definitions.rootElements.splice(index, 1);
       }
     }
