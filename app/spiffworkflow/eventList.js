@@ -5,7 +5,7 @@ import {
   TextFieldEntry,
   isTextFieldEntryEdited
 } from '@bpmn-io/properties-panel';
-import { getRoot } from './helpers';
+import { getRoot, processId } from './helpers';
 
 /* This function creates a list of a particular event type at the process level using the item list
  * and add function provided by `getArray`.
@@ -142,7 +142,7 @@ function ItemTextField(props) {
       element,
       moddleElement: item,
       properties: {
-        id: value,
+        id: processId(value),
         name: value,
       },
     });
