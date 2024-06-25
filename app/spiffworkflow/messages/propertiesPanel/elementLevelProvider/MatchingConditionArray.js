@@ -75,22 +75,36 @@ function MatchingConditionTextField(props) {
     };
 
     const setValue = (value) => {
+        
+        const trimmedValue = (value) ? value.trim() : value;
+
         var extensions = (isMessageEvent(element)) ?
             element.businessObject.eventDefinitions[0].get('extensionElements') || moddle.create('bpmn:ExtensionElements') :
             element.businessObject.get('extensionElements') || moddle.create('bpmn:ExtensionElements');
 
         let variableCorrelationObject = getVariableCorrelationObject();
 
-        if (!variableCorrelationObject) {
-            variableCorrelationObject = moddle.create('spiffworkflow:ProcessVariableCorrelation', {
-                propertyId: correlationPropertyModdleElement.id,
-                expression: value
-            });
-            extensions
-                .get('values')
-                .push(variableCorrelationObject);
+        if (trimmedValue === '' || !trimmedValue) {
+            // remove the object if it exists
+            if (variableCorrelationObject) {
+                const index = extensions.get('values').indexOf(variableCorrelationObject);
+                if (index > -1) {
+                    extensions.get('values').splice(index, 1);
+                }
+            }
+        } else {
+            // create or update the object
+            if (!variableCorrelationObject) {
+                variableCorrelationObject = moddle.create('spiffworkflow:ProcessVariableCorrelation', {
+                    propertyId: correlationPropertyModdleElement.id,
+                    expression: trimmedValue
+                });
+                extensions.get('values').push(variableCorrelationObject);
+            } else {
+                variableCorrelationObject.expression = trimmedValue;
+            }
         }
-        variableCorrelationObject.expression = value;
+
         (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0].set('extensionElements', extensions) : element.businessObject.set('extensionElements', extensions);
         commandStack.execute('element.updateProperties', {
             element,
