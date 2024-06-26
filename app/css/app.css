@@ -74,8 +74,21 @@ adjust CSS props so that padding won't add to dimensions.
 
 .bio-properties-panel-group-entries > .bio-properties-panel-description {
   padding-inline: 15px;
-  padding-block: 8px;
+  padding-block: 5px;
 }
+
+.bio-properties-panel-group-entries.open > .bio-properties-panel-group {
+  margin-inline: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s; */
+  margin-bottom: 5px;
+}
+
+/* .bio-properties-panel-group + .bio-properties-panel-group {
+  margin-top: 10px;
+} */
 
 /* Darker background on mouse-over */
 .bpmn-js-spiffworkflow-btn:hover {
