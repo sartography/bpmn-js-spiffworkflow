@@ -16,9 +16,11 @@ import SignalPropertiesProvider from './signals/propertiesPanel/SignalProperties
 import ErrorPropertiesProvider from './errors/propertiesPanel/ErrorPropertiesProvider';
 import EscalationPropertiesProvider from './escalations/propertiesPanel/EscalationPropertiesProvider';
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
-import StandardLoopPropertiesProvider from './loops/propertiesPanel/StandardLoopPropertiesProvider';
-import MultiInstancePropertiesProvider from './loops/propertiesPanel/MultiInstancePropertiesProvider';
 import IoPropertiesProvider from './InputOutput/propertiesProvider/IoPropertiesProvider';
+import StandardLoopPropertiesProvider from './loops/StandardLoopPropertiesProvider';
+import MultiInstancePropertiesProvider from './loops/MultiInstancePropertiesProvider';
+import CallActivityInterceptor from './callActivity/CallActivityInterceptor';
+import MessageInterceptor from './messages/MessageInterceptor';
 
 export default {
   __depends__: [RulesModule],
@@ -32,6 +34,7 @@ export default {
     'conditionsPropertiesProvider',
     'extensionsPropertiesProvider',
     'messagesPropertiesProvider',
+    'messageInterceptor',
     'signalPropertiesProvider',
     'errorPropertiesProvider',
     'escalationPropertiesProvider',
@@ -42,7 +45,8 @@ export default {
     'dataObjectRenderer',
     'multiInstancePropertiesProvider',
     'standardLoopPropertiesProvider',
-    'IoPropertiesProvider'
+    'IoPropertiesProvider',
+    'callActivityInterceptor'
   ],
   dataObjectInterceptor: ['type', DataObjectInterceptor],
   dataObjectRules: ['type', DataObjectRules],
@@ -57,11 +61,13 @@ export default {
   errorPropertiesProvider: ['type', ErrorPropertiesProvider],
   escalationPropertiesProvider: ['type', EscalationPropertiesProvider],
   messagesPropertiesProvider: ['type', MessagesPropertiesProvider],
+  messageInterceptor: ['type', MessageInterceptor],
   callActivityPropertiesProvider: ['type', CallActivityPropertiesProvider],
   ioPalette: ['type', IoPalette],
   ioRules: ['type', IoRules],
   ioInterceptor: ['type', IoInterceptor],
   multiInstancePropertiesProvider: ['type', MultiInstancePropertiesProvider],
   standardLoopPropertiesProvider: ['type', StandardLoopPropertiesProvider],
-  IoPropertiesProvider: ['type', IoPropertiesProvider]
+  IoPropertiesProvider: ['type', IoPropertiesProvider],
+  callActivityInterceptor: [ 'type', CallActivityInterceptor ]
 };

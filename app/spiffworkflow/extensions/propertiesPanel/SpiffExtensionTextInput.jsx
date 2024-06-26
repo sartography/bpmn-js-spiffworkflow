@@ -1,9 +1,7 @@
-import {useService } from 'bpmn-js-properties-panel';
+import React from 'react';
+import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import {
-  getExtensionValue, setExtensionValue
-} from '../extensionHelpers';
-
+import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
 
 /**
  * A generic properties' editor for text input.
@@ -21,25 +19,42 @@ import {
  * @returns {string|null|*}
  */
 export function SpiffExtensionTextInput(props) {
-  const { element, commandStack, moddle, name, label, description, businessObject } = props;
+  const {
+    element,
+    commandStack,
+    moddle,
+    name,
+    label,
+    description
+  } = props;
   const debounce = useService('debounceInput');
+  const { businessObject } = element;
 
   const getValue = () => {
-    return getExtensionValue(businessObject, name)
-  }
-
-  const setValue = value => {
-    setExtensionValue(element, name, value, moddle, commandStack, businessObject)
+    const value = getExtensionValue(businessObject, name);
+    return value;
   };
 
-  return <TextFieldEntry
-    id={'extension_' + name}
-    element={element}
-    description={description}
-    label={label}
-    getValue={getValue}
-    setValue={setValue}
-    debounce={debounce}
-  />;
+  const setValue = (value) => {
+    setExtensionValue(
+      element,
+      name,
+      value,
+      moddle,
+      commandStack,
+      businessObject,
+    );
+  };
 
+  return (
+    <TextFieldEntry
+      id={'extension_' + name}
+      element={element}
+      description={description}
+      label={label}
+      getValue={getValue}
+      setValue={setValue}
+      debounce={debounce}
+    />
+  );
 }

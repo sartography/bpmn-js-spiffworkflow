@@ -36,3 +36,13 @@ export function getRoot(businessObject, moddle) {
   }
   return businessObject;
 }
+
+
+export function processId(id) {
+  let trimmedId = id.trim();
+  let processedId = trimmedId.replace(/\s+/g, '');
+  if (id !== processedId) {
+    alert('ID should not contain spaces. It has been adjusted.');
+  }
+  return processedId;
+}
