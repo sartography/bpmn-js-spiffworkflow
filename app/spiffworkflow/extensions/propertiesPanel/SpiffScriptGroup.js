@@ -102,7 +102,7 @@ function getScriptObject(element, scriptType) {
     })[0];
 }
 
-function updateScript(commandStack, moddle, element, scriptType, newValue) {
+export function updateScript(commandStack, moddle, element, scriptType, newValue) {
   const { businessObject } = element;
   let scriptObj = getScriptObject(element, scriptType);
   // Create the script object if needed.
@@ -136,7 +136,7 @@ function updateScript(commandStack, moddle, element, scriptType, newValue) {
   }
 }
 
-function getScriptString(element, scriptType) {
+export function getScriptString(element, scriptType) {
   const scriptObj = getScriptObject(element, scriptType);
   if (scriptObj && scriptObj.value) {
     return scriptObj.value;

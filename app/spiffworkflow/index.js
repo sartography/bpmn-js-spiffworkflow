@@ -21,6 +21,7 @@ import StandardLoopPropertiesProvider from './loops/StandardLoopPropertiesProvid
 import MultiInstancePropertiesProvider from './loops/MultiInstancePropertiesProvider';
 import CallActivityInterceptor from './callActivity/CallActivityInterceptor';
 import MessageInterceptor from './messages/MessageInterceptor';
+import CustomContextPadProvider from './extensions/contextPad/CustomContextPadProvider';
 
 export default {
   __depends__: [RulesModule],
@@ -33,6 +34,7 @@ export default {
     'dataStorePropertiesProvider',
     'conditionsPropertiesProvider',
     'extensionsPropertiesProvider',
+    'customContextPadProvider',
     'messagesPropertiesProvider',
     'messageInterceptor',
     'signalPropertiesProvider',
@@ -57,6 +59,7 @@ export default {
   dataStorePropertiesProvider: ['type', DataStorePropertiesProvider],
   conditionsPropertiesProvider: ['type', ConditionsPropertiesProvider],
   extensionsPropertiesProvider: ['type', ExtensionsPropertiesProvider],
+  customContextPadProvider: ['type', CustomContextPadProvider],
   signalPropertiesProvider: ['type', SignalPropertiesProvider],
   errorPropertiesProvider: ['type', ErrorPropertiesProvider],
   escalationPropertiesProvider: ['type', EscalationPropertiesProvider],
