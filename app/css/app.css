@@ -1,5 +1,5 @@
-
-html, body {
+html,
+body {
   height: 100%;
   margin: 0px;
 }
@@ -11,7 +11,7 @@ html, body {
 #container {
   display: flex;
   width: 100%;
-  height: 100%; 
+  height: 100%;
 }
 
 #modeler {
@@ -34,9 +34,9 @@ Remove the height of the header from the main content area,
 adjust CSS props so that padding won't add to dimensions.
 */
 #container:has(#modeler) {
-  -webkit-box-sizing: border-box; 
-  -moz-box-sizing: border-box;    
-  box-sizing: border-box;   
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   height: calc(100% - 65px);
   padding: 8px;
 }
@@ -72,12 +72,12 @@ adjust CSS props so that padding won't add to dimensions.
   max-width: 350px;
 }
 
-.bio-properties-panel-group-entries > .bio-properties-panel-description {
+.bio-properties-panel-group-entries>.bio-properties-panel-description {
   padding-inline: 15px;
   padding-block: 5px;
 }
 
-.bio-properties-panel-group-entries.open > .bio-properties-panel-group {
+.bio-properties-panel-group-entries.open>.bio-properties-panel-group {
   margin-inline: 15px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -97,25 +97,33 @@ adjust CSS props so that padding won't add to dimensions.
 
 /* Code Editor -- provided as a div overlay */
 .overlay {
-  position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
-  width: 100%; /* Full width (cover the whole page) */
-  height: 100%; /* Full height (cover the whole page) */
+  position: fixed;
+  /* Sit on top of the page content */
+  display: none;
+  /* Hidden by default */
+  width: 100%;
+  /* Full width (cover the whole page) */
+  height: 100%;
+  /* Full height (cover the whole page) */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-  z-index: 200; /* BPMN Canvas has some huge z-indexes, pop-up tools are 100 for ex.*/
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Black background with opacity */
+  z-index: 200;
+  /* BPMN Canvas has some huge z-indexes, pop-up tools are 100 for ex.*/
 }
 
-#code_editor, #markdown_editor {
+#code_editor,
+#markdown_editor {
   background-color: #ccc;
   margin: 50px auto 10px auto;
   max-width: 800px;
 }
 
-#code_buttons, #markdown_buttons {
+#code_buttons,
+#markdown_buttons {
   margin: 50px auto 10px auto;
   max-width: 800px;
   right: 10px;
@@ -149,4 +157,37 @@ adjust CSS props so that padding won't add to dimensions.
 
 .d-grid {
   display: grid !important;
+}
+
+
+.bpmn-icon-post-script-trigger {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23126D82' viewBox='0 0 36 36' version='1.1' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpath d='M13.71,12.59a1,1,0,0,0-1.39-.26L5.79,16.78a1,1,0,0,0,0,1.65l6.53,4.45a1,1,0,1,0,1.13-1.65L8.13,17.61,13.45,14A1,1,0,0,0,13.71,12.59Z'%3E%3C/path%3E%3Cpath d='M18.56,11.62L15.41,24.29a.9.9,0,0,0,.66,1.09l.22,0a.9.9,0,0,0,.87-.68L19.73,14.4a3.59,3.59,0,0,1-1.16-2.79Z'%3E%3C/path%3E%3Cpath d='M30.21,16.78l-2-1.38H24.64l3.24,2.21-5.32,3.63a1,1,0,0,0,1.13,1.65l6.53-4.45a1,1,0,0,0,0-1.65Z'%3E%3C/path%3E%3Cpath d='M26.85,1.14,21.13,11A1.28,1.28,0,0,0,22.23,13H33.68A1.28,1.28,0,0,0,34.78,11L29.06,1.14A1.28,1.28,0,0,0,26.85,1.14Z'%3E%3C/path%3E%3C/svg%3E") !important;
+  /* /*Black background-image: url("data:image/svg+xml,%3Csvg fill='%23000000' viewBox='0 0 36 36' version='1.1' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpath d='M13.71,12.59a1,1,0,0,0-1.39-.26L5.79,16.78a1,1,0,0,0,0,1.65l6.53,4.45a1,1,0,1,0,1.13-1.65L8.13,17.61,13.45,14A1,1,0,0,0,13.71,12.59Z'%3E%3C/path%3E%3Cpath d='M18.56,11.62L15.41,24.29a.9.9,0,0,0,.66,1.09l.22,0a.9.9,0,0,0,.87-.68L19.73,14.4a3.59,3.59,0,0,1-1.16-2.79Z'%3E%3C/path%3E%3Cpath d='M30.21,16.78l-2-1.38H24.64l3.24,2.21-5.32,3.63a1,1,0,0,0,1.13,1.65l6.53-4.45a1,1,0,0,0,0-1.65Z'%3E%3C/path%3E%3Cpath d='M26.85,1.14,21.13,11A1.28,1.28,0,0,0,22.23,13H33.68A1.28,1.28,0,0,0,34.78,11L29.06,1.14A1.28,1.28,0,0,0,26.85,1.14Z'%3E%3C/path%3E%3C/svg%3E") !important; */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.bpmn-icon-pre-script-trigger {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23126D82' viewBox='0 0 36 36' version='1.1' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpath d='M13.71,12.59a1,1,0,0,0-1.39-.26L5.79,16.78a1,1,0,0,0,0,1.65l6.53,4.45a1,1,0,1,0,1.13-1.65L8.13,17.61,13.45,14A1,1,0,0,0,13.71,12.59Z'%3E%3C/path%3E%3Cpath d='M30.21,16.78l-6.53-4.45A1,1,0,1,0,22.55,14l5.32,3.63-5.32,3.63a1,1,0,0,0,1.13,1.65l6.53-4.45a1,1,0,0,0,0-1.65Z'%3E%3C/path%3E%3Cpath d='M19.94,9.83a.9.9,0,0,0-1.09.66L15.41,24.29a.9.9,0,0,0,.66,1.09l.22,0a.9.9,0,0,0,.87-.68l3.44-13.81A.9.9,0,0,0,19.94,9.83Z'%3E%3C/path%3E%3Ccircle cx='30' cy='6' r='5'%3E%3C/circle%3E%3C/svg%3E") !important;
+  /* *Black background-image: url("data:image/svg+xml,%3Csvg fill='%23000000' viewBox='0 0 36 36' version='1.1' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpath d='M13.71,12.59a1,1,0,0,0-1.39-.26L5.79,16.78a1,1,0,0,0,0,1.65l6.53,4.45a1,1,0,1,0,1.13-1.65L8.13,17.61,13.45,14A1,1,0,0,0,13.71,12.59Z'%3E%3C/path%3E%3Cpath d='M30.21,16.78l-6.53-4.45A1,1,0,1,0,22.55,14l5.32,3.63-5.32,3.63a1,1,0,0,0,1.13,1.65l6.53-4.45a1,1,0,0,0,0-1.65Z'%3E%3C/path%3E%3Cpath d='M19.94,9.83a.9.9,0,0,0-1.09.66L15.41,24.29a.9.9,0,0,0,.66,1.09l.22,0a.9.9,0,0,0,.87-.68l3.44-13.81A.9.9,0,0,0,19.94,9.83Z'%3E%3C/path%3E%3Ccircle cx='30' cy='6' r='5'%3E%3C/circle%3E%3C/svg%3E") !important; */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.bpmn-icon-pre-script-trigger:hover {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23126D82' viewBox='0 0 36 36' version='1.1' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpath d='M13.71,12.59a1,1,0,0,0-1.39-.26L5.79,16.78a1,1,0,0,0,0,1.65l6.53,4.45a1,1,0,1,0,1.13-1.65L8.13,17.61,13.45,14A1,1,0,0,0,13.71,12.59Z'%3E%3C/path%3E%3Cpath d='M30.21,16.78l-6.53-4.45A1,1,0,1,0,22.55,14l5.32,3.63-5.32,3.63a1,1,0,0,0,1.13,1.65l6.53-4.45a1,1,0,0,0,0-1.65Z'%3E%3C/path%3E%3Cpath d='M19.94,9.83a.9.9,0,0,0-1.09.66L15.41,24.29a.9.9,0,0,0,.66,1.09l.22,0a.9.9,0,0,0,.87-.68l3.44-13.81A.9.9,0,0,0,19.94,9.83Z'%3E%3C/path%3E%3Ccircle cx='30' cy='6' r='5'%3E%3C/circle%3E%3C/svg%3E") !important;
+}
+
+.bpmn-icon-post-script-trigger:hover {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23126D82' viewBox='0 0 36 36' version='1.1' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpath d='M13.71,12.59a1,1,0,0,0-1.39-.26L5.79,16.78a1,1,0,0,0,0,1.65l6.53,4.45a1,1,0,1,0,1.13-1.65L8.13,17.61,13.45,14A1,1,0,0,0,13.71,12.59Z'%3E%3C/path%3E%3Cpath d='M18.56,11.62L15.41,24.29a.9.9,0,0,0,.66,1.09l.22,0a.9.9,0,0,0,.87-.68L19.73,14.4a3.59,3.59,0,0,1-1.16-2.79Z'%3E%3C/path%3E%3Cpath d='M30.21,16.78l-2-1.38H24.64l3.24,2.21-5.32,3.63a1,1,0,0,0,1.13,1.65l6.53-4.45a1,1,0,0,0,0-1.65Z'%3E%3C/path%3E%3Cpath d='M26.85,1.14,21.13,11A1.28,1.28,0,0,0,22.23,13H33.68A1.28,1.28,0,0,0,34.78,11L29.06,1.14A1.28,1.28,0,0,0,26.85,1.14Z'%3E%3C/path%3E%3C/svg%3E") !important;
 }
