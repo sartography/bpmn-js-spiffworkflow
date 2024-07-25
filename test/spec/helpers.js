@@ -24,7 +24,6 @@ export function bootstrapPropertiesPanel(diagram, options, locals) {
     CONTAINER = container;
 
     insertBpmnStyles();
-    insertCoreStyles();
     const createModeler = bootstrapBpmnJS(Modeler, diagram, options, locals);
     await act(() => createModeler.call(this));
 
@@ -48,14 +47,6 @@ export function clearPropertiesPanelContainer() {
   if (PROPERTIES_PANEL_CONTAINER) {
     PROPERTIES_PANEL_CONTAINER.remove();
   }
-}
-
-export function insertCoreStyles() {
-  insertCSS(
-    'properties-panel.css',
-    require('bpmn-js-properties-panel/dist/assets/properties-panel.css').default
-  );
-  insertCSS('test.css', require('./test.css').default);
 }
 
 export function insertBpmnStyles() {

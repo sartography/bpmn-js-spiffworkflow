@@ -2,11 +2,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    bundle: ['./app/app.js']
+    bundle: ['./app/app.js'],
   },
   output: {
-    path: __dirname + '/public',
-    filename: 'app.js'
+    path: `${__dirname}/public`,
+    filename: 'app.js',
   },
   module: {
     rules: [
@@ -17,36 +17,43 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             plugins: [
-              [ '@babel/plugin-transform-react-jsx', {
-                'importSource': '@bpmn-io/properties-panel/preact',
-                'runtime': 'automatic'
-              } ]
-            ]
-          }
-        }
+              [
+                '@babel/plugin-transform-react-jsx',
+                {
+                  importSource: '@bpmn-io/properties-panel/preact',
+                  runtime: 'automatic',
+                },
+              ],
+            ],
+          },
+        },
       },
       {
         test: /\.bpmn$/,
-        use: 'raw-loader'
-      }
-    ]
+        use: 'raw-loader',
+      },
+    ],
   },
   resolve: {
-    extensions: [ '.js', '.jsx']
+    extensions: ['.js', '.jsx'],
   },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'assets/**', to: 'vendor/bpmn-js', context: 'node_modules/bpmn-js/dist/' },
+        {
+          from: 'assets/**',
+          to: 'vendor/bpmn-js',
+          context: 'node_modules/bpmn-js/dist/',
+        },
         {
           from: 'assets/**',
           to: 'vendor/bpmn-js-properties-panel',
-          context: 'node_modules/bpmn-js-properties-panel/dist/'
+          context: 'node_modules/bpmn-js-properties-panel/dist/',
         },
-        {from: '**/*.{html,css}', context: 'app/'}
-      ]
-    })
+        { from: '**/*.{html,css}', context: 'app/' },
+      ],
+    }),
   ],
   mode: 'development',
-  devtool: 'source-map'
+  devtool: 'source-map',
 };
