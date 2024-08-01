@@ -95,6 +95,7 @@ function getScriptObject(element, scriptType) {
   if (!bizObj.extensionElements) {
     return null;
   }
+
   return bizObj.extensionElements
     .get('values')
     .filter(function getInstanceOfType(e) {
@@ -102,9 +103,35 @@ function getScriptObject(element, scriptType) {
     })[0];
 }
 
-export function updateScript(commandStack, moddle, element, scriptType, newValue) {
+export function updateScript(
+  commandStack,
+  moddle,
+  element,
+  scriptType,
+  newValue
+) {
   const { businessObject } = element;
   let scriptObj = getScriptObject(element, scriptType);
+  // If the pre or post script (when not SCRIPT_TYPE.bpmn) value is empty, remove the corresponding extension element rather than leaving an empty node
+  if (!newValue && scriptObj && scriptType !== SCRIPT_TYPE.bpmn) {
+    let { extensionElements } = businessObject;
+    if (!extensionElements) {
+      extensionElements = moddle.create('bpmn:ExtensionElements');
+    }
+    if (extensionElements && extensionElements.get) {
+      const values = extensionElements
+        .get('values')
+        .filter((e) => e !== scriptObj);
+      extensionElements.values = values;
+      businessObject.extensionElements = extensionElements;
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: businessObject,
+        properties: {},
+      });
+      return;
+    }
+  }
   // Create the script object if needed.
   if (!scriptObj) {
     scriptObj = moddle.create(scriptType);
