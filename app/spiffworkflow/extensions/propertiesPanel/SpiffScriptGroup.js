@@ -62,7 +62,7 @@ function LaunchEditorButton(props) {
           moddle,
           element,
           event.scriptType,
-          event.script
+          event.script,
         );
       });
     },
@@ -102,7 +102,13 @@ function getScriptObject(element, scriptType) {
     })[0];
 }
 
-export function updateScript(commandStack, moddle, element, scriptType, newValue) {
+export function updateScript(
+  commandStack,
+  moddle,
+  element,
+  scriptType,
+  newValue,
+) {
   const { businessObject } = element;
   let scriptObj = getScriptObject(element, scriptType);
   // Create the script object if needed.
@@ -123,6 +129,19 @@ export function updateScript(commandStack, moddle, element, scriptType, newValue
         },
       });
     }
+  } else if (!newValue && scriptType !== SCRIPT_TYPE.bpmn) {
+    let { extensionElements } = businessObject;
+    const newElements = extensionElements.values.filter(
+      (item) => !item.$instanceOf(scriptType),
+    );
+    extensionElements.values = newElements;
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: businessObject,
+      properties: {
+        extensionElements,
+      },
+    });
   } else {
     let newProps = { value: newValue };
     if (scriptType === SCRIPT_TYPE.bpmn) {
