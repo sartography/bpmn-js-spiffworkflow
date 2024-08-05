@@ -295,7 +295,7 @@ bpmnModeler.on('import.parse.complete', (event) => {
       id: ref.id,
       name: ref.id ? typeof ref.name === 'undefined' : ref.name,
     };
-    let elem = bpmnModeler._moddle.create(desc, props);
+    const elem = bpmnModeler._moddle.create(desc, props);
     elem.$parent = ref.element;
     ref.element.set(ref.property, elem);
   });

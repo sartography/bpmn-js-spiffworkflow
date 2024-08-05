@@ -48,7 +48,7 @@ module.exports = {
         {
           from: 'assets/**',
           to: 'vendor/bpmn-js-properties-panel',
-          context: 'node_modules/bpmn-js-properties-panel/dist/',
+          context: 'node_modules/@bpmn-io/properties-panel/dist/',
         },
         { from: '**/*.{html,css}', context: 'app/' },
       ],
