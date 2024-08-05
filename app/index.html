@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <!--
      IMPORTANT:
      This is here to provide an exmaple of how you might use this library in your application.
@@ -13,57 +12,81 @@
     <!-- here are the core dependencies you will need to include -->
     <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css" />
     <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-js.css" />
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css" />
-    <link rel="stylesheet" href="vendor/bpmn-js-properties-panel/assets/properties-panel.css" />
+    <link
+      rel="stylesheet"
+      href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css"
+    />
+    <link
+      rel="stylesheet"
+      href="vendor/bpmn-js-properties-panel/assets/properties-panel.css"
+    />
 
     <!-- Some local css settings -->
     <link rel="stylesheet" href="css/app.css" />
-    <link rel="shortcut icon" href="#">
+    <link rel="shortcut icon" href="#" />
 
     <!-- A python code editor, we are using CodeMirror here -- see app.js for how this is wired in -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/python/python.min.js"></script>
 
     <!-- Markdown Editor -- see app.js for how to wire these in. -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
     <!-- Just have this for the download file icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nice-select2/dist/css/nice-select2.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/nice-select2/dist/css/nice-select2.css"
+    />
     <!-- <script src="https://cdn.jsdelivr.net/npm/nice-select2/dist/js/nice-select2.js"></script> -->
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="menu">
-        <button id="downloadButton" class="bpmn-js-spiffworkflow-btn"><i class="fa fa-download"></i> Download</button>
-        <button id="uploadButton" class="bpmn-js-spiffworkflow-btn">Open a file</button>
+      <button id="downloadButton" class="bpmn-js-spiffworkflow-btn">
+        <i class="fa fa-download"></i> Download
+      </button>
+      <button id="uploadButton" class="bpmn-js-spiffworkflow-btn">
+        Open a file
+      </button>
     </div>
     <div id="container">
-        <div id="modeler"></div>
-        <div id="panel"></div>
+      <div id="modeler"></div>
+      <div id="panel"></div>
     </div>
     <!-- the following are overlays to provide editors for Python and Markdown -->
     <div id="code_overlay" class="overlay">
-        <div id="code_editor"></div>
-        <div id="code_buttons">
-            <button id="saveCode" class="bpmn-js-spiffworkflow-btn">Save</button>
-        </div>
+      <div id="code_editor"></div>
+      <div id="code_buttons">
+        <button id="saveCode" class="bpmn-js-spiffworkflow-btn">Save</button>
+      </div>
     </div>
     <div id="markdown_overlay" class="overlay">
-        <div id="markdown_editor">
-            <textarea id="markdown_textarea"></textarea>
-        </div>
-        <div id="markdown_buttons">
-            <button id="saveMarkdown" class="bpmn-js-spiffworkflow-btn">Save</button>
-        </div>
+      <div id="markdown_editor">
+        <textarea id="markdown_textarea"></textarea>
+      </div>
+      <div id="markdown_buttons">
+        <button id="saveMarkdown" class="bpmn-js-spiffworkflow-btn">
+          Save
+        </button>
+      </div>
     </div>
 
     <!-- Here we load up our application, it's where the configuration happens. -->
     <script src="app.js"></script>
+  </body>
+</html>
+<!---->
 
-</body>
-
-</html><!---->
