@@ -66,7 +66,7 @@ function getServiceTaskParameterModdleElements(shapeElement) {
     getServiceTaskOperatorModdleElement(shapeElement);
   if (serviceTaskOperatorModdleElement) {
     const { parameterList } = serviceTaskOperatorModdleElement;
-    if (parameterList) {
+    if (parameterList && typeof(parameterList.parameters) !== 'undefined') {
       return parameterList.parameters;
     }
   }
