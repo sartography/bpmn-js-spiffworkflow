@@ -432,36 +432,40 @@ function createSignalButtonGroup(element, translate, moddle, commandStack) {
  * @returns entries
  */
 function createServiceGroup(element, translate, moddle, commandStack) {
+  let entries = [
+    {
+      element,
+      moddle,
+      commandStack,
+      component: ServiceTaskOperatorSelect,
+      translate,
+    },
+    {
+      element,
+      moddle,
+      commandStack,
+      component: ServiceTaskResultTextInput,
+      translate,
+    },
+  ];
+  if (typeof(element.businessObject.extensionElements) !== 'undefined' &&
+      typeof(element.businessObject.extensionElements.values[0].parameterList.parameters) !== 'undefined') {
+    entries.push({
+      id: 'serviceTaskParameters',
+      label: translate('Parameters'),
+      component: ListGroup,
+      shouldSort: false,
+      ...ServiceTaskParameterArray({
+        element,
+        moddle,
+        translate,
+        commandStack,
+      }),
+    });
+  }
   return {
     id: 'service_task_properties',
     label: translate('Spiffworkflow Service Properties'),
-    entries: [
-      {
-        element,
-        moddle,
-        commandStack,
-        component: ServiceTaskOperatorSelect,
-        translate,
-      },
-      {
-        element,
-        moddle,
-        commandStack,
-        component: ServiceTaskResultTextInput,
-        translate,
-      },
-      {
-        id: 'serviceTaskParameters',
-        label: translate('Parameters'),
-        component: ListGroup,
-        shouldSort: false,
-        ...ServiceTaskParameterArray({
-          element,
-          moddle,
-          translate,
-          commandStack,
-        }),
-      },
-    ],
+    entries: entries,
   };
 }
