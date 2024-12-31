@@ -32,7 +32,6 @@ export function SpiffExtensionTextArea(props) {
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}
-      isEdited={isTextAreaEntryEdited}
     />
   );
 }
