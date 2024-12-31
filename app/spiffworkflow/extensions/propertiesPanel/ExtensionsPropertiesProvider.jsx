@@ -330,7 +330,9 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         label: 'Instructions',
         description:
           'Displayed RIGHT above user forms or when this task is executing man.',
-        isEdited: isTextAreaEntryEdited,
+        isEdited: function () {
+          return true;
+        },
       },
       {
         element,
@@ -342,7 +344,9 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         event: 'spiff.markdown.edit',
         listenEvent: 'spiff.markdown.update',
         description: translate('Edit the form schema'),
-        isEdited: true,
+        isEdited: function () {
+          return true;
+        },
       },
     ],
   };

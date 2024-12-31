@@ -1,8 +1,6 @@
 import React from 'react';
 import { useService } from 'bpmn-js-properties-panel';
-import {
-  TextAreaEntry,
-} from '@bpmn-io/properties-panel';
+import { TextAreaEntry } from '@bpmn-io/properties-panel';
 import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
 
 /**
@@ -30,7 +28,7 @@ export function SpiffExtensionTextArea(props) {
       id={'extension_' + name}
       element={element}
       description={description}
-      label={label}
+      label={'HI THERE'}
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}
