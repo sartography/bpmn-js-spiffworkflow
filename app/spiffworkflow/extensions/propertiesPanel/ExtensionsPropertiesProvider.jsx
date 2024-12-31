@@ -330,7 +330,6 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         label: 'Instructions',
         description:
           'Displayed above user forms or when this task is executing.',
-        isEdited: isTextAreaEntryEdited, // Ensure the black dot appears when edited
       },
       {
         element,
