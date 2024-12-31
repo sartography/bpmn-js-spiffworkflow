@@ -3,7 +3,6 @@ import {
   ListGroup,
   CheckboxEntry,
   isCheckboxEntryEdited,
-  isTextFieldEntryEdited,
 } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
@@ -31,19 +30,19 @@ export default function ExtensionsPropertiesProvider(
   translate,
   moddle,
   commandStack,
-  elementRegistry
+  elementRegistry,
 ) {
   this.getGroups = function (element) {
-    return function (groups) {
+    return function(groups) {
       if (is(element, 'bpmn:ScriptTask')) {
         groups.push(
-          createScriptGroup(element, translate, moddle, commandStack)
+          createScriptGroup(element, translate, moddle, commandStack),
         );
       } else if (
         isAny(element, ['bpmn:Task', 'bpmn:CallActivity', 'bpmn:SubProcess'])
       ) {
         groups.push(
-          preScriptPostScriptGroup(element, translate, moddle, commandStack)
+          preScriptPostScriptGroup(element, translate, moddle, commandStack),
         );
       }
       if (is(element, 'bpmn:UserTask')) {
@@ -52,7 +51,7 @@ export default function ExtensionsPropertiesProvider(
 
       if (is(element, 'bpmn:BusinessRuleTask')) {
         groups.push(
-          createBusinessRuleGroup(element, translate, moddle, commandStack)
+          createBusinessRuleGroup(element, translate, moddle, commandStack),
         );
       }
       if (
@@ -68,12 +67,12 @@ export default function ExtensionsPropertiesProvider(
         ])
       ) {
         groups.push(
-          createUserInstructionsGroup(element, translate, moddle, commandStack)
+          createUserInstructionsGroup(element, translate, moddle, commandStack),
         );
       }
       if (isAny(element, ['bpmn:ManualTask', 'bpmn:UserTask'])) {
         groups.push(
-          createAllowGuestGroup(element, translate, moddle, commandStack)
+          createAllowGuestGroup(element, translate, moddle, commandStack),
         );
       }
       if (
@@ -85,13 +84,13 @@ export default function ExtensionsPropertiesProvider(
         ])
       ) {
         groups.push(
-          createSignalButtonGroup(element, translate, moddle, commandStack)
+          createSignalButtonGroup(element, translate, moddle, commandStack),
         );
       }
-
+      
       if (is(element, 'bpmn:ServiceTask')) {
         groups.push(
-          createServiceGroup(element, translate, moddle, commandStack)
+          createServiceGroup(element, translate, moddle, commandStack),
         );
       }
 
@@ -215,7 +214,7 @@ function createUserGroup(element, translate, moddle, commandStack) {
     name,
     value,
     moddle,
-    commandStack
+    commandStack,
   ) => {
     const uiName = value.replace('schema.json', 'uischema.json');
     setExtensionValue(
@@ -223,17 +222,17 @@ function createUserGroup(element, translate, moddle, commandStack) {
       'formJsonSchemaFilename',
       value,
       moddle,
-      commandStack
+      commandStack,
     );
     setExtensionValue(
       element,
       'formUiSchemaFilename',
       uiName,
       moddle,
-      commandStack
+      commandStack,
     );
     const matches = spiffExtensionOptions[OPTION_TYPE.json_schema_files].filter(
-      (opt) => opt.value === value
+      (opt) => opt.value === value,
     );
     if (matches.length === 0) {
       spiffExtensionOptions[OPTION_TYPE.json_schema_files].push({
@@ -329,7 +328,7 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         name: 'spiffworkflow:InstructionsForEndUser',
         label: 'Instructions',
         description:
-          'Displayed RIGHT above user forms or when this task is executing man.',
+          'Displayed above user forms or when this task is executing.',
       },
       {
         element,
@@ -449,11 +448,8 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       translate,
     },
   ];
-  if (
-    typeof element.businessObject.extensionElements !== 'undefined' &&
-    typeof element.businessObject.extensionElements.values[0].parameterList
-      .parameters !== 'undefined'
-  ) {
+  if (typeof(element.businessObject.extensionElements) !== 'undefined' &&
+      typeof(element.businessObject.extensionElements.values[0].parameterList.parameters) !== 'undefined') {
     entries.push({
       id: 'serviceTaskParameters',
       label: translate('Parameters'),

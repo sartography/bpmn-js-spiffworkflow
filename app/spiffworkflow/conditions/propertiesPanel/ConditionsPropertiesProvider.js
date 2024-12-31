@@ -1,7 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
-  TextAreaEntry,
-  isTextFieldEntryEdited
+  TextAreaEntry
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 

@@ -105,12 +105,14 @@ function DataObjectGroup(props) {
     {
       id: `${idPrefix}-dataObject`,
       component: DataObjectTextField,
+      isEdited: isTextFieldEntryEdited,
       idPrefix,
       dataObject,
     },
     {
       id: `${idPrefix}-dataObjectName`,
       component: DataObjectNameTextField,
+      isEdited: isTextFieldEntryEdited,
       idPrefix,
       dataObject,
     },
