@@ -1,0 +1,18 @@
+Properties Panel - Instruction is missing non-null indication marker (black dot)
+
+Reproduction
+
+add a proces
+edit end event*)
+add random text to 'element documentation'
+result: black dot appears behind this property
+add random text to 'instructions'
+result: black dot will not appear behind this property
+*) or any element with an 'instructions' property
+
+The title tag on the black dot is "Section contains data." It looks like you use an isEdited function to indicate whether or not the section has been edited, but this needs to be applied to our custom instructions group.
+
+test_instructions_black_dot.py is currently reproducing the bug.
+
+task test_instructions_black_dot.py app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx app/app.js app/spiffworkflow/conditions/propertiesPanel/ConditionsPropertiesProvider.js app/spiffworkflow/extensions/propertiesPanel/SpiffExtensionTextArea.jsx test/spec/BusinessRulePropsSpec.js --read /Users/kevin/projects/github/properties-panel/src
+
