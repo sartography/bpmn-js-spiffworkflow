@@ -130,5 +130,6 @@ function OutputParamTextField(props) {
     getValue,
     setValue,
     debounce,
+    isEdited: isTextAreaEntryEdited,
   });
 }
