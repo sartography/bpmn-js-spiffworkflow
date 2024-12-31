@@ -330,7 +330,7 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         label: 'Instructions',
         description:
           'Displayed RIGHT above user forms or when this task is executing man.',
-        isEdited: isTextAreaEntryEdited,
+        isEdited: isTextFieldEntryEdited,
       },
       {
         element,
