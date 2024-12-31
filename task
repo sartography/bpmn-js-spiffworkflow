@@ -15,6 +15,6 @@ The title tag on the black dot is "Section contains data." It looks like you use
 test_instructions_black_dot.py is currently reproducing the bug.
 isEdited is currently hardcoded to true, but it maybe needs to be a function that always returns true, because i just want to see the black dot. See also the second entry in ExtensionsPropertiesProvider.jsx
 
-Uncaught (in promise) ReferenceError: isTextFieldEntryEdited is not defined
+Can we just reimplement instructions to be more similar to the way Element documentation is implemented?
 
 custom_aider --read task $(rg -l isEdited) test_instructions_black_dot.py app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx app/app.js app/spiffworkflow/conditions/propertiesPanel/ConditionsPropertiesProvider.js app/spiffworkflow/extensions/propertiesPanel/SpiffExtensionTextArea.jsx test/spec/BusinessRulePropsSpec.js $(cd ~/projects/github/properties-panel && rg -l 'isEdited|Section contains' | sed -e 's|^|--read ~/projects/github/properties-panel/|') --message "please follow the instructions from the file called: task"
