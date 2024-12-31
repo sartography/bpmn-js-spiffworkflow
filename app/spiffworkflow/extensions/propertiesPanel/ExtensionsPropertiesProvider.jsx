@@ -3,7 +3,7 @@ import {
   ListGroup,
   CheckboxEntry,
   isCheckboxEntryEdited,
-  isTextAreaEntryEdited, // Import the isEdited function for TextArea
+  isTextFieldEntryEdited,
 } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
@@ -330,9 +330,7 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         label: 'Instructions',
         description:
           'Displayed RIGHT above user forms or when this task is executing man.',
-        isEdited: function () {
-          return true;
-        },
+        isEdited: isTextAreaEntryEdited,
       },
       {
         element,
@@ -344,9 +342,6 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         event: 'spiff.markdown.edit',
         listenEvent: 'spiff.markdown.update',
         description: translate('Edit the form schema'),
-        isEdited: function () {
-          return true;
-        },
       },
     ],
   };
