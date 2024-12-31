@@ -73,7 +73,6 @@ function createDataObjectSelector(element, translate, moddle, commandStack, mode
         id: 'selectDataObject',
         element,
         component: DataObjectSelect,
-        isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
       },

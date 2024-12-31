@@ -69,7 +69,6 @@ function conditionGroup(element, moddle, label, description, commandStack) {
       label,
       description,
       commandStack,
-      isEdited: isTextFieldEntryEdited
     },
   ];
 }

@@ -45,39 +45,32 @@ function MultiInstanceProps(props) {
     {
       id: 'loopCardinality',
       component: LoopCardinality,
-      isEdited: isTextFieldEntryEdited,
     },
     {
       id: 'loopDataInputRef',
       component: InputCollection,
-      isEdited: isTextFieldEntryEdited,
     },
     {
       id: 'dataInputItem',
       component: InputItem,
-      isEdited: isTextFieldEntryEdited,
     },
     {
       id: 'isOutputElSynchronized',
       component: IsOutputElSync,
-      isEdited: isCheckboxEntryEdited,
     },
     {
       id: 'loopDataOutputRef',
       component: OutputCollection,
-      isEdited: isTextFieldEntryEdited,
     },
     !businessObject.get('spiffworkflow:isOutputSynced')
       ? {
           id: 'dataOutputItem',
           component: OutputItem,
-          isEdited: isTextFieldEntryEdited,
         }
       : {},
     {
       id: 'completionCondition',
       component: CompletionCondition,
-      isEdited: isTextFieldEntryEdited,
     },
   ];
 }

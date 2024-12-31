@@ -118,7 +118,6 @@ function MessageCorrelationPropertyGroup(props) {
     {
       id: `${idPrefix}-correlation-property-retrivial-expression`,
       component: CorrelationPropertyRetrivialExpressionTextField,
-      isEdited: isTextFieldEntryEdited,
       idPrefix,
       element,
       correlationPropertyModdleElement,

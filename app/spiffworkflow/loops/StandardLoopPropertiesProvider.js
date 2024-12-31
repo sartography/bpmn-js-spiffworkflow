@@ -45,15 +45,12 @@ function StandardLoopProps(props) {
   return [{
     id: 'loopMaximum',
     component: LoopMaximum,
-    isEdited: isTextFieldEntryEdited
   }, {
     id: 'loopCondition',
     component: LoopCondition,
-    isEdited: isTextFieldEntryEdited
   }, {
     id: 'testBefore',
     component: TestBefore,
-    isEdited: isCheckboxEntryEdited
   }];
 }
 

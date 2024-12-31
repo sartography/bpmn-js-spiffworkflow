@@ -31,7 +31,6 @@ export function createMessageGroup(
       id: 'selectMessage',
       element,
       component: MessageSelect,
-      isEdited: isTextFieldEntryEdited,
       moddle,
       commandStack,
       elementRegistry

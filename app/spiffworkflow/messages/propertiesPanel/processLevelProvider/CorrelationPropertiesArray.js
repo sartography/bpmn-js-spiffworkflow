@@ -104,7 +104,6 @@ function MessageCorrelationPropertyGroup(props) {
     {
       id: `${idPrefix}-correlation-property-name`,
       component: CorrelationPropertyNameTextField,
-      isEdited: isTextFieldEntryEdited,
       idPrefix,
       element,
       correlationPropertyModdleElement,

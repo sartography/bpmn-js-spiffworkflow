@@ -58,7 +58,6 @@ function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
         id: `${idPrefix}-select`,
         element,
         component: getSelect,
-        isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
       },
@@ -79,7 +78,6 @@ function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
         id: `${idPrefix}-code`,
         element,
         component: codeField,
-        isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
       });
@@ -90,7 +88,6 @@ function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
         id: `${idPrefix}-variable`,
         element,
         component: variableName,
-        isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
       });
@@ -99,7 +96,6 @@ function getConfigureGroupForType(eventDetails, label, includeCode, getSelect) {
         id: `${idPrefix}-payload`,
         element,
         component: payloadDefinition,
-        isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
       });

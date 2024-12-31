@@ -72,7 +72,6 @@ function InputParamGroup(props) {
       id,
       inputEntry,
       component: InputParamTextField,
-      isEdited: isTextFieldEntryEdited,
       element,
       moddle,
       commandStack,

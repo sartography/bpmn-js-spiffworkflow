@@ -72,7 +72,6 @@ function OutputParamGroup(props) {
       id,
       outputEntry,
       component: OutputParamTextField,
-      isEdited: isTextFieldEntryEdited,
       element,
       moddle,
       commandStack,
