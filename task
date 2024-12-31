@@ -14,5 +14,4 @@ The title tag on the black dot is "Section contains data." It looks like you use
 
 test_instructions_black_dot.py is currently reproducing the bug.
 
-task test_instructions_black_dot.py app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx app/app.js app/spiffworkflow/conditions/propertiesPanel/ConditionsPropertiesProvider.js app/spiffworkflow/extensions/propertiesPanel/SpiffExtensionTextArea.jsx test/spec/BusinessRulePropsSpec.js --read /Users/kevin/projects/github/properties-panel/src
-
+custom_aider task $(rg -l isEdited) test_instructions_black_dot.py app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx app/app.js app/spiffworkflow/conditions/propertiesPanel/ConditionsPropertiesProvider.js app/spiffworkflow/extensions/propertiesPanel/SpiffExtensionTextArea.jsx test/spec/BusinessRulePropsSpec.js $(cd ~/projects/github/properties-panel && rg -l 'isEdited|Section contains' | sed -e 's|^|--read ~/projects/github/properties-panel/|')
