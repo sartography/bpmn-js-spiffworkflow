@@ -33,7 +33,7 @@ export function SpiffExtensionCheckboxEntry(props) {
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}
-      isEdited={isTextFieldEntryEdited}
+      isEdited={isCheckboxEntryEdited}
     />
   );
 }
