@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CheckboxEntry } from '@bpmn-io/properties-panel';
+import { CheckboxEntry, isCheckboxEntryEdited } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
 
@@ -33,6 +33,7 @@ export function SpiffExtensionCheckboxEntry(props) {
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}
+      isEdited={isTextFieldEntryEdited}
     />
   );
 }

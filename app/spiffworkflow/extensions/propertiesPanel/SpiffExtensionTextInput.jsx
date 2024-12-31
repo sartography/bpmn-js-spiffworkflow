@@ -1,6 +1,6 @@
 import React from 'react';
 import { useService } from 'bpmn-js-properties-panel';
-import { TextFieldEntry } from '@bpmn-io/properties-panel';
+import { TextFieldEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
 
 /**
@@ -55,6 +55,7 @@ export function SpiffExtensionTextInput(props) {
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}
+      isEdited={isTextFieldEntryEdited}
     />
   );
 }

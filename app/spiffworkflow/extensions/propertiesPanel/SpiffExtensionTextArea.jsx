@@ -1,6 +1,6 @@
 import React from 'react';
 import { useService } from 'bpmn-js-properties-panel';
-import { TextAreaEntry } from '@bpmn-io/properties-panel';
+import { TextAreaEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
 
 /**
