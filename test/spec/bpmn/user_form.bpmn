@@ -4,11 +4,11 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0vt1twq</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:endEvent id="Event_0yxpeto">
+    <bpmn:endEvent id="Event_end_1">
       <bpmn:incoming>Flow_1udyjxo</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0vt1twq" sourceRef="StartEvent_1" targetRef="my_user_task" />
-    <bpmn:sequenceFlow id="Flow_1udyjxo" sourceRef="my_user_task" targetRef="Event_0yxpeto" />
+    <bpmn:sequenceFlow id="Flow_1udyjxo" sourceRef="my_user_task" targetRef="Event_end_1" />
     <bpmn:userTask id="my_user_task" name="Complete Web Form">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -43,7 +43,7 @@
         <dc:Bounds x="260" y="60" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0yxpeto_di" bpmnElement="Event_0yxpeto">
+      <bpmndi:BPMNShape id="Event_end_1_di" bpmnElement="Event_end_1">
         <dc:Bounds x="422" y="82" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

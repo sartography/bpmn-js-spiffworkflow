@@ -11,11 +11,11 @@
         <bpmn:startEvent id="StartEvent_1">
             <bpmn:outgoing>Flow_0vt1twq</bpmn:outgoing>
         </bpmn:startEvent>
-        <bpmn:endEvent id="Event_0yxpeto">
+        <bpmn:endEvent id="Event_end_3">
             <bpmn:incoming>Flow_1oukz5y</bpmn:incoming>
         </bpmn:endEvent>
         <bpmn:sequenceFlow id="Flow_0vt1twq" sourceRef="StartEvent_1" targetRef="Activity_1hmit5k" />
-        <bpmn:sequenceFlow id="Flow_1oukz5y" sourceRef="Activity_1dkj93x" targetRef="Event_0yxpeto" />
+        <bpmn:sequenceFlow id="Flow_1oukz5y" sourceRef="Activity_1dkj93x" targetRef="Event_end_3" />
         <bpmn:scriptTask id="Activity_1dkj93x" name="Script Task">
             <bpmn:incoming>Flow_05w3wu8</bpmn:incoming>
             <bpmn:outgoing>Flow_1oukz5y</bpmn:outgoing>
@@ -39,7 +39,7 @@
     </bpmn:process>
     <bpmndi:BPMNDiagram id="BPMNDiagram_1">
         <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_16xfaqc">
-            <bpmndi:BPMNShape id="Event_0yxpeto_di" bpmnElement="Event_0yxpeto">
+            <bpmndi:BPMNShape id="Event_end_3_di" bpmnElement="Event_end_3">
                 <dc:Bounds x="422" y="82" width="36" height="36" />
             </bpmndi:BPMNShape>
             <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
