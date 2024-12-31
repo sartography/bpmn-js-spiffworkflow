@@ -3,6 +3,7 @@ import {
   ListGroup,
   CheckboxEntry,
   isCheckboxEntryEdited,
+  isTextAreaEntryEdited, // Import the isEdited function for TextArea
 } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
@@ -329,6 +330,7 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         label: 'Instructions',
         description:
           'Displayed above user forms or when this task is executing.',
+        isEdited: isTextAreaEntryEdited, // Ensure the black dot appears when edited
       },
       {
         element,
