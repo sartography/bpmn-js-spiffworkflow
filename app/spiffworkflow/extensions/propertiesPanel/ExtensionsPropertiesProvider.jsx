@@ -366,6 +366,13 @@ function ScriptValenceCheckbox(props) {
   });
 }
 
+/**
+ * Create a group on the main panel with a select box (for choosing the Data Object to connect)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
 function createUserGroup(element, translate, moddle, commandStack) {
   const updateExtensionProperties = (
     element,
@@ -430,6 +437,15 @@ function createUserGroup(element, translate, moddle, commandStack) {
   };
 }
 
+/**
+ * Select and launch for Business Rules
+ *
+ * @param element
+ * @param translate
+ * @param moddle
+ * @param commandStack
+ * @returns {{entries: [{moddle, component: ((function(*): preact.VNode<any>)|*), name: string, description, label, commandStack, element},{component: ((function(*): preact.VNode<any>)|*), name: string, description, label, event: string, element}], id: string, label}}
+ */
 function createBusinessRuleGroup(element, translate, moddle, commandStack) {
   return {
     id: 'business_rule_properties',
@@ -457,6 +473,13 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
   };
 }
 
+/**
+ * Create a group on the main panel with a text box (for choosing the information to display to the user)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
 function createUserInstructionsGroup(element, translate, moddle, commandStack) {
   return {
     id: 'instructions',
@@ -487,6 +510,13 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
   };
 }
 
+/**
+ * Create a group on the main panel with a text box (for choosing the information to display to the user)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
 function createAllowGuestGroup(element, translate, moddle, commandStack) {
   return {
     id: 'allow_guest_user',
@@ -526,6 +556,14 @@ function createAllowGuestGroup(element, translate, moddle, commandStack) {
   };
 }
 
+/**
+ * Create a group on the main panel with a text box for specifying a
+ * a Button Label that is associated with a signal event.)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
 function createSignalButtonGroup(element, translate, moddle, commandStack) {
   let description = (
     <p style={{ maxWidth: '330px' }}>
@@ -551,6 +589,13 @@ function createSignalButtonGroup(element, translate, moddle, commandStack) {
   };
 }
 
+/**
+ * Create a group on the main panel with a text box (for choosing the dmn to connect)
+ * @param element
+ * @param translate
+ * @param moddle
+ * @returns entries
+ */
 function createServiceGroup(element, translate, moddle, commandStack) {
   let entries = [
     {
