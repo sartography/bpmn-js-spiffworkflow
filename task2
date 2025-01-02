@@ -1,0 +1,18 @@
+The issue in the app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx file is that four features (createBusinessRuleGroup, createUserInstructionsGroup, createAllowGuestGroup, and createUserGroup) do not result in black dots showing when things are changed. However, the preScriptPostScriptGroup does show the black dots correctly. The problem is likely due to the missing or incorrect isEdited function for these components.
+
+## Instructions
+
+Add the necessary imports at the beginning of the file:
+
+import {
+  CheckboxEntry,
+  isCheckboxEntryEdited,
+  TextAreaEntry,
+  isTextAreaEntryEdited,
+  SelectEntry,
+  isSelectEntryEdited,
+  SimpleEntry,
+  isSimpleEntryEdited,
+} from '@bpmn-io/properties-panel';
+
+And then update each group to include the appropriate isEdited function:
