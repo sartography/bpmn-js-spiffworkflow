@@ -1,5 +1,22 @@
 The issue in the app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx file is that four features (createBusinessRuleGroup, createUserInstructionsGroup, createAllowGuestGroup, and createUserGroup) do not result in black dots showing when things are changed.
 However, preScriptPostScriptGroup does show the black dots correctly.
-commandStack.execute('element.updateModdleProperties' only seems to be fired by the preScriptPostScriptGroup, but not any of the broken features, so that might help explain the issue.
-isEdited, when removed from the working preScriptPostScriptGroup function, does indeed break the black dot functionality, so that might be a key difference as well.
+
+possible key differences:
+1. commandStack.execute('element.updateModdleProperties' only seems to be fired by the preScriptPostScriptGroup, but not any of the broken features, so that might help explain the issue.
+2. isEdited, when removed from the working preScriptPostScriptGroup function, does indeed break the black dot functionality, so that might be a key difference as well.
+
+maybe try applying both of these.
 There is a unit test at test_instructions_black_dot.py that demonstrates the difference, but the reason for the bug must be in app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx
+
+here are some of the other functions from the lib, since isTextFieldEntryEdited is not the only relevant isEdited function, and some of these others might also need to be imported.
+
+ ~/projects/github/properties-panel | main > rg export.*default.*isEdited
+src/components/entries/index.js
+1:export { default as CheckboxEntry, isEdited as isCheckboxEntryEdited } from './Checkbox';
+13:export { default as TemplatingEntry, isEdited as isTemplatingEntryEdited } from './templating';
+15:export { default as NumberFieldEntry, isEdited as isNumberFieldEntryEdited } from './NumberField';
+16:export { default as SelectEntry, isEdited as isSelectEntryEdited } from './Select';
+17:export { default as SimpleEntry, isEdited as isSimpleEntryEdited } from './Simple';
+18:export { default as TextAreaEntry, isEdited as isTextAreaEntryEdited } from './TextArea';
+19:export { default as TextFieldEntry, isEdited as isTextFieldEntryEdited } from './TextField';
+20:export { default as ToggleSwitchEntry, isEdited as isToggleSwitchEntryEdited } from './ToggleSwitch';
