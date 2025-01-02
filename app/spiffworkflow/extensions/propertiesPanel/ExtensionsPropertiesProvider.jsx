@@ -331,7 +331,6 @@ function getEntries(props) {
       type: scriptType,
       element,
       component: LaunchEditorButton,
-      isEdited: isTextFieldEntryEdited,
       moddle,
       commandStack,
     },
