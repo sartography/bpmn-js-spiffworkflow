@@ -25,7 +25,6 @@ const PREFIX = 'spiffworkflow:';
  *
  */
 
-
 /**
  * Returns the string value of the spiff extension with the given name on the provided element. ""
  * @param useProperties if set to true, will look inside extensions/spiffworkflow:properties  otherwise, just
@@ -34,7 +33,6 @@ const PREFIX = 'spiffworkflow:';
  * @param name
  */
 export function getExtensionValue(businessObject, name) {
-
   const useProperties = !name.startsWith(PREFIX);
   let extension;
   if (useProperties) {
@@ -48,11 +46,17 @@ export function getExtensionValue(businessObject, name) {
   return '';
 }
 
-export function setExtensionValue(element, name, value, moddle, commandStack, businessObject) {
+export function setExtensionValue(
+  element,
+  name,
+  value,
+  moddle,
+  commandStack,
+  businessObject
+) {
+  const useProperties = !name.startsWith(PREFIX);
 
-  const useProperties = !name.startsWith(PREFIX)
-
-  let businessObjectToUse = businessObject
+  let businessObjectToUse = businessObject;
   if (!businessObjectToUse) {
     businessObjectToUse = element.businessObject;
   }
@@ -80,10 +84,12 @@ export function setExtensionValue(element, name, value, moddle, commandStack, bu
     let extension = getExtension(businessObjectToUse, name);
     if (!extension) {
       extension = moddle.create(name);
-      extensions.get('values').push(extension)
+      extensions.get('values').push(extension);
     }
     extension.value = value;
   }
+
+  console.log('hammering updateModdlePRoperties');
 
   commandStack.execute('element.updateModdleProperties', {
     element,
@@ -105,7 +111,6 @@ function getExtension(businessObject, name) {
     }
   })[0];
 }
-
 
 function getExtensionProperty(businessObject, name) {
   const parentElement = getExtension(businessObject, SPIFF_PARENT_PROP);

@@ -2,10 +2,13 @@ import React from 'react';
 import {
   ListGroup,
   CheckboxEntry,
+  isTextAreaEntryEdited,
   isCheckboxEntryEdited,
   TextAreaEntry,
   isTextFieldEntryEdited,
   HeaderButton,
+  SelectEntry,
+  isSelectEntryEdited,
 } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import {
@@ -49,6 +52,7 @@ function PythonScript(props) {
   };
 
   const setValue = (value) => {
+    console.log('hammered script setValue');
     updateScript(commandStack, moddle, element, type, value);
   };
 
@@ -60,6 +64,7 @@ function PythonScript(props) {
     getValue,
     setValue,
     debounce,
+    isEdited: isTextFieldEntryEdited,
   });
 }
 
@@ -78,6 +83,9 @@ function LaunchEditorButton(props) {
       });
       // Listen for a response, to update the script.
       eventBus.once('spiff.script.update', (event) => {
+        console.log(
+          'calling script from spiff.script.update (never happens here)'
+        );
         updateScript(
           commandStack,
           moddle,
@@ -127,6 +135,7 @@ export function updateScript(
         .filter((e) => e !== scriptObj);
       extensionElements.values = values;
       businessObject.extensionElements = extensionElements;
+      console.log('script 1');
       commandStack.execute('element.updateModdleProperties', {
         element,
         moddleElement: businessObject,
@@ -144,6 +153,7 @@ export function updateScript(
       }
       scriptObj.value = newValue;
       extensionElements.get('values').push(scriptObj);
+      console.log('script 2 (this is the one)');
       commandStack.execute('element.updateModdleProperties', {
         element,
         moddleElement: businessObject,
@@ -157,6 +167,7 @@ export function updateScript(
     if (scriptType === SCRIPT_TYPE.bpmn) {
       newProps = { script: newValue };
     }
+    console.log('script 3');
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: scriptObj,
@@ -393,6 +404,7 @@ function createUserGroup(element, translate, moddle, commandStack) {
         name: 'formJsonSchemaFilename',
         label: translate('JSON Schema Filename'),
         description: translate('Form Description (RSJF)'),
+        isEdited: isSelectEntryEdited,
       },
       {
         component: SpiffExtensionLaunchButton,
@@ -433,6 +445,7 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
         name: 'spiffworkflow:CalledDecisionId',
         label: translate('Select Decision Table'),
         description: translate('Select a decision table from the list'),
+        isEdited: isSelectEntryEdited,
       },
       {
         element,
@@ -462,11 +475,12 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         element,
         moddle,
         commandStack,
-        component: SpiffExtensionTextArea,
+        component: InstructionsTextArea, // Use the new component
+        id: 'instructions_text_area',
         name: 'spiffworkflow:InstructionsForEndUser',
         label: 'Instructions',
         description:
-          'Displayed above user forms or when this task is executing.',
+          'IS Displayed above user forms or when this task is executing.',
       },
       {
         element,
@@ -481,6 +495,47 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
       },
     ],
   };
+}
+
+function InstructionsTextArea(props) {
+  const { element, moddle, commandStack, label, description } = props;
+  const translate = useService('translate');
+  const debounce = useService('debounceInput');
+
+  const getValue = () => {
+    return getScriptString(element, 'spiffworkflow:InstructionsForEndUser');
+  };
+
+  const setValue = (value) => {
+    console.log('setValue: started');
+    setExtensionValue(
+      element,
+      'spiffworkflow:InstructionsForEndUser',
+      value,
+      moddle,
+      commandStack
+    );
+    console.log(
+      'setValue: about to call commandStack element.updateModdleProperties'
+    );
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: element.businessObject,
+      properties: {},
+    });
+    console.log('setValue: called element.updateModdleProperties');
+  };
+
+  return TextAreaEntry({
+    id: 'instructionsTextArea',
+    element,
+    description: translate(description),
+    label: translate(label),
+    getValue,
+    setValue,
+    debounce,
+    isEdited: isTextFieldEntryEdited,
+  });
 }
 
 /**
@@ -504,6 +559,7 @@ function createAllowGuestGroup(element, translate, moddle, commandStack) {
         label: 'Guest can complete this task',
         description:
           'Allow a guest user to complete this task without logging in. They will not be allowed to do anything but submit this task. If another task directly follows it that allows guest access, they could also complete that task.',
+        isEdited: isCheckboxEntryEdited,
       },
       {
         element,
@@ -514,6 +570,7 @@ function createAllowGuestGroup(element, translate, moddle, commandStack) {
         label: 'Guest confirmation',
         description:
           'This is markdown that is displayed to the user after they complete the task. If this is filled out then the user will not be able to complete additional tasks without a new link to the next task.',
+        isEdited: isTextAreaEntryEdited,
       },
       {
         element,
@@ -557,6 +614,7 @@ function createSignalButtonGroup(element, translate, moddle, commandStack) {
         name: 'spiffworkflow:SignalButtonLabel',
         label: 'Button Label',
         description: description,
+        isEdited: isTextFieldEntryEdited,
       },
     ],
   };
