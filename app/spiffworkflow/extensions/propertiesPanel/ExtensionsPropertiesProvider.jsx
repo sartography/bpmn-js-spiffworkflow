@@ -339,32 +339,6 @@ function getEntries(props) {
   return entries;
 }
 
-function ScriptValenceCheckbox(props) {
-  const { element, commandStack } = props;
-
-  const getValue = () => {
-    return element.businessObject.loopCharacteristics.scriptsOnInstances;
-  };
-
-  const setValue = (value) => {
-    const loopCharacteristics = element.businessObject.loopCharacteristics;
-    loopCharacteristics.scriptsOnInstances = value || undefined;
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: loopCharacteristics,
-    });
-  };
-
-  return CheckboxEntry({
-    element,
-    id: 'selectScriptValence',
-    label: 'Run scripts on instances',
-    description: 'By default, scripts will attach to the multiinstance task',
-    getValue,
-    setValue,
-  });
-}
-
 /**
  * Create a group on the main panel with a select box (for choosing the Data Object to connect)
  * @param element
