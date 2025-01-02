@@ -3,9 +3,11 @@ import {
   ListGroup,
   CheckboxEntry,
   isCheckboxEntryEdited,
+  TextAreaEntry,
+  isTextFieldEntryEdited,
+  HeaderButton,
 } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
 import {
   ServiceTaskParameterArray,
   ServiceTaskOperatorSelect,
@@ -22,8 +24,157 @@ import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 import { SpiffExtensionCheckboxEntry } from './SpiffExtensionCheckboxEntry';
 import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { setExtensionValue } from '../extensionHelpers';
+import { useService } from 'bpmn-js-properties-panel';
 
 const LOW_PRIORITY = 500;
+
+export const SCRIPT_TYPE = {
+  bpmn: 'bpmn:script',
+  pre: 'spiffworkflow:PreScript',
+  post: 'spiffworkflow:PostScript',
+};
+
+function PythonScript(props) {
+  const { element, id } = props;
+  const { type } = props;
+  const { moddle, commandStack } = props;
+  const { label } = props;
+  const { description } = props;
+
+  const translate = useService('translate');
+  const debounce = useService('debounceInput');
+
+  const getValue = () => {
+    return getScriptString(element, type);
+  };
+
+  const setValue = (value) => {
+    updateScript(commandStack, moddle, element, type, value);
+  };
+
+  return TextAreaEntry({
+    id,
+    element,
+    description: translate(description),
+    label: translate(label),
+    getValue,
+    setValue,
+    debounce,
+  });
+}
+
+function LaunchEditorButton(props) {
+  const { element, type, moddle, commandStack } = props;
+  const eventBus = useService('eventBus');
+  return HeaderButton({
+    className: 'spiffworkflow-properties-panel-button',
+    onClick: () => {
+      const script = getScriptString(element, type);
+      eventBus.fire('spiff.script.edit', {
+        element,
+        scriptType: type,
+        script,
+        eventBus,
+      });
+      // Listen for a response, to update the script.
+      eventBus.once('spiff.script.update', (event) => {
+        updateScript(
+          commandStack,
+          moddle,
+          element,
+          event.scriptType,
+          event.script
+        );
+      });
+    },
+    children: 'Launch Editor',
+  });
+}
+
+function getScriptObject(element, scriptType) {
+  const bizObj = element.businessObject;
+  if (scriptType === SCRIPT_TYPE.bpmn) {
+    return bizObj;
+  }
+  if (!bizObj.extensionElements) {
+    return null;
+  }
+
+  return bizObj.extensionElements
+    .get('values')
+    .filter(function getInstanceOfType(e) {
+      return e.$instanceOf(scriptType);
+    })[0];
+}
+
+export function updateScript(
+  commandStack,
+  moddle,
+  element,
+  scriptType,
+  newValue
+) {
+  const { businessObject } = element;
+  let scriptObj = getScriptObject(element, scriptType);
+  if (!newValue && scriptObj && scriptType !== SCRIPT_TYPE.bpmn) {
+    let { extensionElements } = businessObject;
+    if (!extensionElements) {
+      extensionElements = moddle.create('bpmn:ExtensionElements');
+    }
+    if (extensionElements && extensionElements.get) {
+      const values = extensionElements
+        .get('values')
+        .filter((e) => e !== scriptObj);
+      extensionElements.values = values;
+      businessObject.extensionElements = extensionElements;
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: businessObject,
+        properties: {},
+      });
+      return;
+    }
+  }
+  if (!scriptObj) {
+    scriptObj = moddle.create(scriptType);
+    if (scriptType !== SCRIPT_TYPE.bpmn) {
+      let { extensionElements } = businessObject;
+      if (!extensionElements) {
+        extensionElements = moddle.create('bpmn:ExtensionElements');
+      }
+      scriptObj.value = newValue;
+      extensionElements.get('values').push(scriptObj);
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: businessObject,
+        properties: {
+          extensionElements,
+        },
+      });
+    }
+  } else {
+    let newProps = { value: newValue };
+    if (scriptType === SCRIPT_TYPE.bpmn) {
+      newProps = { script: newValue };
+    }
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: scriptObj,
+      properties: newProps,
+    });
+  }
+}
+
+export function getScriptString(element, scriptType) {
+  const scriptObj = getScriptObject(element, scriptType);
+  if (scriptObj && scriptObj.value) {
+    return scriptObj.value;
+  }
+  if (scriptObj && scriptObj.script) {
+    return scriptObj.script;
+  }
+  return '';
+}
 
 export default function ExtensionsPropertiesProvider(
   propertiesPanel,
@@ -108,17 +259,11 @@ ExtensionsPropertiesProvider.$inject = [
   'elementRegistry',
 ];
 
-/**
- * Adds a group to the properties panel for the script task that allows you
- * to set the script.
- * @param element
- * @param translate
- * @returns The components to add to the properties panel. */
 function createScriptGroup(element, translate, moddle, commandStack) {
   return {
     id: 'spiff_script',
     label: translate('Script'),
-    entries: scriptGroup({
+    entries: getEntries({
       element,
       moddle,
       scriptType: SCRIPT_TYPE.bpmn,
@@ -130,17 +275,9 @@ function createScriptGroup(element, translate, moddle, commandStack) {
   };
 }
 
-/**
- * Adds a section to the properties' panel for NON-Script tasks, so that
- * you can define a pre-script and a post-script for modifying data as it comes and out.
- * @param element
- * @param translate
- * @param moddle  For altering the underlying XML File.
- * @returns The components to add to the properties panel.
- */
 function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
   const entries = [
-    ...scriptGroup({
+    ...getEntries({
       element,
       moddle,
       commandStack,
@@ -149,7 +286,7 @@ function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
       label: 'Pre-Script',
       description: 'code to execute prior to this task.',
     }),
-    ...scriptGroup({
+    ...getEntries({
       element,
       moddle,
       commandStack,
@@ -164,6 +301,43 @@ function preScriptPostScriptGroup(element, translate, moddle, commandStack) {
     label: translate('Pre/Post Scripts'),
     entries: entries,
   };
+}
+
+function getEntries(props) {
+  const {
+    element,
+    moddle,
+    scriptType,
+    label,
+    description,
+    translate,
+    commandStack,
+  } = props;
+
+  const entries = [
+    {
+      id: `pythonScript_${scriptType}`,
+      element,
+      type: scriptType,
+      component: PythonScript,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+      commandStack,
+      label,
+      description,
+    },
+    {
+      id: `launchEditorButton${scriptType}`,
+      type: scriptType,
+      element,
+      component: LaunchEditorButton,
+      isEdited: isTextFieldEntryEdited,
+      moddle,
+      commandStack,
+    },
+  ];
+
+  return entries;
 }
 
 function ScriptValenceCheckbox(props) {
@@ -192,13 +366,6 @@ function ScriptValenceCheckbox(props) {
   });
 }
 
-/**
- * Create a group on the main panel with a select box (for choosing the Data Object to connect)
- * @param element
- * @param translate
- * @param moddle
- * @returns entries
- */
 function createUserGroup(element, translate, moddle, commandStack) {
   const updateExtensionProperties = (
     element,
@@ -263,15 +430,6 @@ function createUserGroup(element, translate, moddle, commandStack) {
   };
 }
 
-/**
- * Select and launch for Business Rules
- *
- * @param element
- * @param translate
- * @param moddle
- * @param commandStack
- * @returns {{entries: [{moddle, component: ((function(*): preact.VNode<any>)|*), name: string, description, label, commandStack, element},{component: ((function(*): preact.VNode<any>)|*), name: string, description, label, event: string, element}], id: string, label}}
- */
 function createBusinessRuleGroup(element, translate, moddle, commandStack) {
   return {
     id: 'business_rule_properties',
@@ -299,13 +457,6 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
   };
 }
 
-/**
- * Create a group on the main panel with a text box (for choosing the information to display to the user)
- * @param element
- * @param translate
- * @param moddle
- * @returns entries
- */
 function createUserInstructionsGroup(element, translate, moddle, commandStack) {
   return {
     id: 'instructions',
@@ -336,13 +487,6 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
   };
 }
 
-/**
- * Create a group on the main panel with a text box (for choosing the information to display to the user)
- * @param element
- * @param translate
- * @param moddle
- * @returns entries
- */
 function createAllowGuestGroup(element, translate, moddle, commandStack) {
   return {
     id: 'allow_guest_user',
@@ -382,14 +526,6 @@ function createAllowGuestGroup(element, translate, moddle, commandStack) {
   };
 }
 
-/**
- * Create a group on the main panel with a text box for specifying a
- * a Button Label that is associated with a signal event.)
- * @param element
- * @param translate
- * @param moddle
- * @returns entries
- */
 function createSignalButtonGroup(element, translate, moddle, commandStack) {
   let description = (
     <p style={{ maxWidth: '330px' }}>
@@ -415,13 +551,6 @@ function createSignalButtonGroup(element, translate, moddle, commandStack) {
   };
 }
 
-/**
- * Create a group on the main panel with a text box (for choosing the dmn to connect)
- * @param element
- * @param translate
- * @param moddle
- * @returns entries
- */
 function createServiceGroup(element, translate, moddle, commandStack) {
   let entries = [
     {
