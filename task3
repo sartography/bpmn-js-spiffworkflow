@@ -1,5 +1,5 @@
 The issue in the app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx file is that four features (createBusinessRuleGroup, createUserInstructionsGroup, createAllowGuestGroup, and createUserGroup) do not result in black dots showing when things are changed.
 However, preScriptPostScriptGroup does show the black dots correctly.
-What could explain this difference?
+commandStack.execute('element.updateModdleProperties' only seems to be fired by the preScriptPostScriptGroup, but not any of the broken features, so that might help explain the issue.
+isEdited, when removed from the working preScriptPostScriptGroup function, does indeed break the black dot functionality, so that might be a key difference as well.
 There is a unit test at test_instructions_black_dot.py that demonstrates the difference, but the reason for the bug must be in app/spiffworkflow/extensions/propertiesPanel/ExtensionsPropertiesProvider.jsx
-Can you spot it?
