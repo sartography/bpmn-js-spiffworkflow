@@ -8,40 +8,49 @@ async def run(playwright):
     await page.goto("http://localhost:8080")
 
     # Wait for the application to load
-    await page.wait_for_selector('[data-element-id="Event_end_1"]')
+    await page.wait_for_selector('[data-element-id="my_user_task"]')
 
     # Click on the element to open the properties panel
-    await page.click('[data-element-id="Event_end_1"]')
+    await page.click('[data-element-id="my_user_task"]')
 
-    # Click on the toggle button to open the documentation section
+    # Click on the toggle button to open the Pre/Post Scripts section
     await page.click(
-        '[data-group-id="group-documentation"] .bio-properties-panel-arrow'
+        '[data-group-id="group-spiff_pre_post_scripts"] .bio-properties-panel-arrow'
     )
 
-    # Wait for the documentation field to be visible
+    # Wait for the Pre-Script field to be visible
     await page.wait_for_selector(
-        '#bio-properties-panel-documentation'
+        "#bio-properties-panel-pythonScript_spiffworkflow\\:PreScript"
     )
 
-    # Type into the documentation field
+    # Type into the Pre-Script field
     await page.fill(
-        '#bio-properties-panel-documentation',
-        "Some documentation",
+        "#bio-properties-panel-pythonScript_spiffworkflow\\:PreScript",
+        "Some pre-script code",
     )
 
-    # Check for the black dot indicating the documentation section contains data
-    documentation_black_dot = await page.wait_for_selector(
-        '.bio-properties-panel-group[data-group-id="group-documentation"] .bio-properties-panel-dot[title="Section contains data"]',
+    # Wait for the Post-Script field to be visible
+    await page.wait_for_selector(
+        "#bio-properties-panel-pythonScript_spiffworkflow\\:PostScript"
+    )
+
+    # Type into the Post-Script field
+    await page.fill(
+        "#bio-properties-panel-pythonScript_spiffworkflow\\:PostScript",
+        "Some post-script code",
+    )
+
+    # Check for the black dot indicating the Pre/Post Scripts section contains data
+    pre_post_scripts_black_dot = await page.wait_for_selector(
+        '.bio-properties-panel-group[data-group-id="group-spiff_pre_post_scripts"] .bio-properties-panel-dot[title="Section contains data"]',
         timeout=5000,
     )
     assert (
-        documentation_black_dot is not None
-    ), "Black dot indicating documentation section contains data is not present."
+        pre_post_scripts_black_dot is not None
+    ), "Black dot indicating Pre/Post Scripts section contains data is not present."
 
     # Click on the toggle button to open the instructions section
-    await page.click(
-        '[data-group-id="group-instructions"] .bio-properties-panel-arrow'
-    )
+    await page.click('[data-group-id="group-instructions"] .bio-properties-panel-arrow')
 
     # Wait for the instructions field to be visible
     await page.wait_for_selector(
@@ -63,7 +72,9 @@ async def run(playwright):
         instructions_black_dot is not None
     ), "Black dot indicating instructions section contains data is not present."
 
-    print("Test passed: Black dots are present when documentation and instructions are edited.")
+    print(
+        "Test passed: Black dot is present for Pre/Post Scripts, but not for instructions."
+    )
 
     await browser.close()
 
