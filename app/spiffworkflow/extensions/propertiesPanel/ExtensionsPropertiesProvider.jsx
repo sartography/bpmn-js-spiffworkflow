@@ -322,7 +322,7 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
     label: translate('Instructions'),
     entries: [
       {
-        id: 'extension_spiffworkflow_instructionsforenduser',
+        id: 'extension_spiffworkflow:InstructionsForEndUser',
         element,
         moddle,
         commandStack,
@@ -333,7 +333,7 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         isEdited: isTextAreaEntryEdited
       },
       {
-        id: 'extension_spiffworkflow_instructionsforenduser_launch_button',
+        id: 'extension_spiffworkflow:InstructionsForEndUser',
         element,
         moddle,
         commandStack,
