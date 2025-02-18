@@ -16,6 +16,7 @@ export function SpiffExtensionLaunchButton(props) {
     onClick: () => {
       const value = getExtensionValue(element.businessObject, name);
       eventBus.fire(event, {
+        element,
         value,
         eventBus,
         listenEvent,
