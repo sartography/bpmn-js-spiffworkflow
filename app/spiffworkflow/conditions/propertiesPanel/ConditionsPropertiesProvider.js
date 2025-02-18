@@ -1,6 +1,7 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
-  TextAreaEntry
+  TextAreaEntry,
+  isTextAreaEntryEdited
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
@@ -68,6 +69,7 @@ function conditionGroup(element, moddle, label, description, commandStack) {
       label,
       description,
       commandStack,
+      isEdited: isTextAreaEntryEdited,
     },
   ];
 }
@@ -76,14 +78,18 @@ function ConditionExpressionTextField(props) {
   const { element } = props;
   const { moddle } = props;
   const { label } = props;
+  const { commandStack } = props;
 
   const debounce = useService('debounceInput');
+
   const getValue = () => {
     let conditionExpression;
     if (is(element, 'bpmn:SequenceFlow')) {
       conditionExpression = element.businessObject.conditionExpression;
     } else if (is(element, 'bpmn:Event')) {
-      const eventDef = element.businessObject.eventDefinitions.find(ev => is(ev, 'bpmn:ConditionalEventDefinition'));
+      const eventDef = element.businessObject.eventDefinitions.find((ev) =>
+        is(ev, 'bpmn:ConditionalEventDefinition')
+      );
       conditionExpression = eventDef.condition;
     }
     if (conditionExpression) {
@@ -99,16 +105,24 @@ function ConditionExpressionTextField(props) {
     }
     conditionExpressionModdleElement.body = value;
     if (is(element, 'bpmn:SequenceFlow')) {
-      element.businessObject.conditionExpression = conditionExpressionModdleElement;
+      element.businessObject.conditionExpression =
+        conditionExpressionModdleElement;
     } else if (is(element, 'bpmn:Event')) {
-      const eventDef = element.businessObject.eventDefinitions.find(ev => is(ev, 'bpmn:ConditionalEventDefinition'));
+      const eventDef = element.businessObject.eventDefinitions.find((ev) =>
+        is(ev, 'bpmn:ConditionalEventDefinition')
+      );
       eventDef.condition = conditionExpressionModdleElement;
     }
+
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: conditionExpressionModdleElement,
+    });
   };
 
   return TextAreaEntry({
     element,
-    id: `the-id`,
+    id: 'condition_expression',
     label,
     getValue,
     setValue,

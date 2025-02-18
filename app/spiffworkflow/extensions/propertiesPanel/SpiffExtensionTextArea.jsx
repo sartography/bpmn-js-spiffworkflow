@@ -12,7 +12,8 @@ export function SpiffExtensionTextArea(props) {
     moddle = props.moddle;
   const name = props.name,
     label = props.label,
-    description = props.description;
+    description = props.description,
+    id = props.id;
   const debounce = useService('debounceInput');
 
   const getValue = () => {
@@ -25,7 +26,7 @@ export function SpiffExtensionTextArea(props) {
 
   return (
     <TextAreaEntry
-      id={'extension_' + name}
+      id={(id !== undefined) ? id : 'extension_' + name}
       element={element}
       description={description}
       label={label}
