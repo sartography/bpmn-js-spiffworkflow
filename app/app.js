@@ -301,6 +301,11 @@ bpmnModeler.on('import.parse.complete', (event) => {
   });
 });
 
+bpmnModeler.on('elements.changed', event => {
+  console.log('elements.changed', event);
+});
+
+
 bpmnModeler.importXML(diagramXML).then(() => {});
 
 // This handles the download and upload buttons - it isn't specific to

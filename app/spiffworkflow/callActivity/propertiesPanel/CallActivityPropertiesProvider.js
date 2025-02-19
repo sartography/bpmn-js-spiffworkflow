@@ -1,5 +1,5 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { HeaderButton, TextFieldEntry } from '@bpmn-io/properties-panel';
+import { HeaderButton, TextFieldEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
 const LOW_PRIORITY = 500;
@@ -41,6 +41,7 @@ function createCalledElementGroup(element, translate, moddle, commandStack) {
         id: `called_element_text_field`,
         element,
         component: CalledElementTextField,
+        isEdited: isTextFieldEntryEdited,
         moddle,
         commandStack,
         translate,
@@ -78,13 +79,14 @@ function CalledElementTextField(props) {
   const { element } = props;
   const { translate } = props;
 
+  const modeling = useService('modeling');
   const debounce = useService('debounceInput');
   const getValue = () => {
     return getCalledElementValue(element);
   };
 
   const setValue = (value) => {
-    element.businessObject.calledElement = value;
+    return modeling.updateProperties(element, { calledElement: value });
   };
 
   return TextFieldEntry({
