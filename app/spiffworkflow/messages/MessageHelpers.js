@@ -832,11 +832,9 @@ export function synCorrleationProperties(
   for (let cProperty of correlationProps) {
     let isUsed = false;
     for (const cpExpression of cProperty.correlationPropertyRetrievalExpression) {
-      const msgRef = findMessageElement(
-        businessObject,
-        cpExpression.messageRef.id,
-        definitions,
-      );
+      const msgRef = cpExpression.messageRef
+        ? findMessageElement(businessObject, cpExpression.messageRef.id, definitions)
+        : undefined;
       isUsed =
         msgRef &&
         msgObject &&
