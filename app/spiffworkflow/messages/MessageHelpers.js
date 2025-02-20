@@ -373,7 +373,7 @@ export function createOrUpdateCorrelationPropertiesV2(
   messageId
 ) {
   let definitions = getRoot(element.businessObject);
-
+  console.log("CREATE OR UPDATE V2", element.businessObject, definitions, propertiesConfig);
   if (propertiesConfig) {
     // Iterate over each property configuration
     for (const propConfig of propertiesConfig) {
@@ -465,34 +465,88 @@ export function findCorrelationPropertyById(definitions, id) {
 
 export function isMessageRefUsed(definitions, messageRef) {
   if (!definitions.rootElements) {
-    return true;
+    return true; // Assume used if no root elements to check (conservative default)
   }
 
+  // Helper function to recursively check flow elements
+  function checkElement(element) {
+    // Check if this element references the messageRef
+    if (
+      isMessageEvent(element) &&
+      element.eventDefinitions &&
+      element.eventDefinitions[0] &&
+      element.eventDefinitions[0].messageRef &&
+      element.eventDefinitions[0].messageRef.id === messageRef
+    ) {
+      return true;
+    } else if (
+      isMessageElement(element) &&
+      element.messageRef &&
+      element.messageRef.id === messageRef
+    ) {
+      return true;
+    }
+
+    // If this element is a container (e.g., SubProcess), recurse into its flowElements
+    if (element.$type === 'bpmn:SubProcess' && element.flowElements) {
+      for (const childElement of element.flowElements) {
+        if (checkElement(childElement)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // Iterate over rootElements
   for (const rootElement of definitions.rootElements) {
     if (rootElement.$type === 'bpmn:Process') {
       const process = rootElement;
-      for (const element of process.flowElements) {
-        if (
-          isMessageEvent(element) &&
-          element.eventDefinitions &&
-          element.eventDefinitions[0] &&
-          element.eventDefinitions[0].messageRef &&
-          element.eventDefinitions[0].messageRef.id === messageRef
-        ) {
-          return true;
-        } else if (
-          isMessageElement(element) &&
-          element.messageRef &&
-          element.messageRef.id === messageRef
-        ) {
-          return true;
+      if (process.flowElements) {
+        for (const element of process.flowElements) {
+          if (checkElement(element)) {
+            return true;
+          }
         }
       }
     }
   }
 
-  return false;
+  return false; // No references found after full traversal
 }
+
+// export function isMessageRefUsed(definitions, messageRef) {
+//   if (!definitions.rootElements) {
+//     return true;
+//   }
+//
+//   for (const rootElement of definitions.rootElements) {
+//     if (rootElement.$type === 'bpmn:Process') {
+//       window.rootElement  = rootElement
+//       const process = rootElement;
+//       for (const element of process.flowElements) {
+//         if (
+//           isMessageEvent(element) &&
+//           element.eventDefinitions &&
+//           element.eventDefinitions[0] &&
+//           element.eventDefinitions[0].messageRef &&
+//           element.eventDefinitions[0].messageRef.id === messageRef
+//         ) {
+//           return true;
+//         } else if (
+//           isMessageElement(element) &&
+//           element.messageRef &&
+//           element.messageRef.id === messageRef
+//         ) {
+//           return true;
+//         }
+//       }
+//     }
+//   }
+//
+//   return false;
+// }
 
 function isMessageIdInRetrievalExpressions(propConfig, messageId) {
   return propConfig.retrieval_expressions.some(
@@ -807,6 +861,7 @@ export function synCorrleationProperties(
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
   const expressionsToDelete = [];
+
 
   for (let cProperty of correlationProps) {
     let isUsed = false;

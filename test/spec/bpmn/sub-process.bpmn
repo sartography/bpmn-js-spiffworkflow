@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" id="Definitions_96f6665" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.0.0-dev">
+  <bpmn:process id="Process_4abovwi" isExecutable="true">
+    <bpmn:subProcess id="Activity_1pky533">
+      <bpmn:intermediateCatchEvent id="Event_12ydefv" name="a" spiffworkflow:isMatchingCorrelation="true">
+        <bpmn:messageEventDefinition id="MessageEventDefinition_01rnzls" messageRef="A">
+          <bpmn:extensionElements>
+            <spiffworkflow:processVariableCorrelation>
+              <spiffworkflow:propertyId>aa</spiffworkflow:propertyId>
+              <spiffworkflow:expression>a</spiffworkflow:expression>
+            </spiffworkflow:processVariableCorrelation>
+            <spiffworkflow:messageVariable>sdf</spiffworkflow:messageVariable>
+          </bpmn:extensionElements>
+        </bpmn:messageEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:intermediateCatchEvent id="Event_0qaubw2" name="b" spiffworkflow:isMatchingCorrelation="true">
+        <bpmn:messageEventDefinition id="MessageEventDefinition_1o0bau6" messageRef="B">
+          <bpmn:extensionElements>
+            <spiffworkflow:processVariableCorrelation>
+              <spiffworkflow:propertyId>bb</spiffworkflow:propertyId>
+              <spiffworkflow:expression>b</spiffworkflow:expression>
+            </spiffworkflow:processVariableCorrelation>
+            <spiffworkflow:messageVariable>bbbbb</spiffworkflow:messageVariable>
+          </bpmn:extensionElements>
+        </bpmn:messageEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:receiveTask id="Activity_17klj6a" name="c" messageRef="C" spiffworkflow:isMatchingCorrelation="true">
+        <bpmn:extensionElements>
+          <spiffworkflow:processVariableCorrelation>
+            <spiffworkflow:propertyId>cc</spiffworkflow:propertyId>
+            <spiffworkflow:expression>c</spiffworkflow:expression>
+          </spiffworkflow:processVariableCorrelation>
+          <spiffworkflow:messageVariable>ccccc</spiffworkflow:messageVariable>
+        </bpmn:extensionElements>
+      </bpmn:receiveTask>
+    </bpmn:subProcess>
+    <bpmn:manualTask id="Activity_08ifa56">
+      <bpmn:extensionElements>
+        <spiffworkflow:instructionsForEndUser></spiffworkflow:instructionsForEndUser>
+      </bpmn:extensionElements>
+    </bpmn:manualTask>
+  </bpmn:process>
+  <bpmn:message id="A" name="A" />
+  <bpmn:message id="B" name="B" />
+  <bpmn:message id="C" name="C" />
+  <bpmn:correlationProperty id="aa" name="aaa">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="A">
+      <bpmn:formalExpression>aa</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+  <bpmn:correlationProperty id="bb" name="bbb">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="B">
+      <bpmn:formalExpression>cc</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+  <bpmn:correlationProperty id="cc" name="cc">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="C">
+      <bpmn:formalExpression>cc</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+  <bpmn:correlationKey id="CorrelationKey_1ra3zc3" name="MainCorrelationKey">
+    <bpmn:correlationPropertyRef>cc</bpmn:correlationPropertyRef>
+  </bpmn:correlationKey>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_4abovwi">
+      <bpmndi:BPMNShape id="Activity_1jy5vzl_di" bpmnElement="Activity_08ifa56">
+        <dc:Bounds x="110" y="-200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1pky533_di" bpmnElement="Activity_1pky533" isExpanded="true">
+        <dc:Bounds x="-180" y="-60" width="610" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ahqek0_di" bpmnElement="Event_12ydefv">
+        <dc:Bounds x="-48" y="22" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="-34" y="65" width="8" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0j75260_di" bpmnElement="Event_0qaubw2">
+        <dc:Bounds x="52" y="22" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="67" y="65" width="7" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_08s68o7_di" bpmnElement="Activity_17klj6a">
+        <dc:Bounds x="160" y="0" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

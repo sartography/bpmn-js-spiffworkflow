@@ -3,7 +3,7 @@ import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
-import diagramXML from '../test/spec/bpmn/user_form.bpmn';
+import diagramXML from '../test/spec/bpmn/sub-process.bpmn';
 import spiffworkflow from './spiffworkflow';
 import setupFileOperations from './fileOperations';
 import {
@@ -302,6 +302,16 @@ bpmnModeler.on('import.parse.complete', (event) => {
 });
 
 bpmnModeler.importXML(diagramXML).then(() => {});
+
+
+const btn = document.getElementById('messageButton');
+btn.addEventListener('click', (_event) => {
+  launchMarkdownEvent.eventBus.fire('spiff.add_message.returned', {
+    name: "C",
+    correlation_properties: { id: "cc", retrievalExpression: "ccc" },
+    elementId: "Activity_17klj6a"
+  });
+});
 
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
