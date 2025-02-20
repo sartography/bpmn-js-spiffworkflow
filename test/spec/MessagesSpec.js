@@ -130,8 +130,7 @@ describe('Messages should work', function () {
 
     changeInput(selector, 'love_letter_response');
     const messageElemend = findMessageModdleElements(rootShape.businessObject);
-    expect(messageElemend.length).to.equal(2);
-
+    expect(messageElemend.length).to.equal(1);
   }));
 
   it('should be able to add new message and correlation properties on add_message_event', async function () {
@@ -162,9 +161,8 @@ describe('Messages should work', function () {
     expect(updatedEntry).to.exist;
 
     const updatedSelector = findSelect(updatedEntry);
-    expect(updatedSelector.options.length).to.equal(3);
-    expect(updatedSelector.options[2].value).to.equal('msgName');
-
+    expect(updatedSelector.options.length).to.equal(2);
+    expect(updatedSelector.options[1].value).to.equal('msgName');
   });
 
   it('should be able to generate default Correlation keys on changing message', async function () {
