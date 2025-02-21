@@ -1,7 +1,7 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
   TextAreaEntry,
-  isTextAreaEntryEdited,
+  isTextAreaEntryEdited
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
@@ -65,7 +65,6 @@ function conditionGroup(element, moddle, label, description, commandStack) {
       id: `condition_expression`,
       element,
       component: ConditionExpressionTextField,
-      isEdited: isTextAreaEntryEdited,
       moddle,
       label,
       description,
