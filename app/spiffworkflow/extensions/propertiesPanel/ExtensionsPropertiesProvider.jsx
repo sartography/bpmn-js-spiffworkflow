@@ -3,6 +3,7 @@ import {
   ListGroup,
   CheckboxEntry,
   isCheckboxEntryEdited,
+  isTextAreaEntryEdited
 } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
@@ -321,16 +322,18 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
     label: translate('Instructions'),
     entries: [
       {
+        id: 'extension_spiffworkflow:InstructionsForEndUser',
         element,
         moddle,
         commandStack,
         component: SpiffExtensionTextArea,
         name: 'spiffworkflow:InstructionsForEndUser',
         label: 'Instructions',
-        description:
-          'Displayed above user forms or when this task is executing.',
+        description: 'Displayed above user forms or when this task is executing.',
+        isEdited: isTextAreaEntryEdited
       },
       {
+        id: 'extension_spiffworkflow:InstructionsForEndUser',
         element,
         moddle,
         commandStack,
