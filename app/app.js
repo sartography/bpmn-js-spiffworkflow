@@ -53,6 +53,7 @@ try {
  *
  */
 bpmnModeler.on('spiff.service_tasks.requested', (event) => {
+  console.log('spiff.service_tasks.requested');
   event.eventBus.fire('spiff.service_tasks.returned', {
     serviceTaskOperators: [
       {

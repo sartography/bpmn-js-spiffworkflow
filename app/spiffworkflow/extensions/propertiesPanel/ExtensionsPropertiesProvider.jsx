@@ -457,7 +457,6 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       id: 'serviceTaskParameters',
       label: translate('Parameters'),
       component: ListGroup,
-      shouldSort: false,
       ...ServiceTaskParameterArray({
         element,
         moddle,
