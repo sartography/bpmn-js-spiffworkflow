@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" id="Definitions_96f6665" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.0.0-dev">
+  <bpmn:message id="mje-process-receive-manual-entry-response" name="mje-process-receive-manual-entry-response" />
+  <bpmn:message id="mje-process-approval-bot-collect" name="mje-process-approval-bot-collect" />
+  <bpmn:process id="Process_0xyrvu1">
+    <bpmn:receiveTask id="ActivityA" name="A" messageRef="messageA" spiffworkflow:isMatchingCorrelation="true">
+      <bpmn:extensionElements>
+        <spiffworkflow:processVariableCorrelation>
+          <spiffworkflow:propertyId>old_name</spiffworkflow:propertyId>
+          <spiffworkflow:expression>"a"</spiffworkflow:expression>
+        </spiffworkflow:processVariableCorrelation>
+        <spiffworkflow:messageVariable>varA</spiffworkflow:messageVariable>
+      </bpmn:extensionElements>
+    </bpmn:receiveTask>
+    <bpmn:receiveTask id="ActivityB" name="B" messageRef="messageB" spiffworkflow:isMatchingCorrelation="true">
+      <bpmn:extensionElements>
+        <spiffworkflow:processVariableCorrelation>
+          <spiffworkflow:propertyId>old_name</spiffworkflow:propertyId>
+          <spiffworkflow:expression>"b"</spiffworkflow:expression>
+        </spiffworkflow:processVariableCorrelation>
+        <spiffworkflow:messageVariable>varB</spiffworkflow:messageVariable>
+      </bpmn:extensionElements>
+    </bpmn:receiveTask>
+  </bpmn:process>
+  <bpmn:message id="messageA" name="messageA" />
+  <bpmn:correlationProperty id="old_name" name="old_name">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="messageA">
+      <bpmn:formalExpression>old_exp</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+    <bpmn:correlationPropertyRetrievalExpression messageRef="messageB">
+      <bpmn:formalExpression>old_exp</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+  <bpmn:correlationKey id="CorrelationKey_0k8fal6" name="MainCorrelationKey">
+    <bpmn:correlationPropertyRef>old_name</bpmn:correlationPropertyRef>
+  </bpmn:correlationKey>
+  <bpmn:message id="messageB" name="messageB" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0xyrvu1">
+      <bpmndi:BPMNShape id="Activity_00v6mgb_di" bpmnElement="ActivityA">
+        <dc:Bounds x="590" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xdpm2k_di" bpmnElement="ActivityB">
+        <dc:Bounds x="750" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
