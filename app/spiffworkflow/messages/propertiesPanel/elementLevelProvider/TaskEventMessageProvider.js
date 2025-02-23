@@ -142,12 +142,13 @@ export function createMessageGroup(
 
   // Adding Correlation Conditions Section
   const isMatchingCorrelation = businessObject.get('spiffworkflow:isMatchingCorrelation');
+  const id = businessObject.get('messageRef')?.id ?? "undefined";
   if (isMatchingCorrelation && isMatchingCorrelation !== "false" && canReceiveMessage(element)) {
     results.push({
       id: "correlationConditions",
       label: translate('Matching Conditions'),
       ...MatchingCorrelationEntries({
-        idPrefix: businessObject.get('messageRef').id,
+        idPrefix: id,
         element,
         moddle,
         commandStack,
