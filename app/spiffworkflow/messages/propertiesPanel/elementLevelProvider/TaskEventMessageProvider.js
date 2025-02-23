@@ -147,6 +147,7 @@ export function createMessageGroup(
       id: "correlationConditions",
       label: translate('Matching Conditions'),
       ...MatchingCorrelationEntries({
+        idPrefix: businessObject.get('messageRef').id,
         element,
         moddle,
         commandStack,

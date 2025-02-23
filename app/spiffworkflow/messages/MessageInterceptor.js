@@ -1,5 +1,5 @@
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
-import { isMessageElement, isMessageRefUsed, setParentCorrelationKeys, synCorrleationProperties, getRoot} from './MessageHelpers';
+import { isMessageElement, isMessageRefUsed, setParentCorrelationKeys, syncCorrelationProperties, getRoot} from './MessageHelpers';
 
 const HIGH_PRIORITY = 90500;
 
@@ -38,7 +38,7 @@ export default class MessageInterceptor extends CommandInterceptor {
                     }
 
                     // Automatic deletion of previous message correlation properties
-                    synCorrleationProperties(shape, definitions, moddle);
+                    syncCorrelationProperties(shape, definitions, moddle);
                 }
 
                 // Update Correlation key if Process has collaboration

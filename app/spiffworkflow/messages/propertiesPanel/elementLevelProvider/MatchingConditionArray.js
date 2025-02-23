@@ -26,7 +26,7 @@ export function MatchingCorrelationEntries(props) {
     const entries = (correlationPropertyArray && correlationPropertyArray.length !== 0) ? correlationPropertyArray.map(
         (correlationPropertyModdleElement, index) => {
             return {
-                id: `${idPrefix}-correlation-property-name`,
+                id: `${idPrefix}-correlation-property-`,
                 component: MatchingConditionTextField,
                 correlationPropertyModdleElement,
                 element,

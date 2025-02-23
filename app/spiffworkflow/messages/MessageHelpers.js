@@ -182,7 +182,6 @@ export function findCorrelationPropertiesByMessage(element) {
 
   const { businessObject } = element;
   const root = getRoot(businessObject);
-  const correlationProperties = [];
 
   if (isMessageEvent(element)) {
     if (
@@ -197,27 +196,29 @@ export function findCorrelationPropertiesByMessage(element) {
     if (!businessObject.messageRef) return;
     messageId = businessObject.messageRef.id;
   }
+  return findCorrelationPropertiesByMessageId(messageId, root)
+}
 
-  if (isIterable(root.rootElements)) {
-    for (const rootElement of root.rootElements) {
-      if (rootElement.$type === 'bpmn:CorrelationProperty') {
-        rootElement.correlationPropertyRetrievalExpression =
-          rootElement.correlationPropertyRetrievalExpression
-            ? rootElement.correlationPropertyRetrievalExpression
-            : [];
-        const existingExpressionIndex =
-          rootElement.correlationPropertyRetrievalExpression.findIndex(
-            (retrievalExpr) =>
-              retrievalExpr.messageRef &&
-              retrievalExpr.messageRef.id === messageId,
-          );
-        existingExpressionIndex !== -1
-          ? correlationProperties.push(rootElement)
-          : null;
-      }
+export function findCorrelationPropertiesByMessageId(messageId, root) {
+  const correlationProperties = [];
+
+  for (const rootElement of root.rootElements) {
+    if (rootElement.$type === 'bpmn:CorrelationProperty') {
+      rootElement.correlationPropertyRetrievalExpression =
+        rootElement.correlationPropertyRetrievalExpression
+          ? rootElement.correlationPropertyRetrievalExpression
+          : [];
+      const existingExpressionIndex =
+        rootElement.correlationPropertyRetrievalExpression.findIndex(
+          (retrievalExpr) =>
+            retrievalExpr.messageRef &&
+            retrievalExpr.messageRef.id === messageId,
+        );
+      existingExpressionIndex !== -1
+        ? correlationProperties.push(rootElement)
+        : null;
     }
   }
-
   return correlationProperties;
 }
 
@@ -819,7 +820,7 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
   return mainCorrelationKey;
 }
 
-export function synCorrleationProperties(
+export function syncCorrelationProperties(
   element,
   definitions,
   moddle,
@@ -874,5 +875,33 @@ export function synCorrleationProperties(
         definitions.rootElements.splice(index, 1);
       }
     }
+  }
+}
+
+export function deleteMessage(definitions, messageId) {
+  const rootElements = definitions.rootElements;
+
+  // Delete correlation retrieval expressions (Which live outside the message)
+  const corProps = findCorrelationPropertiesByMessage
+
+  // Delete the message object
+  const index = rootElements.findIndex(
+    (element) =>
+      element.$type === 'bpmn:Message' && element.id === messageId
+  );
+  if (rootElements && index !== -1) {
+    rootElements.splice(index, 1);
+    definitions.rootElements = rootElements;
+  }
+
+  // Delete retrieval expressions related to message
+  const props = findCorrelationPropertiesByMessageId(messageId, definitions)
+  for (let prop of props) {
+    let propIndex = prop.correlationPropertyRetrievalExpression.findIndex(
+      (retrievalExpr) =>
+        retrievalExpr.messageRef &&
+        retrievalExpr.messageRef.id === messageId,
+    );
+    prop.correlationPropertyRetrievalExpression.splice(propIndex, 1);
   }
 }

@@ -10,7 +10,8 @@ import {
   isMessageEvent,
   isMessageRefUsed,
   setParentCorrelationKeys,
-  synCorrleationProperties,
+  syncCorrelationProperties,
+  deleteMessage
 } from '../../MessageHelpers';
 import { SPIFF_ADD_MESSAGE_RETURNED_EVENT } from '../../../constants';
 
@@ -80,8 +81,7 @@ export function MessageSelect(props) {
     }
 
     if (oldMessageRef) {
-      cleanupOldMessage(definitions, oldMessageRef.id);
-      synCorrleationProperties(element, definitions, moddle, messageObject);
+      syncCorrelationProperties(element, definitions, moddle, messageObject);
     }
 
     try {
@@ -111,6 +111,16 @@ export function MessageSelect(props) {
       correlation_properties: cProperties,
     };
 
+    // Delete the original message object if one exists, so we can replace it with the new definition.
+    const { businessObject } = element;
+    const definitions = getRoot(businessObject);
+    let oldMessage = findMessageById(definitions, newMsg.identifier);
+    if(oldMessage) {
+      deleteMessage(definitions, oldMessage.id);
+    }
+
+
+    // Update the list of options to display
     spiffExtensionOptions['spiff.messages'] =
       Array.isArray(spiffExtensionOptions['spiff.messages']) &&
       spiffExtensionOptions['spiff.messages']
@@ -241,19 +251,5 @@ function findMessageObject(messageId) {
     };
   } else {
     return null;
-  }
-}
-
-function cleanupOldMessage(definitions, oldMessageId) {
-  if (!isMessageRefUsed(definitions, oldMessageId)) {
-    const rootElements = definitions.rootElements;
-    const oldMessageIndex = rootElements.findIndex(
-      (element) =>
-        element.$type === 'bpmn:Message' && element.id === oldMessageId
-    );
-    if (rootElements && oldMessageIndex !== -1) {
-      rootElements.splice(oldMessageIndex, 1);
-      definitions.rootElements = rootElements;
-    }
   }
 }

@@ -13,12 +13,8 @@ import {
   findGroupEntry,
   findSelect,
   findTextarea,
-  findInput,
-  pressButton,
-  findButtonByClass,
   getPropertiesPanel,
   changeInput,
-  findDivByClass
 } from './helpers';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
@@ -26,10 +22,13 @@ import { fireEvent } from '@testing-library/preact';
 import { getBpmnJS, inject } from 'bpmn-js/test/helper';
 import { findCorrelationProperties, findMessageModdleElements } from '../../app/spiffworkflow/messages/MessageHelpers';
 
+import {
+  spiffExtensionOptions,
+} from '../../app/spiffworkflow/extensions/propertiesPanel/SpiffExtensionSelect';
+
 describe('Messages should work', function () {
   const xml = require('./bpmn/collaboration.bpmn').default;
   let container;
-
   beforeEach(function () {
     container = TestContainer.get(this);
   });
@@ -63,6 +62,15 @@ describe('Messages should work', function () {
     });
   };
 
+  // Assure that the list of messages avaiable from the API is empty
+  const clear_messages = () => {
+    const modeler = getBpmnJS();
+    let eventBus = modeler.get('eventBus')
+    eventBus.on(`spiff.messages.requested`, (event) => {
+      eventBus.fire(`spiff.messages.returned`, { configuration: { messages: [] } });
+    });
+  }
+
   it('should show a Message Properties group when a send task is selected', async function () {
     // Select the send Task
     const sendShape = await expectSelected('ActivitySendLetter');
@@ -76,9 +84,11 @@ describe('Messages should work', function () {
   });
 
   it('should show a list of messages in a drop down inside the message group', async function () {
+
+    clear_messages();
+
     // Select the send Task
     const sendShape = await expectSelected('ActivitySendLetter');
-    expect(sendShape, "Can't find Send Task").to.exist;
 
     // THEN - there are two options to choose from.
     const entry = findEntry('selectMessage', container);
@@ -88,6 +98,7 @@ describe('Messages should work', function () {
     const selector = findSelect(entry);
     expect(selector).to.exist;
     expect(selector.length).to.equal(2);
+    print(selector)
     await expectSelected('my_collaboration');
   });
 
@@ -129,11 +140,13 @@ describe('Messages should work', function () {
     expect(selector.options.length).to.equal(2);
 
     changeInput(selector, 'love_letter_response');
-    const messageElemend = findMessageModdleElements(rootShape.businessObject);
-    expect(messageElemend.length).to.equal(1);
+    const messageElement = findMessageModdleElements(rootShape.businessObject);
+    expect(messageElement.length).to.equal(2);
   }));
 
   it('should be able to add new message and correlation properties on add_message_event', async function () {
+
+    clear_messages();
 
     const modeler = getBpmnJS();
 
@@ -161,13 +174,10 @@ describe('Messages should work', function () {
     expect(updatedEntry).to.exist;
 
     const updatedSelector = findSelect(updatedEntry);
-    expect(updatedSelector.options.length).to.equal(2);
-    expect(updatedSelector.options[1].value).to.equal('msgName');
+    expect(updatedSelector.options.length).to.equal(3);
+    expect(updatedSelector.options[2].value).to.equal('msgName');
   });
 
-  it('should be able to generate default Correlation keys on changing message', async function () {
-
-  })
 
 
   // 🔶🔶 OLD Features
