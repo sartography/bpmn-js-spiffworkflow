@@ -22,9 +22,6 @@ import { fireEvent } from '@testing-library/preact';
 import { getBpmnJS, inject } from 'bpmn-js/test/helper';
 import { findCorrelationProperties, findMessageModdleElements } from '../../app/spiffworkflow/messages/MessageHelpers';
 
-import {
-  spiffExtensionOptions,
-} from '../../app/spiffworkflow/extensions/propertiesPanel/SpiffExtensionSelect';
 
 describe('Messages should work', function () {
   const xml = require('./bpmn/collaboration.bpmn').default;
