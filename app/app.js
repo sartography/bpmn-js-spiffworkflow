@@ -309,6 +309,16 @@ bpmnModeler.on('elements.changed', event => {
 
 bpmnModeler.importXML(diagramXML).then(() => {});
 
+// Use this to simulate an add/update from the message editor.
+// bpmnModeler.on('spiff.message.edit', (event) => {
+//   event.eventBus.fire('spiff.add_message.returned', {
+//     elementId: "ActivityA",
+//     name: "messageA",
+//     correlation_properties:
+//       { "new_name": { retrieval_expression: "new_exp" }}
+//   });
+// });
+
 // This handles the download and upload buttons - it isn't specific to
 // the BPMN modeler or these extensions, just a quick way to allow you to
 // create and save files, so keeping it outside the example.
