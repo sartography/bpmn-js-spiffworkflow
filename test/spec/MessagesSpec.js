@@ -98,7 +98,7 @@ describe('Messages should work', function () {
     const selector = findSelect(entry);
     expect(selector).to.exist;
     expect(selector.length).to.equal(2);
-    print(selector)
+    console.log(selector);
     await expectSelected('my_collaboration');
   });
 
