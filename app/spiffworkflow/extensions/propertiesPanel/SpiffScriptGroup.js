@@ -55,8 +55,11 @@ function LaunchEditorButton(props) {
         script,
         eventBus,
       });
-      // Listen for a response, to update the script.
-      eventBus.once('spiff.script.update', (event) => {
+      
+      const saver = event => {
+        console.log('spiff.script.saveXXX');
+        if (event.element !== element) return;
+        console.log('spiff.script.save', event);
         updateScript(
           commandStack,
           moddle,
@@ -64,7 +67,18 @@ function LaunchEditorButton(props) {
           event.scriptType,
           event.script
         );
-      });
+      };
+
+      const updater = event => {
+        console.log('spiff.script.updateXXX');
+        if (event.element !== element) return;
+        console.log('spiff.script.update', event);
+        saver(event);
+        eventBus.off('spiff.script.update', updater);
+      };
+
+      eventBus.on('spiff.script.save', saver);
+      eventBus.on('spiff.script.update', updater);
     },
     children: 'Launch Editor',
   });

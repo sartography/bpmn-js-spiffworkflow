@@ -90,6 +90,7 @@ const myCodeMirror = CodeMirror(document.getElementById('code_editor'), {
 });
 
 const saveCodeBtn = document.getElementById('saveCode');
+const saveAndCloseCodeBtn = document.getElementById('saveAndCloseCode');
 let launchCodeEvent = null;
 
 bpmnModeler.on('spiff.script.edit', (newEvent) => {
@@ -103,6 +104,15 @@ bpmnModeler.on('spiff.script.edit', (newEvent) => {
 });
 
 saveCodeBtn.addEventListener('click', (_event) => {
+  const { scriptType, element } = launchCodeEvent;
+  launchCodeEvent.eventBus.fire('spiff.script.save', {
+    element,
+    scriptType,
+    script: myCodeMirror.getValue(),
+  });
+});
+
+saveAndCloseCodeBtn.addEventListener('click', (_event) => {
   const { scriptType, element } = launchCodeEvent;
   launchCodeEvent.eventBus.fire('spiff.script.update', {
     element,
