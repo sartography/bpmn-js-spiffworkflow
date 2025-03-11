@@ -46,3 +46,13 @@ export function processId(id) {
   }
   return processedId;
 }
+
+export function checkIfServiceTaskHasParameters(extensionElements) {
+  let hasParameters = false;
+  extensionElements.values.forEach((item) => {
+    if ("parameterList" in item && "parameters" in item.parameterList && typeof (item.parameterList.parameters) !== "undefined") {
+      hasParameters = true
+    }
+  })
+  return hasParameters;
+}

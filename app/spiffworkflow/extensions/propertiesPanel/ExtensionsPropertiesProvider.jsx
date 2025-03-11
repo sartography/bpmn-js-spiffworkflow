@@ -23,6 +23,7 @@ import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 import { SpiffExtensionCheckboxEntry } from './SpiffExtensionCheckboxEntry';
 import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { setExtensionValue } from '../extensionHelpers';
+import { checkIfServiceTaskHasParameters } from '../../helpers'
 
 const LOW_PRIORITY = 500;
 
@@ -34,7 +35,7 @@ export default function ExtensionsPropertiesProvider(
   elementRegistry,
 ) {
   this.getGroups = function (element) {
-    return function(groups) {
+    return function (groups) {
       if (is(element, 'bpmn:ScriptTask')) {
         groups.push(
           createScriptGroup(element, translate, moddle, commandStack),
@@ -88,7 +89,7 @@ export default function ExtensionsPropertiesProvider(
           createSignalButtonGroup(element, translate, moddle, commandStack),
         );
       }
-      
+
       if (is(element, 'bpmn:ServiceTask')) {
         groups.push(
           createServiceGroup(element, translate, moddle, commandStack),
@@ -451,8 +452,8 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       translate,
     },
   ];
-  if (typeof(element.businessObject.extensionElements) !== 'undefined' &&
-      typeof(element.businessObject.extensionElements.values[0].parameterList.parameters) !== 'undefined') {
+  if (typeof (element.businessObject.extensionElements) !== 'undefined' &&
+    checkIfServiceTaskHasParameters(element.businessObject.extensionElements)) {
     entries.push({
       id: 'serviceTaskParameters',
       label: translate('Parameters'),
