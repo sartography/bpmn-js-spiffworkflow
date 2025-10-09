@@ -270,6 +270,15 @@ function createUserGroup(element, translate, moddle, commandStack) {
         listenFunction: updateExtensionProperties,
         description: translate('Edit the form schema'),
       },
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionTextInput,
+        name: 'spiffworkflow:VariableName',
+        label: 'Variable Name',
+        description: 'Store form results in this variable',
+      },
     ],
   };
 }
