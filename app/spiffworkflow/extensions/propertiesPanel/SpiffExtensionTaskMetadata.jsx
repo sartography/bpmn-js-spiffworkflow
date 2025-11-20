@@ -82,13 +82,6 @@ export function SpiffExtensionTaskMetadata(props) {
 
     return (
         <>
-            <div className="bio-properties-panel-entry">
-                <div className="bio-properties-panel-description">
-                    {translate(
-                        'Value is an expression, so if you want a string, surround it in double quotes.'
-                    )}
-                </div>
-            </div>
             {metadataKeys.map((keyEntry) => {
                 const key = typeof keyEntry === 'string' ? keyEntry : keyEntry.name;
                 if (!key) return null;
