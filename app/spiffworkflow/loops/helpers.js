@@ -5,13 +5,11 @@ export function getLoopProperty(element, propertyName) {
   const { loopCharacteristics } = element.businessObject;
   const prop = loopCharacteristics.get(propertyName);
   let value = '';
-  if (typeof (prop) !== 'object') {
+  if (typeof prop !== 'object') {
     value = prop;
-  } else if (typeof (prop) !== 'undefined') {
-    if (prop.$type === 'bpmn:FormalExpression')
-      value = prop.get('body');
-    else
-      value = prop.get('id');
+  } else if (typeof prop !== 'undefined') {
+    if (prop.$type === 'bpmn:FormalExpression') value = prop.get('body');
+    else value = prop.get('id');
   }
   return value;
 }
@@ -19,13 +17,15 @@ export function getLoopProperty(element, propertyName) {
 export function setLoopProperty(element, propertyName, value, commandStack) {
   const { loopCharacteristics } = element.businessObject;
 
-  if (typeof (value) === 'object') {
+  if (typeof value === 'object') {
     value.$parent = loopCharacteristics;
   }
 
   const properties = { [propertyName]: value };
-  if (propertyName === 'loopCardinality') properties.loopDataInputRef = undefined;
-  if (propertyName === 'loopDataInputRef') properties.loopCardinality = undefined;
+  if (propertyName === 'loopCardinality')
+    properties.loopDataInputRef = undefined;
+  if (propertyName === 'loopDataInputRef')
+    properties.loopCardinality = undefined;
 
   commandStack.execute('element.updateModdleProperties', {
     element,

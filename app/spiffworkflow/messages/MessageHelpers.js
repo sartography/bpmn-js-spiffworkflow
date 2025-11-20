@@ -102,7 +102,7 @@ export function findCorrelationKeyForCorrelationProperty(shapeElement, moddle) {
 }
 
 export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
-  shapeElement,
+  shapeElement
 ) {
   const formalExpressions = [];
   const messageRefElement = getMessageRefElement(shapeElement);
@@ -114,7 +114,7 @@ export function findCorrelationPropertiesAndRetrievalExpressionsForMessage(
           const retrievalExpression =
             getRetrievalExpressionFromCorrelationProperty(
               childElement,
-              messageRefElement,
+              messageRefElement
             );
           if (retrievalExpression) {
             const formalExpression = {
@@ -147,7 +147,7 @@ export function getMessageElementForShapeElement(shapeElement) {
 
 function getRetrievalExpressionFromCorrelationProperty(
   correlationProperty,
-  message,
+  message
 ) {
   if (correlationProperty.correlationPropertyRetrievalExpression) {
     for (const retrievalExpression of correlationProperty.correlationPropertyRetrievalExpression) {
@@ -196,7 +196,7 @@ export function findCorrelationPropertiesByMessage(element) {
     if (!businessObject.messageRef) return;
     messageId = businessObject.messageRef.id;
   }
-  return findCorrelationPropertiesByMessageId(messageId, root)
+  return findCorrelationPropertiesByMessageId(messageId, root);
 }
 
 export function findCorrelationPropertiesByMessageId(messageId, root) {
@@ -212,7 +212,7 @@ export function findCorrelationPropertiesByMessageId(messageId, root) {
         rootElement.correlationPropertyRetrievalExpression.findIndex(
           (retrievalExpr) =>
             retrievalExpr.messageRef &&
-            retrievalExpr.messageRef.id === messageId,
+            retrievalExpr.messageRef.id === messageId
         );
       existingExpressionIndex !== -1
         ? correlationProperties.push(rootElement)
@@ -287,7 +287,7 @@ export function createOrUpdateCorrelationProperties(
   commandStack,
   element,
   propertiesConfig,
-  messageId,
+  messageId
 ) {
   let definitions = getRoot(element.businessObject);
 
@@ -297,7 +297,7 @@ export function createOrUpdateCorrelationProperties(
       if (isMessageIdInRetrievalExpressions(propConfig, messageId)) {
         let correlationProperty = findCorrelationPropertyById(
           definitions,
-          propConfig.id,
+          propConfig.id
         );
 
         // If the correlationProperty does not exist, create it
@@ -319,14 +319,14 @@ export function createOrUpdateCorrelationProperties(
             correlationProperty.correlationPropertyRetrievalExpression.findIndex(
               (retrievalExpr) =>
                 retrievalExpr.messageRef &&
-                retrievalExpr.messageRef.id === messageId,
+                retrievalExpr.messageRef.id === messageId
             );
           if (expr.message_ref == messageId && existingExpressionIndex === -1) {
             const retrievalExpression = bpmnFactory.create(
-              'bpmn:CorrelationPropertyRetrievalExpression',
+              'bpmn:CorrelationPropertyRetrievalExpression'
             );
             const formalExpression = bpmnFactory.create(
-              'bpmn:FormalExpression',
+              'bpmn:FormalExpression'
             );
             formalExpression.body = expr.formal_expression
               ? expr.formal_expression
@@ -334,11 +334,11 @@ export function createOrUpdateCorrelationProperties(
             retrievalExpression.messagePath = formalExpression;
             const msgElement = findMessageElement(
               element.businessObject,
-              expr.message_ref,
+              expr.message_ref
             );
             retrievalExpression.messageRef = msgElement;
             correlationProperty.correlationPropertyRetrievalExpression.push(
-              retrievalExpression,
+              retrievalExpression
             );
           }
         });
@@ -346,7 +346,7 @@ export function createOrUpdateCorrelationProperties(
         const existingIndex = definitions.rootElements.findIndex(
           (element) =>
             element.id === correlationProperty.id &&
-            element.$type === correlationProperty.$type,
+            element.$type === correlationProperty.$type
         );
 
         if (existingIndex !== -1) {
@@ -371,7 +371,7 @@ export function createOrUpdateCorrelationPropertiesV2(
   commandStack,
   element,
   propertiesConfig,
-  messageId,
+  messageId
 ) {
   let definitions = getRoot(element.businessObject);
   if (propertiesConfig) {
@@ -379,7 +379,7 @@ export function createOrUpdateCorrelationPropertiesV2(
     for (const propConfig of propertiesConfig) {
       let correlationProperty = findCorrelationPropertyById(
         definitions,
-        propConfig.identifier,
+        propConfig.identifier
       );
 
       const msgElement = findMessageElement(element.businessObject, messageId);
@@ -400,12 +400,12 @@ export function createOrUpdateCorrelationPropertiesV2(
         correlationProperty.correlationPropertyRetrievalExpression.findIndex(
           (retrievalExpr) =>
             retrievalExpr.messageRef &&
-            retrievalExpr.messageRef.id === messageId,
+            retrievalExpr.messageRef.id === messageId
         );
 
       if (existingExpressionIndex === -1) {
         const retrievalExpression = bpmnFactory.create(
-          'bpmn:CorrelationPropertyRetrievalExpression',
+          'bpmn:CorrelationPropertyRetrievalExpression'
         );
         const formalExpression = bpmnFactory.create('bpmn:FormalExpression');
         formalExpression.body = propConfig.retrieval_expression
@@ -414,7 +414,7 @@ export function createOrUpdateCorrelationPropertiesV2(
         retrievalExpression.messagePath = formalExpression;
         retrievalExpression.messageRef = msgElement;
         correlationProperty.correlationPropertyRetrievalExpression.push(
-          retrievalExpression,
+          retrievalExpression
         );
       } else {
         const existingRetrievalExpression =
@@ -431,7 +431,7 @@ export function createOrUpdateCorrelationPropertiesV2(
       const existingIndex = definitions.rootElements.findIndex(
         (element) =>
           element.id === correlationProperty.id &&
-          element.$type === correlationProperty.$type,
+          element.$type === correlationProperty.$type
       );
 
       if (existingIndex !== -1) {
@@ -518,17 +518,17 @@ export function isMessageRefUsed(definitions, messageRef) {
 
 function isMessageIdInRetrievalExpressions(propConfig, messageId) {
   return propConfig.retrieval_expressions.some(
-    (expr) => expr.message_ref === messageId,
+    (expr) => expr.message_ref === messageId
   );
 }
 
 function isMessageRefInCorrelationPropertiesRetrivalExpression(
   correlationProperty,
-  messageRef,
+  messageRef
 ) {
   return correlationProperty.correlationPropertyRetrievalExpression
     ? correlationProperty.correlationPropertyRetrievalExpression.some(
-        (expr) => expr.messageRef === messageRef,
+        (expr) => expr.messageRef === messageRef
       )
     : false;
 }
@@ -538,13 +538,13 @@ export function createNewCorrelationProperty(
   element,
   moddle,
   commandStack,
-  messageRef,
+  messageRef
 ) {
   const rootElement = getRoot(element.businessObject);
   const { rootElements } = rootElement;
 
   const newCorrelationPropertyElement = moddle.create(
-    'bpmn:CorrelationProperty',
+    'bpmn:CorrelationProperty'
   );
 
   const correlationPropertyId = moddle.ids.nextPrefixed('CorrelationProperty_');
@@ -555,14 +555,14 @@ export function createNewCorrelationProperty(
 
   if (messageRef) {
     const retrievalExpression = moddle.create(
-      'bpmn:CorrelationPropertyRetrievalExpression',
+      'bpmn:CorrelationPropertyRetrievalExpression'
     );
     const formalExpression = moddle.create('bpmn:FormalExpression');
     formalExpression.body = '';
     retrievalExpression.messagePath = formalExpression;
     retrievalExpression.messageRef = messageRef;
     newCorrelationPropertyElement.correlationPropertyRetrievalExpression.push(
-      retrievalExpression,
+      retrievalExpression
     );
   }
 
@@ -579,7 +579,7 @@ export function createNewCorrelationKey(
   element,
   moddle,
   commandStack,
-  messageRef,
+  messageRef
 ) {
   if (element.type === 'bpmn:Collaboration') {
     const newCorrelationKeyElement = moddle.create('bpmn:CorrelationKey');
@@ -627,7 +627,7 @@ export function setMessageRefToListofCorrelationProperties(
   correlationPropertyIDs,
   element,
   moddle,
-  commandStack,
+  commandStack
 ) {
   let definitions = getRoot(element.businessObject);
   if (definitions) {
@@ -637,11 +637,11 @@ export function setMessageRefToListofCorrelationProperties(
         correlationPropertyIDs.includes(rootElement.id) &&
         !isMessageRefInCorrelationPropertiesRetrivalExpression(
           rootElement,
-          messageRef,
+          messageRef
         )
       ) {
         const retrievalExpression = moddle.create(
-          'bpmn:CorrelationPropertyRetrievalExpression',
+          'bpmn:CorrelationPropertyRetrievalExpression'
         );
         const formalExpression = moddle.create('bpmn:FormalExpression');
         formalExpression.body = '';
@@ -649,7 +649,7 @@ export function setMessageRefToListofCorrelationProperties(
         retrievalExpression.messageRef = messageRef;
         rootElement.correlationPropertyRetrievalExpression
           ? rootElement.correlationPropertyRetrievalExpression.push(
-              retrievalExpression,
+              retrievalExpression
             )
           : (rootElement.correlationPropertyRetrievalExpression = [
               retrievalExpression,
@@ -659,12 +659,12 @@ export function setMessageRefToListofCorrelationProperties(
         !correlationPropertyIDs.includes(rootElement.id) &&
         isMessageRefInCorrelationPropertiesRetrivalExpression(
           rootElement,
-          messageRef,
+          messageRef
         )
       ) {
         rootElement.correlationPropertyRetrievalExpression =
           rootElement.correlationPropertyRetrievalExpression.filter(
-            (expr) => expr.messageRef !== messageRef,
+            (expr) => expr.messageRef !== messageRef
           );
       }
     });
@@ -674,7 +674,7 @@ export function setMessageRefToListofCorrelationProperties(
 export function getCorrelationPropertiesIDsFiltredByMessageRef(
   businessObject,
   moddle,
-  messageRef,
+  messageRef
 ) {
   const root = getRoot(businessObject, moddle);
   const IDs = [];
@@ -684,7 +684,7 @@ export function getCorrelationPropertiesIDsFiltredByMessageRef(
         rootElement.$type === 'bpmn:CorrelationProperty' &&
         isMessageRefInCorrelationPropertiesRetrivalExpression(
           rootElement,
-          messageRef,
+          messageRef
         )
       ) {
         IDs.push({
@@ -696,7 +696,7 @@ export function getCorrelationPropertiesIDsFiltredByMessageRef(
         rootElement.$type === 'bpmn:CorrelationProperty' &&
         !isMessageRefInCorrelationPropertiesRetrivalExpression(
           rootElement,
-          messageRef,
+          messageRef
         )
       ) {
         IDs.push({
@@ -714,19 +714,19 @@ export function setParentCorrelationKeys(
   definitions,
   bpmnFactory,
   element,
-  moddle,
+  moddle
 ) {
   // Retrieve all correlation properties
   let correlationProperties = findCorrelationProperties(
     element.businessObject,
-    moddle,
+    moddle
   );
   correlationProperties = correlationProperties || [];
 
   let mainCorrelationKey = findOrCreateMainCorrelationKey(
     definitions,
     bpmnFactory,
-    moddle,
+    moddle
   );
 
   // Clear existing ones
@@ -785,7 +785,7 @@ export function setParentCorrelationKeys(
       .find(
         (key) =>
           key.$type === 'bpmn:CorrelationKey' &&
-          key.name === 'MainCorrelationKey',
+          key.name === 'MainCorrelationKey'
       );
 
     if (!existingKey) {
@@ -806,7 +806,7 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
     .find(
       (element) =>
         element.$type === 'bpmn:CorrelationKey' &&
-        element.name === 'MainCorrelationKey',
+        element.name === 'MainCorrelationKey'
     );
 
   if (!mainCorrelationKey) {
@@ -824,7 +824,7 @@ export function syncCorrelationProperties(
   element,
   definitions,
   moddle,
-  msgObject,
+  msgObject
 ) {
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
@@ -834,7 +834,11 @@ export function syncCorrelationProperties(
     let isUsed = false;
     for (const cpExpression of cProperty.correlationPropertyRetrievalExpression) {
       const msgRef = cpExpression.messageRef
-        ? findMessageElement(businessObject, cpExpression.messageRef.id, definitions)
+        ? findMessageElement(
+            businessObject,
+            cpExpression.messageRef.id,
+            definitions
+          )
         : undefined;
       isUsed =
         msgRef &&
@@ -867,7 +871,7 @@ export function syncCorrelationProperties(
       (msgObject &&
         msgObject.correlation_properties &&
         msgObject.correlation_properties.some(
-          (obj) => obj.identifier === cProperty.id,
+          (obj) => obj.identifier === cProperty.id
         ));
     if (!propertyToBeDeleted) {
       const index = definitions.get('rootElements').indexOf(cProperty);
@@ -882,12 +886,11 @@ export function deleteMessage(definitions, messageId) {
   const rootElements = definitions.rootElements;
 
   // Delete correlation retrieval expressions (Which live outside the message)
-  const corProps = findCorrelationPropertiesByMessage
+  const corProps = findCorrelationPropertiesByMessage;
 
   // Delete the message object
   const index = rootElements.findIndex(
-    (element) =>
-      element.$type === 'bpmn:Message' && element.id === messageId
+    (element) => element.$type === 'bpmn:Message' && element.id === messageId
   );
   if (rootElements && index !== -1) {
     rootElements.splice(index, 1);
@@ -895,12 +898,11 @@ export function deleteMessage(definitions, messageId) {
   }
 
   // Delete retrieval expressions related to message
-  const props = findCorrelationPropertiesByMessageId(messageId, definitions)
+  const props = findCorrelationPropertiesByMessageId(messageId, definitions);
   for (let prop of props) {
     let propIndex = prop.correlationPropertyRetrievalExpression.findIndex(
       (retrievalExpr) =>
-        retrievalExpr.messageRef &&
-        retrievalExpr.messageRef.id === messageId,
+        retrievalExpr.messageRef && retrievalExpr.messageRef.id === messageId
     );
     prop.correlationPropertyRetrievalExpression.splice(propIndex, 1);
   }

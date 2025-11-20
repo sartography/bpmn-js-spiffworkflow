@@ -9,15 +9,14 @@ import { DataObjectArray } from './DataObjectArray';
  * @returns {[{component: (function(*)), isEdited: *, id: string, element},{component:
  * (function(*)), isEdited: *, id: string, element}]}
  */
-export default function(element, moddle) {
-
+export default function (element, moddle) {
   const groupSections = [];
   const dataObjectArray = {
     id: 'editDataObjects',
     element,
     label: 'Available Data Objects',
     component: ListGroup,
-    ...DataObjectArray({ element, moddle })
+    ...DataObjectArray({ element, moddle }),
   };
 
   if (dataObjectArray.items) {
@@ -26,5 +25,3 @@ export default function(element, moddle) {
 
   return groupSections;
 }
-
-

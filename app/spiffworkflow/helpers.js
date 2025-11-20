@@ -37,7 +37,6 @@ export function getRoot(businessObject, moddle) {
   return businessObject;
 }
 
-
 export function processId(id) {
   let trimmedId = id.trim();
   let processedId = trimmedId.replace(/\s+/g, '');
@@ -50,9 +49,13 @@ export function processId(id) {
 export function checkIfServiceTaskHasParameters(extensionElements) {
   let hasParameters = false;
   extensionElements.values.forEach((item) => {
-    if ("parameterList" in item && "parameters" in item.parameterList && typeof (item.parameterList.parameters) !== "undefined") {
-      hasParameters = true
+    if (
+      'parameterList' in item &&
+      'parameters' in item.parameterList &&
+      typeof item.parameterList.parameters !== 'undefined'
+    ) {
+      hasParameters = true;
     }
-  })
+  });
   return hasParameters;
 }

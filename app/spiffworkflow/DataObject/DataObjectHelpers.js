@@ -5,8 +5,7 @@
  */
 
 export function findDataObjects(parent, dataObjects) {
-  if (typeof (dataObjects) === 'undefined')
-    dataObjects = [];
+  if (typeof dataObjects === 'undefined') dataObjects = [];
   let process;
   if (!parent) {
     return [];
@@ -18,10 +17,9 @@ export function findDataObjects(parent, dataObjects) {
     if (process.$type === 'bpmn:SubProcess')
       findDataObjects(process.$parent, dataObjects);
   }
-  if (typeof (process.flowElements) !== 'undefined') {
+  if (typeof process.flowElements !== 'undefined') {
     for (const element of process.flowElements) {
-      if (element.$type === 'bpmn:DataObject')
-        dataObjects.push(element);
+      if (element.$type === 'bpmn:DataObject') dataObjects.push(element);
     }
   }
   return dataObjects;
@@ -40,23 +38,27 @@ export function findDataObjectReferences(children, dataObjectId) {
     return [];
   }
   return children.flatMap((child) => {
-    if (child.$type == 'bpmn:DataObjectReference' && child.dataObjectRef.id == dataObjectId)
+    if (
+      child.$type == 'bpmn:DataObjectReference' &&
+      child.dataObjectRef.id == dataObjectId
+    )
       return [child];
     else if (child.$type == 'bpmn:SubProcess')
       return findDataObjectReferences(child.get('flowElements'), dataObjectId);
-    else
-      return [];
+    else return [];
   });
 }
 
 export function findDataObjectReferenceShapes(children, dataObjectId) {
   return children.flatMap((child) => {
-    if (child.type == 'bpmn:DataObjectReference' && child.businessObject.dataObjectRef.id == dataObjectId)
+    if (
+      child.type == 'bpmn:DataObjectReference' &&
+      child.businessObject.dataObjectRef.id == dataObjectId
+    )
       return [child];
     else if (child.type == 'bpmn:SubProcess')
       return findDataObjectReferenceShapes(child.children, dataObjectId);
-    else
-      return [];
+    else return [];
   });
 }
 
@@ -69,10 +71,21 @@ export function idToHumanReadableName(id) {
   }
 }
 
-export function updateDataObjectReferencesName(parent, nameValue, dataObjectId, commandStack) {
-  const references = findDataObjectReferenceShapes(parent.children, dataObjectId);
+export function updateDataObjectReferencesName(
+  parent,
+  nameValue,
+  dataObjectId,
+  commandStack
+) {
+  const references = findDataObjectReferenceShapes(
+    parent.children,
+    dataObjectId
+  );
   for (const ref of references) {
-    const stateName = ref.businessObject.dataState && ref.businessObject.dataState.name ? ref.businessObject.dataState.name : '';
+    const stateName =
+      ref.businessObject.dataState && ref.businessObject.dataState.name
+        ? ref.businessObject.dataState.name
+        : '';
     const newName = stateName ? `${nameValue} [${stateName}]` : nameValue;
     commandStack.execute('element.updateProperties', {
       element: ref,

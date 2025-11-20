@@ -21,14 +21,16 @@ const HIGH_PRIORITY = 1500;
  * 4) Don't allow someone to move a DataObjectReference from one process to another process.
  */
 export default class DataObjectInterceptor extends CommandInterceptor {
-
   constructor(eventBus, bpmnFactory, commandStack, bpmnUpdater) {
     super(eventBus);
 
     /* The default behavior is to move the data object into whatever object the reference is being created in.
      * If a data object already has a parent, don't change it.
      */
-    bpmnUpdater.updateSemanticParent = (businessObject, parentBusinessObject) => {
+    bpmnUpdater.updateSemanticParent = (
+      businessObject,
+      parentBusinessObject
+    ) => {
       // Special case for participant - which is a valid place to drop a data object, but it needs to be added
       // to the particpant's Process (which isn't directly accessible in BPMN.io
       let realParent = parentBusinessObject;
@@ -42,20 +44,24 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         // when the shape is deleted, but not interested in refactoring at the moment.
         if (realParent != null) {
           const flowElements = realParent.get('flowElements');
-          const existingElement = flowElements.find(i => i.id === 1);
+          const existingElement = flowElements.find((i) => i.id === 1);
           if (!existingElement) {
             flowElements.push(businessObject);
           }
         }
       } else if (is(businessObject, 'bpmn:DataObject')) {
         // For data objects, only update the flowElements for new data objects, and set the parent so it doesn't get moved.
-        if (typeof (businessObject.$parent) === 'undefined') {
+        if (typeof businessObject.$parent === 'undefined') {
           const flowElements = realParent.get('flowElements');
           flowElements.push(businessObject);
           businessObject.$parent = realParent;
         }
       } else {
-        bpmnUpdater.__proto__.updateSemanticParent.call(bpmnUpdater, businessObject, parentBusinessObject);
+        bpmnUpdater.__proto__.updateSemanticParent.call(
+          bpmnUpdater,
+          businessObject,
+          parentBusinessObject
+        );
       }
     };
 
@@ -131,15 +137,22 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         }
         const flowElements = parent.get('flowElements');
         collectionRemove(flowElements, shape.businessObject);
-        const references = findDataObjectReferences(flowElements, dataObject.id);
+        const references = findDataObjectReferences(
+          flowElements,
+          dataObject.id
+        );
         if (references.length === 0) {
           const dataFlowElements = dataObject.$parent.get('flowElements');
           collectionRemove(dataFlowElements, dataObject);
         }
       }
     });
-
   }
 }
 
-DataObjectInterceptor.$inject = ['eventBus', 'bpmnFactory', 'commandStack', 'bpmnUpdater'];
+DataObjectInterceptor.$inject = [
+  'eventBus',
+  'bpmnFactory',
+  'commandStack',
+  'bpmnUpdater',
+];

@@ -22,9 +22,9 @@ export default class IoInterceptor extends CommandInterceptor {
   constructor(eventBus, bpmnFactory, bpmnUpdater) {
     super(eventBus);
 
-    this.execute([ 'shape.create' ], HIGH_PRIORITY, function(event) {
+    this.execute(['shape.create'], HIGH_PRIORITY, function (event) {
       let context = event.context;
-      if ([ 'bpmn:DataInput', 'bpmn:DataOutput' ].includes(context.shape.type)) {
+      if (['bpmn:DataInput', 'bpmn:DataOutput'].includes(context.shape.type)) {
         let type = context.shape.type;
         let type_name = type.split(':')[1];
         let process = context.parent.businessObject;
@@ -49,21 +49,36 @@ export default class IoInterceptor extends CommandInterceptor {
       }
     });
 
-    this.execute([ 'shape.delete' ], HIGH_PRIORITY, function(event) {
+    this.execute(['shape.delete'], HIGH_PRIORITY, function (event) {
       let context = event.context;
-      if ([ 'bpmn:DataInput', 'bpmn:DataOutput' ].includes(context.shape.type)) {
+      if (['bpmn:DataInput', 'bpmn:DataOutput'].includes(context.shape.type)) {
         let type = context.shape.type;
         let process = context.shape.parent.businessObject;
         let ioSpec = assureIOSpecificationExists(process, bpmnFactory);
         if (type == 'bpmn:DataInput') {
-          collectionRemove(ioSpec.inputSets[0].get('dataInputRefs'), context.shape.businessObject);
-          collectionRemove(ioSpec.get('dataInputs'), context.shape.businessObject);
+          collectionRemove(
+            ioSpec.inputSets[0].get('dataInputRefs'),
+            context.shape.businessObject
+          );
+          collectionRemove(
+            ioSpec.get('dataInputs'),
+            context.shape.businessObject
+          );
         } else {
-          collectionRemove(ioSpec.outputSets[0].get('dataOutputRefs'), context.shape.businessObject);
-          collectionRemove(ioSpec.get('dataOutputs'), context.shape.businessObject);
+          collectionRemove(
+            ioSpec.outputSets[0].get('dataOutputRefs'),
+            context.shape.businessObject
+          );
+          collectionRemove(
+            ioSpec.get('dataOutputs'),
+            context.shape.businessObject
+          );
         }
         if (context.shape.di.$parent) {
-          collectionRemove(context.shape.di.$parent.planeElement, context.shape.di);
+          collectionRemove(
+            context.shape.di.$parent.planeElement,
+            context.shape.di
+          );
         }
         if (ioSpec.dataInputs.length === 0 && ioSpec.dataOutputs.length === 0) {
           process.ioSpecification = null;
@@ -72,11 +87,19 @@ export default class IoInterceptor extends CommandInterceptor {
     });
 
     // Stop propagation on executed, to avoid the BpmnUpdator.js from causing errors.
-    this.executed([ 'shape.delete', 'shape.create' ], HIGH_PRIORITY, function(event) {
-      if ([ 'bpmn:DataInput', 'bpmn:DataOutput' ].includes(event.context.shape.type)) {
-        event.stopPropagation(); // Don't let the main code execute, it will fail.
+    this.executed(
+      ['shape.delete', 'shape.create'],
+      HIGH_PRIORITY,
+      function (event) {
+        if (
+          ['bpmn:DataInput', 'bpmn:DataOutput'].includes(
+            event.context.shape.type
+          )
+        ) {
+          event.stopPropagation(); // Don't let the main code execute, it will fail.
+        }
       }
-    });
+    );
   }
 }
 
@@ -112,7 +135,4 @@ function assureIOSpecificationExists(process, bpmnFactory) {
   return ioSpecification;
 }
 
-
-
-IoInterceptor.$inject = [ 'eventBus', 'bpmnFactory', 'bpmnUpdater' ];
-
+IoInterceptor.$inject = ['eventBus', 'bpmnFactory', 'bpmnUpdater'];

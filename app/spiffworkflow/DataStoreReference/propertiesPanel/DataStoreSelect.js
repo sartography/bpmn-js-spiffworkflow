@@ -10,7 +10,6 @@ export const OPTION_TYPE = {
 export const spiffExtensionOptions = {};
 
 export function DataStoreSelect(props) {
-
   const { id, label, description, optionType } = props;
 
   const { element } = props;
@@ -23,35 +22,35 @@ export function DataStoreSelect(props) {
 
   const getValue = () => {
     const dtRef = element.businessObject.dataStoreRef;
-    return dtRef
-      ? dtRef.id
-      : '';
+    return dtRef ? dtRef.id : '';
   };
 
   const setValue = (value) => {
-
     const { businessObject } = element;
 
     const process = businessObject.$parent;
-    
+
     const definitions = getRoot(businessObject);
     if (!definitions.get('rootElements')) {
       definitions.set('rootElements', []);
     }
-    
-    const valId = value
+
+    const valId = value;
 
     if (!valId || valId == '') {
       const oldDataStoreId = businessObject.dataStoreRef.id;
       modeling.updateProperties(element, {
         name: '',
         dataStoreRef: null,
-        type: ''
+        type: '',
       });
       // If previous datastore is not used, delete it
       if (!isDataStoreReferenced(process, oldDataStoreId)) {
         const rootElements = definitions.get('rootElements');
-        const oldMessageIndex = rootElements.findIndex(element => element.$type === 'bpmn:DataStore' && element.id === oldDataStoreId);
+        const oldMessageIndex = rootElements.findIndex(
+          (element) =>
+            element.$type === 'bpmn:DataStore' && element.id === oldDataStoreId
+        );
         if (oldMessageIndex !== -1) {
           rootElements.splice(oldMessageIndex, 1);
           definitions.rootElements = rootElements;
@@ -68,15 +67,17 @@ export function DataStoreSelect(props) {
     const currentDataStoreRef = element.businessObject.dataStoreRef;
 
     // Create DataStore
-    let dataStore = definitions.get('rootElements').find(element =>
-      element.$type === 'bpmn:DataStore' && element.id === valId
-    );
+    let dataStore = definitions
+      .get('rootElements')
+      .find(
+        (element) => element.$type === 'bpmn:DataStore' && element.id === valId
+      );
 
     // If the DataStore doesn't exist, create new one
     if (!dataStore) {
       dataStore = bpmnFactory.create('bpmn:DataStore', {
         id: valId,
-        name: valClz
+        name: valClz,
       });
       definitions.get('rootElements').push(dataStore);
     }
@@ -84,11 +85,14 @@ export function DataStoreSelect(props) {
     modeling.updateProperties(element, {
       name: valName,
       dataStoreRef: dataStore,
-      type: valType
+      type: valType,
     });
 
     // Remove the old DataStore if it's no longer referenced
-    if (currentDataStoreRef && !isDataStoreReferenced(process, currentDataStoreRef.id)) {
+    if (
+      currentDataStoreRef &&
+      !isDataStoreReferenced(process, currentDataStoreRef.id)
+    ) {
       removeDataStore(definitions, currentDataStoreRef.id);
     }
   };
@@ -113,7 +117,6 @@ export function DataStoreSelect(props) {
     return optionList;
   };
 
-  
   if (
     !(optionType in spiffExtensionOptions) ||
     spiffExtensionOptions[optionType] === null
@@ -143,7 +146,6 @@ function requestOptions(eventBus, element, commandStack, optionType) {
 
 function GetDataStoreAttrById(prop, id) {
   const arr = spiffExtensionOptions['data_stores'];
-  const item = arr.find(obj => obj.id === id);
+  const item = arr.find((obj) => obj.id === id);
   return item ? item[prop] : null;
 }
-

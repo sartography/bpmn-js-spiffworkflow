@@ -3,36 +3,44 @@ import {
   isTextFieldEntryEdited,
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
-import { createSpecification, removeElementFromSpecification, updateElementProperties } from '../helpers';
+import {
+  createSpecification,
+  removeElementFromSpecification,
+  updateElementProperties,
+} from '../helpers';
 
 export function OutputParametersArray(props) {
-
   const { element, moddle, translate, commandStack, bpmnFactory } = props;
   const { businessObject } = element;
 
   const ioSpecification = businessObject.ioSpecification;
 
-  const outputsEntries = (ioSpecification) ? ioSpecification.dataOutputs : [];
+  const outputsEntries = ioSpecification ? ioSpecification.dataOutputs : [];
 
-  const items = (outputsEntries) ? outputsEntries.map((outputEntry, index) => {
-    const id = `outputEntry-${index}`;
-    return {
-      id,
-      label: translate(outputEntry.name),
-      entries: OutputParamGroup({
-        element,
-        commandStack,
-        moddle,
-        translate,
-        bpmnFactory,
-        outputEntry
-      }),
-      autoFocusEntry: `output-focus-entry`,
-      remove: removeFactory({
-        element, moddle, commandStack, outputEntry
-      }),
-    };
-  }) : [];
+  const items = outputsEntries
+    ? outputsEntries.map((outputEntry, index) => {
+        const id = `outputEntry-${index}`;
+        return {
+          id,
+          label: translate(outputEntry.name),
+          entries: OutputParamGroup({
+            element,
+            commandStack,
+            moddle,
+            translate,
+            bpmnFactory,
+            outputEntry,
+          }),
+          autoFocusEntry: `output-focus-entry`,
+          remove: removeFactory({
+            element,
+            moddle,
+            commandStack,
+            outputEntry,
+          }),
+        };
+      })
+    : [];
 
   function add(event) {
     const { businessObject } = element;
@@ -40,10 +48,13 @@ export function OutputParametersArray(props) {
     const newOutputID = moddle.ids.nextPrefixed('DataOutput_');
 
     // Create a new DataOutput
-    const newOutput = bpmnFactory.create('bpmn:DataOutput', { id: newOutputID, name: newOutputID });
+    const newOutput = bpmnFactory.create('bpmn:DataOutput', {
+      id: newOutputID,
+      name: newOutputID,
+    });
 
     // Check if ioSpecification already exists
-    createSpecification(bpmnFactory, businessObject, 'output', newOutput)
+    createSpecification(bpmnFactory, businessObject, 'output', newOutput);
 
     // Update the element
     updateElementProperties(commandStack, element);
@@ -64,8 +75,15 @@ function removeFactory(props) {
 }
 
 function OutputParamGroup(props) {
-
-  const { id, outputEntry, element, moddle, commandStack, translate, bpmnFactory } = props;
+  const {
+    id,
+    outputEntry,
+    element,
+    moddle,
+    commandStack,
+    translate,
+    bpmnFactory,
+  } = props;
 
   return [
     {
@@ -77,14 +95,21 @@ function OutputParamGroup(props) {
       moddle,
       commandStack,
       translate,
-      bpmnFactory
-    }
+      bpmnFactory,
+    },
   ];
 }
 
 function OutputParamTextField(props) {
-
-  const { id, element, outputEntry, moddle, commandStack, translate, bpmnFactory } = props;
+  const {
+    id,
+    element,
+    outputEntry,
+    moddle,
+    commandStack,
+    translate,
+    bpmnFactory,
+  } = props;
 
   const debounce = useService('debounceInput');
 
@@ -102,7 +127,10 @@ function OutputParamTextField(props) {
         return;
       }
 
-      let existingInput = ioSpecification.dataOutputs.find(input => input.id === outputEntry.name || input.name === outputEntry.name);
+      let existingInput = ioSpecification.dataOutputs.find(
+        (input) =>
+          input.id === outputEntry.name || input.name === outputEntry.name
+      );
 
       if (existingInput) {
         existingInput.name = value;
@@ -113,7 +141,6 @@ function OutputParamTextField(props) {
       }
 
       updateElementProperties(commandStack, element);
-
     } catch (error) {
       console.log('Setting Value Error : ', error);
     }

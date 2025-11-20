@@ -3,7 +3,7 @@ import { useService } from 'bpmn-js-properties-panel';
 import {
   ListGroup,
   TextFieldEntry,
-  isTextFieldEntryEdited
+  isTextFieldEntryEdited,
 } from '@bpmn-io/properties-panel';
 import { getRoot, processId } from './helpers';
 
@@ -16,8 +16,7 @@ import { getRoot, processId } from './helpers';
  */
 
 function getListGroupForType(groupId, label, getArray) {
-
-  return  function (props) {
+  return function (props) {
     const { element, translate, moddle, commandStack } = props;
     const eventArray = {
       id: groupId,
@@ -30,38 +29,42 @@ function getListGroupForType(groupId, label, getArray) {
     if (eventArray.items) {
       return eventArray;
     }
-  }
+  };
 }
 
 function getArrayForType(itemType, referenceType, prefix) {
-
   return function (props) {
     const { element, moddle, commandStack, translate } = props;
     const root = getRoot(element.businessObject);
-    const matching = root.rootElements ? root.rootElements.filter(elem => elem.$type === itemType) : [];
+    const matching = root.rootElements
+      ? root.rootElements.filter((elem) => elem.$type === itemType)
+      : [];
 
     function removeModelReferences(flowElements, match) {
-      flowElements.map(elem => {
+      flowElements.map((elem) => {
         if (elem.eventDefinitions)
-          elem.eventDefinitions = elem.eventDefinitions.filter(def => def.get(referenceType) != match);
+          elem.eventDefinitions = elem.eventDefinitions.filter(
+            (def) => def.get(referenceType) != match
+          );
         else if (elem.flowElements)
           removeModelReferences(elem.flowElements, match);
       });
     }
 
     function removeElementReferences(children, match) {
-      children.map(child => {
+      children.map((child) => {
         if (child.businessObject.eventDefinitions) {
           const bo = child.businessObject;
-          bo.eventDefinitions = bo.eventDefinitions.filter(def => def.get(referenceType) != match);
+          bo.eventDefinitions = bo.eventDefinitions.filter(
+            (def) => def.get(referenceType) != match
+          );
           commandStack.execute('element.updateProperties', {
             element: child,
             moddleElement: bo,
-            properties: {}
+            properties: {},
           });
         }
-        if (child.children)
-          removeElementReferences(child.children, match);
+        if (child.children) removeElementReferences(child.children, match);
       });
     }
 
@@ -69,20 +72,22 @@ function getArrayForType(itemType, referenceType, prefix) {
       return function (event) {
         event.stopPropagation();
         if (root.rootElements) {
-          root.rootElements = root.rootElements.filter(elem => elem != item);
+          root.rootElements = root.rootElements.filter((elem) => elem != item);
           // This updates visible elements
           removeElementReferences(element.children, item);
           // This handles everything else (eg collapsed subprocesses) but does not update the shapes
           // I can't figure out how to do that
-          root.rootElements.filter(elem => elem.$type === 'bpmn:Process').map(
-            process => removeModelReferences(process.flowElements, item)
-          );
+          root.rootElements
+            .filter((elem) => elem.$type === 'bpmn:Process')
+            .map((process) =>
+              removeModelReferences(process.flowElements, item)
+            );
           commandStack.execute('element.updateProperties', {
             element,
             properties: {},
           });
         }
-      }
+      };
     }
 
     const items = matching.map((item, idx) => {
@@ -107,16 +112,15 @@ function getArrayForType(itemType, referenceType, prefix) {
       const item = moddle.create(itemType);
       item.id = moddle.ids.nextPrefixed(`${prefix}_`);
       item.name = item.id;
-      if (root.rootElements)
-        root.rootElements.push(item);
+      if (root.rootElements) root.rootElements.push(item);
       commandStack.execute('element.updateProperties', {
         element,
         properties: {},
       });
-    };
+    }
 
     return { items, add };
-  }
+  };
 }
 
 function getItemEditor(props) {
@@ -148,7 +152,9 @@ function ItemTextField(props) {
     });
   };
 
-  const getValue = () => { return item.id; }
+  const getValue = () => {
+    return item.id;
+  };
 
   return TextFieldEntry({
     element,

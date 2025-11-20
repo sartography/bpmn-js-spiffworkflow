@@ -52,4 +52,3 @@ MessagesPropertiesProvider.$inject = [
   'commandStack',
   'elementRegistry',
 ];
-

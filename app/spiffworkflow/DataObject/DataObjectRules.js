@@ -18,8 +18,8 @@ export default function DataObjectRules(eventBus) {
 inherits(DataObjectRules, RuleProvider);
 const HIGH_PRIORITY = 1500;
 
-DataObjectRules.prototype.init = function() {
-  this.addRule('elements.move', HIGH_PRIORITY,function(context) {
+DataObjectRules.prototype.init = function () {
+  this.addRule('elements.move', HIGH_PRIORITY, function (context) {
     let elements = context.shapes;
     let target = context.target;
     return canDrop(elements, target);
@@ -36,4 +36,4 @@ function canDrop(elements, target) {
 }
 
 DataObjectRules.prototype.canDrop = canDrop;
-DataObjectRules.$inject = [ 'eventBus' ];
+DataObjectRules.$inject = ['eventBus'];

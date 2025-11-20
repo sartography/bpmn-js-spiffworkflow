@@ -1,6 +1,10 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SimpleEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
-import { createNewCorrelationKey, findCorrelationKeys, getRoot } from '../../MessageHelpers';
+import {
+  createNewCorrelationKey,
+  findCorrelationKeys,
+  getRoot,
+} from '../../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 
 /**
@@ -12,7 +16,7 @@ export function CorrelationKeysArray(props) {
   const { element, moddle, commandStack } = props;
 
   const correlationKeyElements = findCorrelationKeys(element.businessObject);
-  
+
   const items = correlationKeyElements.map((correlationKeyElement, index) => {
     const id = `correlationGroup-${index}`;
     return {

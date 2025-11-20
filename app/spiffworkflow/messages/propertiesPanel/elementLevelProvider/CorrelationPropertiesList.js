@@ -8,7 +8,7 @@ import {
   findCorrelationPropertiesByMessage,
   isMessageEvent,
   createNewCorrelationProperty,
-  getMessageRefElement
+  getMessageRefElement,
 } from '../../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 import { useService } from 'bpmn-js-properties-panel';
@@ -22,59 +22,57 @@ export function CorrelationPropertiesList(props) {
   const { commandStack } = props;
   const { translate } = props;
 
-  const correlationPropertyArray = findCorrelationPropertiesByMessage(
-    element
-  );
+  const correlationPropertyArray = findCorrelationPropertiesByMessage(element);
 
-  const items = (correlationPropertyArray) ? correlationPropertyArray.map(
-    (correlationPropertyModdleElement, index) => {
+  const items = correlationPropertyArray
+    ? correlationPropertyArray.map(
+        (correlationPropertyModdleElement, index) => {
+          const id = `correlation-${index}`;
 
-      const id = `correlation-${index}`;
+          const entries = MessageCorrelationPropertyGroup({
+            idPrefix: id,
+            correlationPropertyModdleElement,
+            translate,
+            element,
+            commandStack,
+            moddle,
+          });
 
-      const entries = MessageCorrelationPropertyGroup({
-        idPrefix: id,
-        correlationPropertyModdleElement,
-        translate,
-        element,
-        commandStack,
-        moddle,
-      });
-
-      return {
-        id,
-        label: correlationPropertyModdleElement.name,
-        entries,
-        autoFocusEntry: id,
-        // remove: removeFactory({
-        //   element,
-        //   correlationPropertyModdleElement,
-        //   commandStack,
-        //   moddle,
-        // }),
-      };
-    }
-  ): [];
+          return {
+            id,
+            label: correlationPropertyModdleElement.name,
+            entries,
+            autoFocusEntry: id,
+            // remove: removeFactory({
+            //   element,
+            //   correlationPropertyModdleElement,
+            //   commandStack,
+            //   moddle,
+            // }),
+          };
+        }
+      )
+    : [];
 
   function add(event) {
-    
     event.stopPropagation();
-    
+
     const messageRef = getMessageRefElement(element);
 
-    if(!messageRef){
+    if (!messageRef) {
       alert('Please select a message');
       return;
     }
 
     createNewCorrelationProperty(element, moddle, commandStack, messageRef);
-
   }
 
   return { items, add };
 }
 
 function removeFactory(props) {
-  const { element, correlationPropertyModdleElement, moddle, commandStack } = props;
+  const { element, correlationPropertyModdleElement, moddle, commandStack } =
+    props;
 
   return function (event) {
     event.stopPropagation();
@@ -123,7 +121,7 @@ function MessageCorrelationPropertyGroup(props) {
       element,
       correlationPropertyModdleElement,
       translate,
-      commandStack
+      commandStack,
     },
   ];
 }
@@ -135,26 +133,31 @@ function CorrelationPropertyRetrivialExpressionTextField(props) {
     correlationPropertyModdleElement,
     commandStack,
     translate,
-    idPrefix
+    idPrefix,
   } = props;
 
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-
-    const message = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0].messageRef : element.businessObject.messageRef;
+    const message = isMessageEvent(element)
+      ? element.businessObject.eventDefinitions[0].messageRef
+      : element.businessObject.messageRef;
     const process = element.businessObject.$parent;
     const definitions = process.$parent;
-    
+
     if (!definitions.get('rootElements')) {
       definitions.set('rootElements', []);
     }
-    definitions.rootElements.forEach(rootElement => {
-      if(rootElement.id == correlationPropertyModdleElement.id && rootElement.$type == 'bpmn:CorrelationProperty'){
-        const matchingRetrievalExpression = rootElement.correlationPropertyRetrievalExpression.find(expr => 
-          expr.messageRef && expr.messageRef === message
-        );
-        if(matchingRetrievalExpression){
+    definitions.rootElements.forEach((rootElement) => {
+      if (
+        rootElement.id == correlationPropertyModdleElement.id &&
+        rootElement.$type == 'bpmn:CorrelationProperty'
+      ) {
+        const matchingRetrievalExpression =
+          rootElement.correlationPropertyRetrievalExpression.find(
+            (expr) => expr.messageRef && expr.messageRef === message
+          );
+        if (matchingRetrievalExpression) {
           matchingRetrievalExpression.messagePath.body = value;
           commandStack.execute('element.updateProperties', {
             element,
@@ -164,18 +167,21 @@ function CorrelationPropertyRetrivialExpressionTextField(props) {
         }
       }
     });
-
   };
 
   const getValue = () => {
+    const message = isMessageEvent(element)
+      ? element.businessObject.eventDefinitions[0].messageRef
+      : element.businessObject.messageRef;
 
-    const message = (isMessageEvent(element)) ? element.businessObject.eventDefinitions[0].messageRef : element.businessObject.messageRef;
-    
-    const matchingRetrievalExpression = correlationPropertyModdleElement.correlationPropertyRetrievalExpression.find(expr => 
-      expr.messageRef && expr.messageRef === message
-    );
-    
-    return (matchingRetrievalExpression) ? matchingRetrievalExpression.messagePath.body : '' ;
+    const matchingRetrievalExpression =
+      correlationPropertyModdleElement.correlationPropertyRetrievalExpression.find(
+        (expr) => expr.messageRef && expr.messageRef === message
+      );
+
+    return matchingRetrievalExpression
+      ? matchingRetrievalExpression.messagePath.body
+      : '';
   };
 
   return TextFieldEntry({
@@ -184,6 +190,6 @@ function CorrelationPropertyRetrivialExpressionTextField(props) {
     label: translate('Retrivial Expression'),
     getValue,
     setValue,
-    debounce
+    debounce,
   });
 }

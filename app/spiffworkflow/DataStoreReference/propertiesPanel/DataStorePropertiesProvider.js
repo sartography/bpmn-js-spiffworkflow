@@ -9,7 +9,7 @@ export default function DataStorePropertiesProvider(
   translate,
   moddle,
   commandStack,
-  bpmnFactory,
+  bpmnFactory
 ) {
   this.getGroups = function (element) {
     return function (groups) {
@@ -48,7 +48,6 @@ function createCustomDataStoreGroup(
   commandStack,
   bpmnFactory
 ) {
-
   const { businessObject } = element;
 
   const group = {
@@ -58,7 +57,7 @@ function createCustomDataStoreGroup(
   };
 
   let description = translate('Select a datasource from the list');
-  if(businessObject.dataStoreRef){
+  if (businessObject.dataStoreRef) {
     const dataStoreId = businessObject.dataStoreRef.id;
     const type = businessObject.get('type');
     description = `The selected data store is of type: ${type}`;

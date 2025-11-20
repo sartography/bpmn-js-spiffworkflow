@@ -11,7 +11,7 @@ import {
   isMessageRefUsed,
   setParentCorrelationKeys,
   syncCorrelationProperties,
-  deleteMessage
+  deleteMessage,
 } from '../../MessageHelpers';
 import { SPIFF_ADD_MESSAGE_RETURNED_EVENT } from '../../../constants';
 
@@ -115,10 +115,9 @@ export function MessageSelect(props) {
     const { businessObject } = element;
     const definitions = getRoot(businessObject);
     let oldMessage = findMessageById(definitions, newMsg.identifier);
-    if(oldMessage) {
+    if (oldMessage) {
       deleteMessage(definitions, oldMessage.id);
     }
-
 
     // Update the list of options to display
     spiffExtensionOptions['spiff.messages'] =

@@ -48,7 +48,7 @@ export default {
     'multiInstancePropertiesProvider',
     'standardLoopPropertiesProvider',
     'IoPropertiesProvider',
-    'callActivityInterceptor'
+    'callActivityInterceptor',
   ],
   dataObjectInterceptor: ['type', DataObjectInterceptor],
   dataObjectRules: ['type', DataObjectRules],
@@ -72,5 +72,5 @@ export default {
   multiInstancePropertiesProvider: ['type', MultiInstancePropertiesProvider],
   standardLoopPropertiesProvider: ['type', StandardLoopPropertiesProvider],
   IoPropertiesProvider: ['type', IoPropertiesProvider],
-  callActivityInterceptor: [ 'type', CallActivityInterceptor ]
+  callActivityInterceptor: ['type', CallActivityInterceptor],
 };

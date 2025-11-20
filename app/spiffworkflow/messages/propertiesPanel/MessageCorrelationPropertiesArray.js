@@ -21,7 +21,6 @@ export function MessageCorrelationPropertiesArray(props) {
   // const { element } = props;
   // const { commandStack } = props;
   // const { translate } = props;
-
   // const correlationPropertyObjectsForCurrentMessage =
   //   findCorrelationPropertiesAndRetrievalExpressionsForMessage(element);
   // const allCorrelationPropertyModdleElements = findCorrelationProperties(
@@ -58,10 +57,8 @@ export function MessageCorrelationPropertiesArray(props) {
   //     };
   //   }
   // );
-
   // function add(event) {
   //   event.stopPropagation();
-
   //   let correlationPropertyElement;
   //   allCorrelationPropertyModdleElements.forEach((cpe) => {
   //     let foundElement = false;
@@ -75,7 +72,6 @@ export function MessageCorrelationPropertiesArray(props) {
   //       correlationPropertyElement = cpe;
   //     }
   //   });
-
   //   // TODO: we should have some way to show an error if element is not found instead
   //   // we need to check this since the code assumes each message only has one ref
   //   // and will not display all properties if there are multiple
@@ -86,10 +82,8 @@ export function MessageCorrelationPropertiesArray(props) {
   //     const messageRefElement = getMessageRefElement(element);
   //     const newFormalExpression = moddle.create('bpmn:FormalExpression');
   //     newFormalExpression.body = '';
-
   //     newRetrievalExpressionElement.messageRef = messageRefElement;
   //     newRetrievalExpressionElement.messagePath = newFormalExpression;
-
   //     if (!correlationPropertyElement.correlationPropertyRetrievalExpression) {
   //       correlationPropertyElement.correlationPropertyRetrievalExpression = [];
   //     }
@@ -106,12 +100,10 @@ export function MessageCorrelationPropertiesArray(props) {
   //     );
   //   }
   // }
-
   // const returnObject = { items };
   // if (allCorrelationPropertyModdleElements.length !== 0) {
   //   returnObject.add = add;
   // }
-
   // return returnObject;
 }
 

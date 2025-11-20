@@ -2,7 +2,10 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-extraneous-dependencies */
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { isTextFieldEntryEdited, isCheckboxEntryEdited } from '@bpmn-io/properties-panel';
+import {
+  isTextFieldEntryEdited,
+  isCheckboxEntryEdited,
+} from '@bpmn-io/properties-panel';
 import { InputItem } from './propertiesPanel/InputItemEntry';
 import { LoopCardinality } from './propertiesPanel/LoopCardinalityEntry';
 import { InputCollection } from './propertiesPanel/InputCollectionEntry';

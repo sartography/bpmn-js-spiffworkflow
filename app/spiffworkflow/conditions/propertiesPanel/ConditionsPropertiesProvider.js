@@ -1,7 +1,7 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import {
   TextAreaEntry,
-  isTextAreaEntryEdited
+  isTextAreaEntryEdited,
 } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
 
@@ -18,14 +18,21 @@ export default function ConditionsPropertiesProvider(
     return function pushGroup(groups) {
       if (is(element, 'bpmn:SequenceFlow')) {
         const { source } = element;
-        if (is(source, 'bpmn:ExclusiveGateway') || is(source, 'bpmn:InclusiveGateway')) {
+        if (
+          is(source, 'bpmn:ExclusiveGateway') ||
+          is(source, 'bpmn:InclusiveGateway')
+        ) {
           groups.push(
             createConditionsGroup(element, translate, moddle, commandStack)
           );
         }
       } else if (is(element, 'bpmn:Event')) {
         const eventDefinitions = element.businessObject.eventDefinitions;
-        if (eventDefinitions.filter(ev => is(ev, 'bpmn:ConditionalEventDefinition')).length > 0) {
+        if (
+          eventDefinitions.filter((ev) =>
+            is(ev, 'bpmn:ConditionalEventDefinition')
+          ).length > 0
+        ) {
           groups.push(
             createConditionsGroup(element, translate, moddle, commandStack)
           );

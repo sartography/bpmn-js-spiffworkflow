@@ -6,16 +6,17 @@ import DataObjectPropertiesProvider from './propertiesPanel/DataObjectProperties
 import DataObjectLabelEditingProvider from './DataObjectLabelEditingProvider';
 
 export default {
-  __depends__: [
-    RulesModule
+  __depends__: [RulesModule],
+  __init__: [
+    'dataInterceptor',
+    'dataObjectRules',
+    'dataObjectRenderer',
+    'dataObjectPropertiesProvider',
+    'dataObjectLabelEditingProvider',
   ],
-  __init__: [ 'dataInterceptor', 'dataObjectRules', 'dataObjectRenderer', 'dataObjectPropertiesProvider', 'dataObjectLabelEditingProvider' ],
-  dataInterceptor: [ 'type', DataObjectInterceptor ],
-  dataObjectRules: [ 'type', DataObjectRules ],
-  dataObjectRenderer: [ 'type', DataObjectRenderer ],
-  dataObjectPropertiesProvider: [ 'type', DataObjectPropertiesProvider ],
-  dataObjectLabelEditingProvider: [ 'type', DataObjectLabelEditingProvider ]
+  dataInterceptor: ['type', DataObjectInterceptor],
+  dataObjectRules: ['type', DataObjectRules],
+  dataObjectRenderer: ['type', DataObjectRenderer],
+  dataObjectPropertiesProvider: ['type', DataObjectPropertiesProvider],
+  dataObjectLabelEditingProvider: ['type', DataObjectLabelEditingProvider],
 };
-
-
-

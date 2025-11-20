@@ -19,14 +19,7 @@ import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
  * @returns {string|null|*}
  */
 export function SpiffExtensionTextInput(props) {
-  const {
-    element,
-    commandStack,
-    moddle,
-    name,
-    label,
-    description
-  } = props;
+  const { element, commandStack, moddle, name, label, description } = props;
   const debounce = useService('debounceInput');
   const { businessObject } = element;
 
@@ -42,7 +35,7 @@ export function SpiffExtensionTextInput(props) {
       value,
       moddle,
       commandStack,
-      businessObject,
+      businessObject
     );
   };
 

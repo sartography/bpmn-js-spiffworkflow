@@ -3,10 +3,8 @@ import DataStorePropertiesProvider from './propertiesPanel/DataStorePropertiesPr
 import DataStoreInterceptor from './DataStoreInterceptor';
 
 export default {
-  __depends__: [
-    RulesModule
-  ],
-  __init__: [ 'dataStoreInterceptor', 'dataStorePropertiesProvider' ],
-  dataStoreInterceptor: [ 'type', DataStoreInterceptor ],
-  dataStorePropertiesProvider: [ 'type', DataStorePropertiesProvider ]
+  __depends__: [RulesModule],
+  __init__: ['dataStoreInterceptor', 'dataStorePropertiesProvider'],
+  dataStoreInterceptor: ['type', DataStoreInterceptor],
+  dataStorePropertiesProvider: ['type', DataStorePropertiesProvider],
 };

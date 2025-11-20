@@ -4,6 +4,5 @@ import MessagesPropertiesProvider from './propertiesPanel/MessagesPropertiesProv
 export default {
   __init__: ['messagesPropertiesProvider', 'messageInterceptor'],
   messagesPropertiesProvider: ['type', MessagesPropertiesProvider],
-  messageInterceptor: [ 'type', MessageInterceptor ],
-
+  messageInterceptor: ['type', MessageInterceptor],
 };
