@@ -74,19 +74,38 @@ export function SpiffExtensionTaskMetadata(props) {
         });
     };
 
+    if (!metadataKeys || metadataKeys.length === 0) {
+        return null;
+    }
+
     return (
         <>
-            {metadataKeys.map((key) => (
-                <TextFieldEntry
-                    key={key}
-                    id={`extension_task_metadata_${key}`}
-                    element={element}
-                    label={key}
-                    getValue={() => getMetadataValue(key)}
-                    setValue={(value) => setMetadataValue(key, value)}
-                    debounce={debounce}
-                />
-            ))}
+            <div className="bio-properties-panel-entry">
+                <div className="bio-properties-panel-description">
+                    Value is an expression, so if you want a string, surround it in double
+                    quotes.
+                </div>
+            </div>
+            {metadataKeys.map((keyEntry) => {
+                const key = typeof keyEntry === 'string' ? keyEntry : keyEntry.name;
+                const label =
+                    typeof keyEntry === 'string' ? keyEntry : keyEntry.label || key;
+                const description =
+                    typeof keyEntry === 'string' ? undefined : keyEntry.description;
+
+                return (
+                    <TextFieldEntry
+                        key={key}
+                        id={`extension_task_metadata_${key}`}
+                        element={element}
+                        label={label}
+                        description={description}
+                        getValue={() => getMetadataValue(key)}
+                        setValue={(value) => setMetadataValue(key, value)}
+                        debounce={debounce}
+                    />
+                );
+            })}
         </>
     );
 }

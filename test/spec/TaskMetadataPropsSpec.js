@@ -15,6 +15,7 @@ import {
     findInput,
 } from './helpers';
 import extensions from '../../app/spiffworkflow/extensions';
+import { query as domQuery } from 'min-dom';
 
 describe('Properties Panel for Task Metadata', function () {
     const diagram_xml = require('./bpmn/diagram.bpmn').default;
@@ -91,5 +92,61 @@ describe('Properties Panel for Task Metadata', function () {
         expect(metadataValues.values).to.have.length(1);
         expect(metadataValues.values[0].name).to.equal('key1');
         expect(metadataValues.values[0].value).to.equal('value1');
+    });
+
+    it('should display label and description for rich keys', async function () {
+        await preparePropertiesPanelWithXml(diagram_xml)();
+        const modeler = getBpmnJS();
+        const eventBus = modeler.get('eventBus');
+
+        eventBus.on('spiff.task_metadata_keys.requested', (event) => {
+            event.eventBus.fire('spiff.task_metadata_keys.returned', {
+                keys: [
+                    {
+                        name: 'rich_key',
+                        label: 'Rich Label',
+                        description: 'Rich Description',
+                    },
+                ],
+            });
+        });
+
+        await expectSelected('task_confirm');
+        const group = findGroupEntry('task_metadata_properties', container);
+        const entry = findEntry('extension_task_metadata_rich_key', group);
+
+        // Check label
+        const label = domQuery('.bio-properties-panel-label', entry);
+        expect(label.innerText).to.equal('Rich Label');
+
+        // Check description (it might be in a different element structure, adjusting expectation)
+        const description = domQuery('.bio-properties-panel-description', entry);
+        expect(description.innerText).to.equal('Rich Description');
+    });
+
+    it('should not display panel if no keys are returned', async function () {
+        await preparePropertiesPanelWithXml(diagram_xml)();
+        const modeler = getBpmnJS();
+        const eventBus = modeler.get('eventBus');
+
+        eventBus.on('spiff.task_metadata_keys.requested', (event) => {
+            event.eventBus.fire('spiff.task_metadata_keys.returned', {
+                keys: [],
+            });
+        });
+
+        await expectSelected('task_confirm');
+        const group = findGroupEntry('task_metadata_properties', container);
+
+        // The group might still exist but be empty or hidden, or the entry within it is missing.
+        // Based on implementation, if SpiffExtensionTaskMetadata returns null, the entry in the group is null.
+        // However, the group itself is created in ExtensionsPropertiesProvider.
+        // Let's check if the entry is present.
+        const entry = findEntry('extension_task_metadata_key1', group);
+        expect(entry).to.not.exist;
+
+        // Also check that the general description is not present
+        const description = domQuery('.bio-properties-panel-description', group);
+        expect(description).to.not.exist;
     });
 });
