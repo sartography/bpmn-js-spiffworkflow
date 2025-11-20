@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ListGroup,
   CheckboxEntry,
+  DescriptionEntry,
   isCheckboxEntryEdited,
   isTextAreaEntryEdited
 } from '@bpmn-io/properties-panel';
@@ -504,6 +505,15 @@ function createTaskMetadataGroup(element, translate, moddle, commandStack) {
     id: 'task_metadata_properties',
     label: translate('Task Metadata'),
     entries: [
+      {
+        id: `infos-textField`,
+        component: DescriptionEntry,
+        value:
+          'ℹ️ Value is an expression, so if you want a string, surround it in double quotes.',
+        element,
+        translate,
+        commandStack,
+      },
       {
         element,
         moddle,
