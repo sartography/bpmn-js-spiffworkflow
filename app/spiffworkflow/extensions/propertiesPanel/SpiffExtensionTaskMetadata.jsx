@@ -108,13 +108,6 @@ export function SpiffExtensionTaskMetadata(props) {
 
     return (
         <>
-            <div className="bio-properties-panel-entry">
-                <div className="bio-properties-panel-description">
-                    ℹ {translate(
-                        'Task metadata is extracted from task data and made available to task APIs for easy access. Each value is an expression, so if you want a string, surround it in double quotes.'
-                    )}
-                </div>
-            </div>
             {allKeys.map((key) => {
                 const isConfigured = configuredKeyNames.includes(key);
                 const keyEntry = configuredKeys.find(
