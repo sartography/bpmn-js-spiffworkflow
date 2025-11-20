@@ -9,7 +9,7 @@ export function SpiffExtensionTaskMetadata(props) {
     const { element, commandStack, moddle } = props;
     const eventBus = useService('eventBus');
     const debounce = useService('debounceInput');
-    const [metadataKeys, setMetadataKeys] = useState([]);
+    const [metadataKeys, setMetadataKeys] = useState(null);
 
     useEffect(() => {
         const onKeysReturned = (event) => {
@@ -76,7 +76,7 @@ export function SpiffExtensionTaskMetadata(props) {
 
     const translate = useService('translate');
 
-    if (!metadataKeys || metadataKeys.length === 0) {
+    if (!metadataKeys || !Array.isArray(metadataKeys) || metadataKeys.length === 0) {
         return null;
     }
 
@@ -103,8 +103,8 @@ export function SpiffExtensionTaskMetadata(props) {
                         key={key}
                         id={`extension_task_metadata_${key}`}
                         element={element}
-                        label={translate(label)}
-                        description={translate(description)}
+                        label={label ? translate(label) : key}
+                        description={description ? translate(description) : undefined}
                         getValue={() => getMetadataValue(key)}
                         setValue={(value) => setMetadataValue(key, value)}
                         debounce={debounce}
