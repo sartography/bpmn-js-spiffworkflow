@@ -185,4 +185,70 @@ describe('Properties Panel for Task Metadata', function () {
         const label2 = domQuery('.bio-properties-panel-label', entry2);
         expect(label2.innerText).to.equal('due_days_before_closing');
     });
+
+    it('should display orphaned keys and allow removal', async function () {
+        await preparePropertiesPanelWithXml(diagram_xml)();
+        const modeler = getBpmnJS();
+        const eventBus = modeler.get('eventBus');
+
+        // 1. Setup: Add a key to the XML manually
+        const element = await expectSelected('task_confirm');
+        const moddle = modeler.get('moddle');
+        const commandStack = modeler.get('commandStack');
+
+        let extensionElements = element.businessObject.extensionElements;
+        if (!extensionElements) {
+            extensionElements = moddle.create('bpmn:ExtensionElements');
+            extensionElements.values = [];
+        }
+        let metadataValues = moddle.create('spiffworkflow:TaskMetadataValues');
+        let entry = moddle.create('spiffworkflow:TaskMetadataValue');
+        entry.name = 'orphaned_key';
+        entry.value = 'some_value';
+        metadataValues.values = [entry];
+        extensionElements.values.push(metadataValues);
+
+        commandStack.execute('element.updateModdleProperties', {
+            element,
+            moddleElement: element.businessObject,
+            properties: { extensionElements },
+        });
+
+        // 2. Fire event with NO keys (so 'orphaned_key' is truly orphaned)
+        eventBus.on('spiff.task_metadata_keys.requested', (event) => {
+            event.eventBus.fire('spiff.task_metadata_keys.returned', {
+                keys: [],
+            });
+        });
+
+        // Re-select to refresh properties panel
+        await expectSelected('task_confirm');
+        const group = findGroupEntry('task_metadata_properties', container);
+
+        // 3. Verify orphaned key is displayed
+        const orphanedEntry = findEntry('extension_task_metadata_orphaned_key', group);
+        expect(orphanedEntry).to.exist;
+        const label = domQuery('.bio-properties-panel-label', orphanedEntry);
+        expect(label.innerText).to.equal('orphaned_key');
+        const description = domQuery('.bio-properties-panel-description', orphanedEntry);
+        expect(description.innerText).to.contain('This key is not defined in the configuration.');
+        expect(description.innerText).to.contain('Remove');
+
+        // 4. Verify removal (by clicking Remove link)
+        const removeLink = domQuery('a', orphanedEntry);
+        expect(removeLink).to.exist;
+        expect(removeLink.innerText).to.equal('Remove');
+
+        // Simulate click
+        removeLink.click();
+
+        // 5. Verify XML is updated (key removed)
+        const businessObject = getBusinessObject(element);
+        const updatedExtensionElements = businessObject.extensionElements;
+        const updatedMetadataValues = updatedExtensionElements.values.find(
+            (v) => v.$type === 'spiffworkflow:TaskMetadataValues'
+        );
+        // Should be removed entirely if it was the only value
+        expect(updatedMetadataValues).to.not.exist;
+    });
 });

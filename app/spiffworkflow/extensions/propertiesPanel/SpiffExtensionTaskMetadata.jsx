@@ -60,12 +60,31 @@ export function SpiffExtensionTaskMetadata(props) {
         }
 
         let entry = metadataValues.values.find((v) => v.name === key);
-        if (!entry) {
-            entry = moddle.create('spiffworkflow:TaskMetadataValue');
-            entry.name = key;
-            metadataValues.values.push(entry);
+
+        if (value === undefined || value === '') {
+            if (entry) {
+                // Remove the entry
+                const index = metadataValues.values.indexOf(entry);
+                metadataValues.values.splice(index, 1);
+            }
+        } else {
+            if (!entry) {
+                entry = moddle.create('spiffworkflow:TaskMetadataValue');
+                entry.name = key;
+                metadataValues.values.push(entry);
+            }
+            entry.value = value;
         }
-        entry.value = value;
+
+        // If metadataValues is empty, we could remove it, but let's keep it simple for now.
+        // Actually, if we don't remove it, we might end up with empty <spiffworkflow:taskMetadataValues /> tag.
+        // Let's check if values is empty and remove the container if so.
+        if (metadataValues.values.length === 0) {
+            const containerIndex = extensionElements.values.indexOf(metadataValues);
+            if (containerIndex > -1) {
+                extensionElements.values.splice(containerIndex, 1);
+            }
+        }
 
         commandStack.execute('element.updateModdleProperties', {
             element,
@@ -76,20 +95,54 @@ export function SpiffExtensionTaskMetadata(props) {
 
     const translate = useService('translate');
 
-    if (!metadataKeys || !Array.isArray(metadataKeys) || metadataKeys.length === 0) {
+    const existingKeys = getMetadataValues().map((v) => v.name);
+    const configuredKeys = metadataKeys || [];
+    const configuredKeyNames = configuredKeys.map((k) => (typeof k === 'string' ? k : k.name));
+
+    // Merge configured keys with existing keys from XML
+    const allKeys = [...new Set([...configuredKeyNames, ...existingKeys])];
+
+    if (allKeys.length === 0) {
         return null;
     }
 
     return (
         <>
-            {metadataKeys.map((keyEntry) => {
-                const key = typeof keyEntry === 'string' ? keyEntry : keyEntry.name;
-                if (!key) return null;
+            <div className="bio-properties-panel-entry">
+                <div className="bio-properties-panel-description">
+                    {translate(
+                        'Value is an expression, so if you want a string, surround it in double quotes.'
+                    )}
+                </div>
+            </div>
+            {allKeys.map((key) => {
+                const isConfigured = configuredKeyNames.includes(key);
+                const keyEntry = configuredKeys.find(
+                    (k) => (typeof k === 'string' ? k : k.name) === key
+                );
 
-                const label =
-                    typeof keyEntry === 'string' ? keyEntry : keyEntry.label || key;
-                const description =
-                    typeof keyEntry === 'string' ? undefined : keyEntry.description;
+                const label = isConfigured
+                    ? typeof keyEntry === 'string'
+                        ? keyEntry
+                        : keyEntry.label || key
+                    : key;
+
+                let description = isConfigured
+                    ? typeof keyEntry === 'string'
+                        ? undefined
+                        : keyEntry.description
+                    : translate('This key is not defined in the configuration.');
+
+                if (!isConfigured) {
+                    description = (
+                        <>
+                            {description} <a href="#" onClick={(e) => {
+                                e.preventDefault();
+                                setMetadataValue(key, undefined);
+                            }} style={{ color: 'red' }}>Remove</a>
+                        </>
+                    );
+                }
 
                 return (
                     <TextFieldEntry
@@ -97,9 +150,11 @@ export function SpiffExtensionTaskMetadata(props) {
                         id={`extension_task_metadata_${key}`}
                         element={element}
                         label={label ? translate(label) : key}
-                        description={description ? translate(description) : undefined}
+                        description={description}
                         getValue={() => getMetadataValue(key)}
-                        setValue={(value) => setMetadataValue(key, value)}
+                        setValue={(value) => {
+                            setMetadataValue(key, value);
+                        }}
                         debounce={debounce}
                     />
                 );
