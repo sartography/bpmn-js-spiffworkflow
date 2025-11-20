@@ -110,8 +110,8 @@ export function SpiffExtensionTaskMetadata(props) {
         <>
             <div className="bio-properties-panel-entry">
                 <div className="bio-properties-panel-description">
-                    {translate(
-                        'ℹ Task metadata is extracted from task data and made available to task APIs for easy access. Each value is an expression, so if you want a string, surround it in double quotes.'
+                    ℹ {translate(
+                        'Task metadata is extracted from task data and made available to task APIs for easy access. Each value is an expression, so if you want a string, surround it in double quotes.'
                     )}
                 </div>
             </div>
