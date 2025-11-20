@@ -21,6 +21,7 @@ import { SpiffExtensionLaunchButton } from './SpiffExtensionLaunchButton';
 import { SpiffExtensionTextArea } from './SpiffExtensionTextArea';
 import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 import { SpiffExtensionCheckboxEntry } from './SpiffExtensionCheckboxEntry';
+import { SpiffExtensionTaskMetadata } from './SpiffExtensionTaskMetadata';
 import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { setExtensionValue } from '../extensionHelpers';
 import { checkIfServiceTaskHasParameters } from '../../helpers'
@@ -93,6 +94,12 @@ export default function ExtensionsPropertiesProvider(
       if (is(element, 'bpmn:ServiceTask')) {
         groups.push(
           createServiceGroup(element, translate, moddle, commandStack),
+        );
+      }
+
+      if (isAny(element, ['bpmn:UserTask', 'bpmn:ManualTask'])) {
+        groups.push(
+          createTaskMetadataGroup(element, translate, moddle, commandStack),
         );
       }
 
@@ -467,9 +474,33 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       }),
     });
   }
+
   return {
     id: 'service_task_properties',
     label: translate('Spiffworkflow Service Properties'),
     entries: entries,
+  };
+}
+
+/**
+ * Create a group on the main panel for editing task metadata
+ * @param element
+ * @param translate
+ * @param moddle
+ * @param commandStack
+ * @returns entries
+ */
+function createTaskMetadataGroup(element, translate, moddle, commandStack) {
+  return {
+    id: 'task_metadata_properties',
+    label: translate('Task Metadata'),
+    entries: [
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionTaskMetadata,
+      },
+    ],
   };
 }
