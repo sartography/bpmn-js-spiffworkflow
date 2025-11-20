@@ -7,9 +7,10 @@
     "build": "webpack --mode production",
     "build:watch": "webpack --watch",
     "dev": "run-p build:watch serve",
-    "serve": "sirv public --dev",
+    "format": "prettier --write --list-different app/**/*.[tj]s{,x}",
     "lint": "./node_modules/.bin/eslint app *.js",
     "lint:fix": "./node_modules/.bin/eslint --fix app *.js",
+    "serve": "sirv public --dev",
     "start": "run-s build serve",
     "test": "karma start karma.conf.js"
   },
