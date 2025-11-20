@@ -4,7 +4,8 @@
 
 import { useService } from "bpmn-js-properties-panel";
 import { getLoopProperty, removeLoopProperty, setLoopProperty } from "../helpers";
-import { TextFieldEntry } from '@bpmn-io/properties-panel';
+import { SelectEntry } from '@bpmn-io/properties-panel';
+import { findDataObjects } from '../../DataObject/DataObjectHelpers';
 
 export function InputCollection(props) {
     const { element } = props;
@@ -29,12 +30,32 @@ export function InputCollection(props) {
         setLoopProperty(element, 'loopDataInputRef', collection, commandStack);
     };
 
-    return TextFieldEntry({
+    const getOptions = () => {
+        const businessObject = element.businessObject;
+        const parent = businessObject.$parent;
+        const dataObjects = findDataObjects(parent);
+        
+        const options = [
+            { label: '', value: '' }  // Empty option to allow clearing
+        ];
+        
+        dataObjects.forEach((dataObj) => {
+            options.push({ 
+                label: dataObj.name || dataObj.id, 
+                value: dataObj.id 
+            });
+        });
+        
+        return options;
+    };
+
+    return SelectEntry({
         element,
         id: 'loopDataInputRef',
         label: translate('Input Collection'),
         getValue,
         setValue,
+        getOptions,
         debounce,
         description: 'Create an instance for each item in this collection',
     });
