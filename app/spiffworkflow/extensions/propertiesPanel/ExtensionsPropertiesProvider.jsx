@@ -509,15 +509,6 @@ function createTaskMetadataGroup(element, translate, moddle, commandStack) {
     label: translate('Task Metadata'),
     entries: [
       {
-        id: `infos-textField`,
-        component: DescriptionEntry,
-        value:
-          'ℹ Value is an expression, so if you want a string, surround it in double quotes.',
-        element,
-        translate,
-        commandStack,
-      },
-      {
         element,
         moddle,
         commandStack,
