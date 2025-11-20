@@ -1,15 +1,23 @@
-import { useService } from "bpmn-js-properties-panel";
-import { HeaderButton, ListGroup, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
-import { canReceiveMessage, getMessageRefElement, getRoot } from "../../MessageHelpers";
+import { useService } from 'bpmn-js-properties-panel';
+import {
+  HeaderButton,
+  ListGroup,
+  isTextFieldEntryEdited,
+} from '@bpmn-io/properties-panel';
+import {
+  canReceiveMessage,
+  getMessageRefElement,
+  getRoot,
+} from '../../MessageHelpers';
 import { CorrelationPropertiesList } from './CorrelationPropertiesList';
 import { MessageSelect } from './MessageSelect';
 import { MessagePayload } from './MessagePayload';
 import { CorrelationCheckboxEntry } from './CorrelationCheckbox';
 import { MessageJsonSchemaSelect } from './MessageJsonSchemaSelect';
 import { MessageVariable } from './MessageVariable';
-import { MessageLaunchEditorButton } from "./MessageLaunchEditorButton";
-import { MatchingCorrelationEntries } from "./MatchingConditionArray";
-import { MatchingCorrelationCheckboxEntry } from "./MatchingCorrelationCheckbox";
+import { MessageLaunchEditorButton } from './MessageLaunchEditorButton';
+import { MatchingCorrelationEntries } from './MatchingConditionArray';
+import { MatchingCorrelationCheckboxEntry } from './MatchingCorrelationCheckbox';
 
 /**
  * Adds a group to the properties panel for editing messages for the SendTask
@@ -23,7 +31,6 @@ export function createMessageGroup(
   commandStack,
   elementRegistry
 ) {
-
   const { businessObject } = element;
 
   const entries = [
@@ -34,15 +41,15 @@ export function createMessageGroup(
       isEdited: isTextFieldEntryEdited,
       moddle,
       commandStack,
-      elementRegistry
+      elementRegistry,
     },
     {
       id: 'messageLaunchEditorButton',
       element,
       translate,
       component: MessageLaunchEditorButton,
-      moddle
-    }
+      moddle,
+    },
   ];
 
   if (canReceiveMessage(element)) {
@@ -75,7 +82,8 @@ export function createMessageGroup(
       component: MatchingCorrelationCheckboxEntry,
       name: 'enable.correlation',
       label: translate('Enable Condition Matching'),
-      description: 'Determine when this message should be received based on matching data values.',
+      description:
+        'Determine when this message should be received based on matching data values.',
     });
   }
 
@@ -97,24 +105,24 @@ export function createMessageGroup(
       label: translate('Message'),
       isDefault: true,
       entries,
-    }
-  ]
+    },
+  ];
 
   // Showing Correlation Properties Group if correlation is enabled
   // if (businessObject.get('isCorrelated')) {
-    // results.push({
-    //   id: 'correlationProperties',
-    //   label: translate('Correlation Properties'),
-    //   isDefault: true,
-    //   component: ListGroup,
-    //   ...CorrelationPropertiesList({
-    //     element,
-    //     moddle,
-    //     commandStack,
-    //     elementRegistry,
-    //     translate,
-    //   }),
-    // })
+  // results.push({
+  //   id: 'correlationProperties',
+  //   label: translate('Correlation Properties'),
+  //   isDefault: true,
+  //   component: ListGroup,
+  //   ...CorrelationPropertiesList({
+  //     element,
+  //     moddle,
+  //     commandStack,
+  //     elementRegistry,
+  //     translate,
+  //   }),
+  // })
   // }
 
   // Adding JsonSchema Group
@@ -141,11 +149,17 @@ export function createMessageGroup(
   // })
 
   // Adding Correlation Conditions Section
-  const isMatchingCorrelation = businessObject.get('spiffworkflow:isMatchingCorrelation');
-  const id = businessObject.get('messageRef')?.id ?? "undefined";
-  if (isMatchingCorrelation && isMatchingCorrelation !== "false" && canReceiveMessage(element)) {
+  const isMatchingCorrelation = businessObject.get(
+    'spiffworkflow:isMatchingCorrelation'
+  );
+  const id = businessObject.get('messageRef')?.id ?? 'undefined';
+  if (
+    isMatchingCorrelation &&
+    isMatchingCorrelation !== 'false' &&
+    canReceiveMessage(element)
+  ) {
     results.push({
-      id: "correlationConditions",
+      id: 'correlationConditions',
       label: translate('Matching Conditions'),
       ...MatchingCorrelationEntries({
         idPrefix: id,
@@ -153,8 +167,8 @@ export function createMessageGroup(
         moddle,
         commandStack,
         translate,
-      })
-    })
+      }),
+    });
   }
 
   return results;
@@ -182,9 +196,13 @@ function LaunchJsonSchemaEditorButton(props) {
       }
 
       // Retrieve Message
-      let bpmnMessage = definitions.get('rootElements').find(element =>
-        element.$type === 'bpmn:Message' && (element.id === msgRef.id || element.name === msgRef.id)
-      );
+      let bpmnMessage = definitions
+        .get('rootElements')
+        .find(
+          (element) =>
+            element.$type === 'bpmn:Message' &&
+            (element.id === msgRef.id || element.name === msgRef.id)
+        );
 
       if (!bpmnMessage) {
         alert('Error : Message not found!');
@@ -195,8 +213,8 @@ function LaunchJsonSchemaEditorButton(props) {
         messageId: msgRef.name,
         schemaId: bpmnMessage.get('jsonSchemaId'),
         eventBus,
-        element
+        element,
       });
-    }
+    },
   });
 }

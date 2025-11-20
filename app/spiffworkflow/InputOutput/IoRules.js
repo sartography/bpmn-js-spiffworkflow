@@ -18,11 +18,10 @@ export default function IoRules(eventBus) {
 
 inherits(IoRules, RuleProvider);
 
-IoRules.$inject = [ 'eventBus' ];
+IoRules.$inject = ['eventBus'];
 
-IoRules.prototype.init = function() {
-  this.addRule('shape.create', HIGH_PRIORITY, function(context) {
-
+IoRules.prototype.init = function () {
+  this.addRule('shape.create', HIGH_PRIORITY, function (context) {
     let element = context.shape;
     let target = context.target;
     let position = context.position;
@@ -35,7 +34,7 @@ IoRules.prototype.init = function() {
  * Allow folks to drop a dataInput or DataOutput only on the top level process.
  */
 function canCreate(element, target, position) {
-  if ([ 'bpmn:DataInput', 'bpmn:DataOutput' ].includes(element.type)) {
+  if (['bpmn:DataInput', 'bpmn:DataOutput'].includes(element.type)) {
     if (target.type == 'bpmn:Process') {
       return true;
     }

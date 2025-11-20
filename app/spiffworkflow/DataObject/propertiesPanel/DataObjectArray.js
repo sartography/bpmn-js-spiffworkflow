@@ -1,5 +1,5 @@
 import { useService } from 'bpmn-js-properties-panel';
-import {SpiffExtensionTextInput} from '../../extensions/propertiesPanel/SpiffExtensionTextInput';
+import { SpiffExtensionTextInput } from '../../extensions/propertiesPanel/SpiffExtensionTextInput';
 import {
   isTextFieldEntryEdited,
   TextFieldEntry,
@@ -28,7 +28,10 @@ export function DataObjectArray(props) {
   let process;
 
   // This element might be a process, or something that will reference a process.
-  if (is(element.businessObject, 'bpmn:Process') || is(element.businessObject, 'bpmn:SubProcess')) {
+  if (
+    is(element.businessObject, 'bpmn:Process') ||
+    is(element.businessObject, 'bpmn:SubProcess')
+  ) {
     process = element.businessObject;
   } else if (element.businessObject.processRef) {
     process = element.businessObject.processRef;
@@ -91,7 +94,10 @@ function removeFactory(props) {
       },
     });
     // When a data object is removed, remove all references as well.
-    const references = findDataObjectReferenceShapes(element.children, dataObject.id);
+    const references = findDataObjectReferenceShapes(
+      element.children,
+      dataObject.id
+    );
     for (const ref of references) {
       commandStack.execute('shape.delete', { shape: ref });
     }
@@ -137,7 +143,7 @@ function DataObjectTextField(props) {
   const setValue = (value) => {
     try {
       // Check if new dataObject Id is not unique
-      if(findDataObject(element.businessObject, value) !== undefined){
+      if (findDataObject(element.businessObject, value) !== undefined) {
         alert('Data Object ID Should be unique');
         return;
       }
@@ -179,7 +185,6 @@ function DataObjectNameTextField(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-
     // Update references name
     updateDataObjectReferencesName(element, value, dataObject.id, commandStack);
 

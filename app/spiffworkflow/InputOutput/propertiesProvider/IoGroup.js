@@ -9,7 +9,6 @@ export function createIoGroup(
   commandStack,
   bpmnFactory
 ) {
-
   const group = {
     label: translate('Input/Output Management'),
     id: 'ioProperties',
@@ -37,7 +36,7 @@ export function createIoGroup(
       moddle,
       translate,
       commandStack,
-      bpmnFactory
+      bpmnFactory,
     }),
   });
 
@@ -51,8 +50,8 @@ export function createIoGroup(
       moddle,
       translate,
       commandStack,
-      bpmnFactory
-    })
+      bpmnFactory,
+    }),
   });
 
   return group;

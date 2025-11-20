@@ -3,4 +3,4 @@ import EscalationPropertiesProvider from './propertiesPanel/EscalationProperties
 export default {
   __init__: ['escalationPropertiesProvider'],
   escalationrrorPropertiesProvider: ['type', EscalationPropertiesProvider],
-}
+};

@@ -4,23 +4,19 @@ import translate from 'diagram-js/lib/i18n/translate/translate';
 /**
  * Add data inputs and data outputs to the panel.
  */
-export default function IoPalette(palette, create, elementFactory,) {
+export default function IoPalette(palette, create, elementFactory) {
   this._create = create;
   this._elementFactory = elementFactory;
   palette.registerProvider(this);
 }
 
-IoPalette.$inject = [
-  'palette',
-  'create',
-  'elementFactory'
-];
+IoPalette.$inject = ['palette', 'create', 'elementFactory'];
 
-IoPalette.prototype.getPaletteEntries = function() {
-
+IoPalette.prototype.getPaletteEntries = function () {
   let input_type = 'bpmn:DataInput';
   let output_type = 'bpmn:DataOutput';
-  let elementFactory = this._elementFactory, create = this._create;
+  let elementFactory = this._elementFactory,
+    create = this._create;
 
   function createListener(event, type) {
     let shape = elementFactory.createShape(assign({ type: type }, {}));
@@ -44,8 +40,8 @@ IoPalette.prototype.getPaletteEntries = function() {
       title: translate('Create DataInput'),
       action: {
         dragstart: createInputListener,
-        click: createInputListener
-      }
+        click: createInputListener,
+      },
     },
     'create.data-output': {
       group: 'data-object',
@@ -53,10 +49,8 @@ IoPalette.prototype.getPaletteEntries = function() {
       title: translate('Create DataOutput'),
       action: {
         dragstart: createOutputListener,
-        click: createOutputListener
-      }
-    }
-
+        click: createOutputListener,
+      },
+    },
   };
 };
-

@@ -4,5 +4,5 @@ import CallActivityPropertiesProvider from './propertiesPanel/CallActivityProper
 export default {
   __init__: ['callActivityPropertiesProvider'],
   callActivityPropertiesProvider: ['type', CallActivityPropertiesProvider],
-  callActivityInterceptor: [ 'type', CallActivityInterceptor ],
+  callActivityInterceptor: ['type', CallActivityInterceptor],
 };

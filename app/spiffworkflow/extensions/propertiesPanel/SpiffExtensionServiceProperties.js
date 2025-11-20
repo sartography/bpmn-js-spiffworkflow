@@ -66,7 +66,11 @@ function getServiceTaskParameterModdleElements(shapeElement) {
     getServiceTaskOperatorModdleElement(shapeElement);
   if (serviceTaskOperatorModdleElement) {
     const { parameterList } = serviceTaskOperatorModdleElement;
-    if (parameterList && "parameters" in parameterList && typeof (parameterList.parameters) !== 'undefined') {
+    if (
+      parameterList &&
+      'parameters' in parameterList &&
+      typeof parameterList.parameters !== 'undefined'
+    ) {
       return parameterList.parameters;
     }
   }
@@ -107,11 +111,19 @@ export function ServiceTaskOperatorSelect(props) {
       console.error(`Could not find service task operator with id: ${value}`);
       return;
     }
-    if (!(element.businessObject.id in previouslyUsedServiceTaskParameterValuesHash)) {
-      previouslyUsedServiceTaskParameterValuesHash[element.businessObject.id] = {}
+    if (
+      !(
+        element.businessObject.id in
+        previouslyUsedServiceTaskParameterValuesHash
+      )
+    ) {
+      previouslyUsedServiceTaskParameterValuesHash[element.businessObject.id] =
+        {};
     }
     const previouslyUsedServiceTaskParameterValues =
-      previouslyUsedServiceTaskParameterValuesHash[element.businessObject.id][value];
+      previouslyUsedServiceTaskParameterValuesHash[element.businessObject.id][
+        value
+      ];
 
     const { businessObject } = element;
     let extensions = businessObject.extensionElements;
@@ -229,7 +241,8 @@ function serviceTaskParameterEntries(props) {
 }
 
 function ServiceTaskParameterTextField(props) {
-  const { idPrefix, element, serviceTaskParameterModdleElement, commandStack } = props;
+  const { idPrefix, element, serviceTaskParameterModdleElement, commandStack } =
+    props;
 
   const debounce = useService('debounceInput');
 
@@ -242,7 +255,6 @@ function ServiceTaskParameterTextField(props) {
       },
     });
   };
-
 
   const getValue = () => {
     return serviceTaskParameterModdleElement.value;

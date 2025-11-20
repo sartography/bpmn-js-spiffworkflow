@@ -3,36 +3,44 @@ import {
   isTextFieldEntryEdited,
   TextFieldEntry,
 } from '@bpmn-io/properties-panel';
-import { createSpecification, removeElementFromSpecification, updateElementProperties } from '../helpers';
+import {
+  createSpecification,
+  removeElementFromSpecification,
+  updateElementProperties,
+} from '../helpers';
 
 export function InputParametersArray(props) {
-
   const { element, moddle, translate, commandStack, bpmnFactory } = props;
   const { businessObject } = element;
 
   const ioSpecification = businessObject.ioSpecification;
 
-  const inputsEntries = (ioSpecification) ? ioSpecification.dataInputs : [];
+  const inputsEntries = ioSpecification ? ioSpecification.dataInputs : [];
 
-  const items = (inputsEntries) ? inputsEntries.map((inputEntry, index) => {
-    const id = `inputEntry-${index}`;
-    return {
-      id,
-      label: translate(inputEntry.name),
-      entries: InputParamGroup({
-        element,
-        commandStack,
-        moddle,
-        translate,
-        bpmnFactory,
-        inputEntry
-      }),
-      autoFocusEntry: `input-focus-entry`,
-      remove: removeFactory({
-        element, moddle, commandStack, inputEntry
-      }),
-    };
-  }) : [];
+  const items = inputsEntries
+    ? inputsEntries.map((inputEntry, index) => {
+        const id = `inputEntry-${index}`;
+        return {
+          id,
+          label: translate(inputEntry.name),
+          entries: InputParamGroup({
+            element,
+            commandStack,
+            moddle,
+            translate,
+            bpmnFactory,
+            inputEntry,
+          }),
+          autoFocusEntry: `input-focus-entry`,
+          remove: removeFactory({
+            element,
+            moddle,
+            commandStack,
+            inputEntry,
+          }),
+        };
+      })
+    : [];
 
   function add(event) {
     const { businessObject } = element;
@@ -40,10 +48,13 @@ export function InputParametersArray(props) {
     const newInputID = moddle.ids.nextPrefixed('DataInput_');
 
     // Create a new DataInput
-    const newInput = bpmnFactory.create('bpmn:DataInput', { id: newInputID, name: newInputID });
+    const newInput = bpmnFactory.create('bpmn:DataInput', {
+      id: newInputID,
+      name: newInputID,
+    });
 
     // Check if ioSpecification already exists
-    createSpecification(bpmnFactory, businessObject, 'input', newInput)
+    createSpecification(bpmnFactory, businessObject, 'input', newInput);
 
     // Update the element
     updateElementProperties(commandStack, element);
@@ -64,8 +75,15 @@ function removeFactory(props) {
 }
 
 function InputParamGroup(props) {
-
-  const { id, inputEntry, element, moddle, commandStack, translate, bpmnFactory } = props;
+  const {
+    id,
+    inputEntry,
+    element,
+    moddle,
+    commandStack,
+    translate,
+    bpmnFactory,
+  } = props;
 
   return [
     {
@@ -77,14 +95,21 @@ function InputParamGroup(props) {
       moddle,
       commandStack,
       translate,
-      bpmnFactory
-    }
+      bpmnFactory,
+    },
   ];
 }
 
 function InputParamTextField(props) {
-
-  const { id, element, inputEntry, moddle, commandStack, translate, bpmnFactory } = props;
+  const {
+    id,
+    element,
+    inputEntry,
+    moddle,
+    commandStack,
+    translate,
+    bpmnFactory,
+  } = props;
 
   const debounce = useService('debounceInput');
 
@@ -102,7 +127,10 @@ function InputParamTextField(props) {
         return;
       }
 
-      let existingInput = ioSpecification.dataInputs.find(input => input.id === inputEntry.name || input.name === inputEntry.name);
+      let existingInput = ioSpecification.dataInputs.find(
+        (input) =>
+          input.id === inputEntry.name || input.name === inputEntry.name
+      );
 
       if (existingInput) {
         existingInput.name = value;
@@ -113,7 +141,6 @@ function InputParamTextField(props) {
       }
 
       updateElementProperties(commandStack, element);
-
     } catch (error) {
       console.log('Setting Value Error : ', error);
     }

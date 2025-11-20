@@ -1,6 +1,10 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { TextFieldEntry } from '@bpmn-io/properties-panel';
-import { getRoot, findMessageModdleElements, createNewMessage } from '../../MessageHelpers';
+import {
+  getRoot,
+  findMessageModdleElements,
+  createNewMessage,
+} from '../../MessageHelpers';
 import { removeFirstInstanceOfItemFromArrayInPlace } from '../../../helpers';
 import { MessagePropertiesMultiSelect } from './MessagePropertiesMultiSelect';
 
@@ -100,7 +104,7 @@ function messageGroup(props) {
       commandStack,
       moddle,
       translate,
-    }
+    },
   ];
 }
 
@@ -171,6 +175,6 @@ function MessagePropertiesSelectField(props) {
     label: translate('Properties'),
     debounce,
     messageElement,
-    moddle
+    moddle,
   });
 }

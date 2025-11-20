@@ -26,7 +26,7 @@ export function SpiffExtensionTextArea(props) {
 
   return (
     <TextAreaEntry
-      id={(id !== undefined) ? id : 'extension_' + name}
+      id={id !== undefined ? id : 'extension_' + name}
       element={element}
       description={description}
       label={label}

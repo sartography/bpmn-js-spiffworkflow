@@ -13,10 +13,11 @@ export function MatchingCorrelationCheckboxEntry(props) {
   const debounce = useService('debounceInput');
 
   const getValue = () => {
-    const isMatchingCorrelation = businessObject.get('spiffworkflow:isMatchingCorrelation');
-    const value = isMatchingCorrelation && isMatchingCorrelation !== 'false'
-      ? true
-      : false;
+    const isMatchingCorrelation = businessObject.get(
+      'spiffworkflow:isMatchingCorrelation'
+    );
+    const value =
+      isMatchingCorrelation && isMatchingCorrelation !== 'false' ? true : false;
     return value;
   };
 

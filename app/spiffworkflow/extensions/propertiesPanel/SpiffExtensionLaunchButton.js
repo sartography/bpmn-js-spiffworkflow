@@ -1,6 +1,6 @@
 import { HeaderButton } from '@bpmn-io/properties-panel';
 import { useService } from 'bpmn-js-properties-panel';
-import {getExtensionValue, setExtensionValue} from '../extensionHelpers';
+import { getExtensionValue, setExtensionValue } from '../extensionHelpers';
 
 /**
  * Sends a notification to the host application saying the user
@@ -28,14 +28,19 @@ export function SpiffExtensionLaunchButton(props) {
         const { commandStack, moddle } = props;
         // Listen for a response, to update the script.
         eventBus.once(listenEvent, (response) => {
-          if(listenFunction) {
+          if (listenFunction) {
             listenFunction(element, name, response.value, moddle, commandStack);
           } else {
-            setExtensionValue(element, name, response.value, moddle, commandStack);
+            setExtensionValue(
+              element,
+              name,
+              response.value,
+              moddle,
+              commandStack
+            );
           }
         });
       }
-
     },
     children: 'Launch Editor',
   });

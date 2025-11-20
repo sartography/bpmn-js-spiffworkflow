@@ -1,8 +1,6 @@
 import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
 
-import {
-  attr as svgAttr
-} from 'tiny-svg';
+import { attr as svgAttr } from 'tiny-svg';
 
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
 import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil';
@@ -21,7 +19,7 @@ export default class DataObjectRenderer extends BaseRenderer {
   }
 
   canRender(element) {
-    return isAny(element, [ 'bpmn:DataObjectReference' ]) && !element.labelTarget;
+    return isAny(element, ['bpmn:DataObjectReference']) && !element.labelTarget;
   }
 
   drawShape(parentNode, element) {
@@ -41,4 +39,4 @@ export default class DataObjectRenderer extends BaseRenderer {
   }
 }
 
-DataObjectRenderer.$inject = [ 'eventBus', 'bpmnRenderer' ];
+DataObjectRenderer.$inject = ['eventBus', 'bpmnRenderer'];

@@ -1,5 +1,9 @@
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { ListGroup, isTextFieldEntryEdited, TextFieldEntry } from '@bpmn-io/properties-panel';
+import {
+  ListGroup,
+  isTextFieldEntryEdited,
+  TextFieldEntry,
+} from '@bpmn-io/properties-panel';
 import { DataObjectSelect } from './DataObjectSelect';
 import { DataObjectArray } from './DataObjectArray';
 import { useService } from 'bpmn-js-properties-panel';
@@ -18,13 +22,22 @@ export default function DataObjectPropertiesProvider(
   this.getGroups = function (element) {
     return function (groups) {
       if (is(element, 'bpmn:DataObjectReference')) {
-        const generalGroup = groups.find(group => group.id === 'general');
+        const generalGroup = groups.find((group) => group.id === 'general');
         if (generalGroup) {
-          generalGroup.entries = generalGroup.entries.filter(entry => entry.id !== 'name');
+          generalGroup.entries = generalGroup.entries.filter(
+            (entry) => entry.id !== 'name'
+          );
         }
 
         groups.push(
-          createDataObjectSelector(element, translate, moddle, commandStack, modeling, bpmnFactory)
+          createDataObjectSelector(
+            element,
+            translate,
+            moddle,
+            commandStack,
+            modeling,
+            bpmnFactory
+          )
         );
       }
       if (
@@ -54,7 +67,7 @@ DataObjectPropertiesProvider.$inject = [
   'commandStack',
   'elementRegistry',
   'modeling',
-  'bpmnFactory'
+  'bpmnFactory',
 ];
 
 /**
@@ -64,7 +77,14 @@ DataObjectPropertiesProvider.$inject = [
  * @param moddle
  * @returns entries
  */
-function createDataObjectSelector(element, translate, moddle, commandStack, modeling, bpmnFactory) {
+function createDataObjectSelector(
+  element,
+  translate,
+  moddle,
+  commandStack,
+  modeling,
+  bpmnFactory
+) {
   return {
     id: 'data_object_properties',
     label: translate('Data Object Properties'),
@@ -84,8 +104,8 @@ function createDataObjectSelector(element, translate, moddle, commandStack, mode
         moddle,
         commandStack,
         modeling,
-        bpmnFactory
-      }
+        bpmnFactory,
+      },
     ],
   };
 }
@@ -137,7 +157,7 @@ function createDataStateTextField(props) {
     if (!dataState) {
       dataState = bpmnFactory.create('bpmn:DataState', {
         id: 'DataState_' + businessObject.id,
-        name: value
+        name: value,
       });
     } else {
       dataState.name = value;
@@ -145,17 +165,17 @@ function createDataStateTextField(props) {
 
     // Update the DataObjectReference with new or updated DataState
     modeling.updateProperties(element, {
-      dataState: dataState
+      dataState: dataState,
     });
 
     // Extract the original name
     const originalName = businessObject.name.split(' [')[0];
 
     // Update the label of the DataObjectReference
-    const newName = (value) ? originalName + ' [' + value + ']' : originalName;
+    const newName = value ? originalName + ' [' + value + ']' : originalName;
 
     modeling.updateProperties(element, {
-      name: newName
+      name: newName,
     });
   };
 

@@ -46,11 +46,13 @@ export function MessagePayload(props) {
       const { messageRef } = bo;
       if (messageRef) {
         const { extensionElements } = messageRef;
-        const payloadResp = (extensionElements) ? extensionElements
-          .get('values')
-          .filter(function getInstanceOfType(e) {
-            return e.$instanceOf('spiffworkflow:MessagePayload');
-          })[0] : undefined;
+        const payloadResp = extensionElements
+          ? extensionElements
+              .get('values')
+              .filter(function getInstanceOfType(e) {
+                return e.$instanceOf('spiffworkflow:MessagePayload');
+              })[0]
+          : undefined;
 
         if (payloadResp) {
           setValue(payloadResp.value);
@@ -62,12 +64,11 @@ export function MessagePayload(props) {
   };
 
   const setValue = (value) => {
-
     var extensions = isMessageEvent(element)
       ? element.businessObject.eventDefinitions[0].get('extensionElements') ||
-      moddle.create('bpmn:ExtensionElements')
+        moddle.create('bpmn:ExtensionElements')
       : element.businessObject.get('extensionElements') ||
-      moddle.create('bpmn:ExtensionElements');
+        moddle.create('bpmn:ExtensionElements');
 
     let messagePayloadObject = getMessagePayloadObject();
     if (!messagePayloadObject) {
@@ -78,9 +79,9 @@ export function MessagePayload(props) {
 
     isMessageEvent(element)
       ? element.businessObject.eventDefinitions[0].set(
-        'extensionElements',
-        extensions
-      )
+          'extensionElements',
+          extensions
+        )
       : element.businessObject.set('extensionElements', extensions);
 
     commandStack.execute('element.updateProperties', {

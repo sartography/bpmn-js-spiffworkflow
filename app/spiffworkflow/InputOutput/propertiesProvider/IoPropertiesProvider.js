@@ -15,13 +15,7 @@ export default function IoPropertiesProvider(
     return function pushGroup(groups) {
       if (isBpmnTask(element)) {
         groups.push(
-          createIoGroup(
-            element,
-            translate,
-            moddle,
-            commandStack,
-            bpmnFactory
-          )
+          createIoGroup(element, translate, moddle, commandStack, bpmnFactory)
         );
       }
       return groups;

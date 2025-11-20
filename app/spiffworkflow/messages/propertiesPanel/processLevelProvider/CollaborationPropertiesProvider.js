@@ -16,7 +16,6 @@ export function createCollaborationGroup(
   commandStack,
   elementRegistry
 ) {
-
   const results = [
     {
       id: 'messages',
@@ -45,7 +44,7 @@ export function createCollaborationGroup(
         elementRegistry,
         translate,
       }),
-    }
+    },
   ];
 
   // Hide Correlation Keys

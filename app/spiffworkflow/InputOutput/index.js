@@ -4,10 +4,9 @@ import IoInterceptor from './IoInterceptor';
 import IoPropertiesProvider from './propertiesProvider/IoPropertiesProvider';
 
 export default {
-  __init__: [ 'IoPalette', 'IoRules', 'IoInterceptor', 'IoPropertiesProvider' ],
-  IoPalette: [ 'type', IoPalette ],
-  IoRules: [ 'type', IoRules ],
-  IoInterceptor: [ 'type', IoInterceptor ],
-  IoPropertiesProvider: [ 'type', IoPropertiesProvider ]
+  __init__: ['IoPalette', 'IoRules', 'IoInterceptor', 'IoPropertiesProvider'],
+  IoPalette: ['type', IoPalette],
+  IoRules: ['type', IoRules],
+  IoInterceptor: ['type', IoInterceptor],
+  IoPropertiesProvider: ['type', IoPropertiesProvider],
 };
-

@@ -120,7 +120,7 @@ function FindProcessButton(props) {
       eventBus.fire('spiff.callactivity.search', {
         processId,
         eventBus,
-        element
+        element,
       });
     },
     children: 'Search',

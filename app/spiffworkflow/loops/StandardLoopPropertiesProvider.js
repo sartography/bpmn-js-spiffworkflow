@@ -16,9 +16,12 @@ export default function StandardLoopPropertiesProvider(propertiesPanel) {
   this.getGroups = function getGroupsCallback(element) {
     return function pushGroup(groups) {
       if (
-        (is(element, 'bpmn:Task') || is(element, 'bpmn:CallActivity') || is(element, 'bpmn:SubProcess')) && 
-        typeof(element.businessObject.loopCharacteristics) !== 'undefined' &&
-        element.businessObject.loopCharacteristics.$type === 'bpmn:StandardLoopCharacteristics'
+        (is(element, 'bpmn:Task') ||
+          is(element, 'bpmn:CallActivity') ||
+          is(element, 'bpmn:SubProcess')) &&
+        typeof element.businessObject.loopCharacteristics !== 'undefined' &&
+        element.businessObject.loopCharacteristics.$type ===
+          'bpmn:StandardLoopCharacteristics'
       ) {
         const group = {
           id: 'standardLoopCharacteristics',
@@ -27,10 +30,8 @@ export default function StandardLoopPropertiesProvider(propertiesPanel) {
           entries: StandardLoopProps(element),
           shouldOpen: true,
         };
-        if (groups.length < 3)
-          groups.push(group);
-        else
-          groups.splice(2, 0, group);
+        if (groups.length < 3) groups.push(group);
+        else groups.splice(2, 0, group);
       }
       return groups;
     };
@@ -42,19 +43,23 @@ StandardLoopPropertiesProvider.$inject = ['propertiesPanel'];
 
 function StandardLoopProps(props) {
   const { element } = props;
-  return [{
-    id: 'loopMaximum',
-    component: LoopMaximum,
-    isEdited: isTextFieldEntryEdited
-  }, {
-    id: 'loopCondition',
-    component: LoopCondition,
-    isEdited: isTextFieldEntryEdited
-  }, {
-    id: 'testBefore',
-    component: TestBefore,
-    isEdited: isCheckboxEntryEdited
-  }];
+  return [
+    {
+      id: 'loopMaximum',
+      component: LoopMaximum,
+      isEdited: isTextFieldEntryEdited,
+    },
+    {
+      id: 'loopCondition',
+      component: LoopCondition,
+      isEdited: isTextFieldEntryEdited,
+    },
+    {
+      id: 'testBefore',
+      component: TestBefore,
+      isEdited: isCheckboxEntryEdited,
+    },
+  ];
 }
 
 function LoopMaximum(props) {
@@ -68,7 +73,7 @@ function LoopMaximum(props) {
     return getLoopProperty(element, 'loopMaximum');
   };
 
-  const setValue = value => {
+  const setValue = (value) => {
     setLoopProperty(element, 'loopMaximum', value, commandStack);
   };
 
@@ -78,7 +83,7 @@ function LoopMaximum(props) {
     label: translate('Loop Maximum'),
     getValue,
     setValue,
-    debounce
+    debounce,
   });
 }
 
@@ -93,7 +98,7 @@ function TestBefore(props) {
     return getLoopProperty(element, 'testBefore');
   };
 
-  const setValue = value => {
+  const setValue = (value) => {
     setLoopProperty(element, 'testBefore', value, commandStack);
   };
 
@@ -117,8 +122,10 @@ function LoopCondition(props) {
     return getLoopProperty(element, 'loopCondition');
   };
 
-  const setValue = value => {
-    const loopCondition = bpmnFactory.create('bpmn:FormalExpression', {body: value})
+  const setValue = (value) => {
+    const loopCondition = bpmnFactory.create('bpmn:FormalExpression', {
+      body: value,
+    });
     setLoopProperty(element, 'loopCondition', loopCondition, commandStack);
   };
 
@@ -128,6 +135,6 @@ function LoopCondition(props) {
     label: translate('Loop Condition'),
     getValue,
     setValue,
-    debounce
+    debounce,
   });
 }
