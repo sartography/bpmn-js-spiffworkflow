@@ -74,14 +74,25 @@ export function SpiffExtensionTaskMetadata(props) {
         });
     };
 
+    const translate = useService('translate');
+
     if (!metadataKeys || metadataKeys.length === 0) {
         return null;
     }
 
     return (
         <>
+            <div className="bio-properties-panel-entry">
+                <div className="bio-properties-panel-description">
+                    {translate(
+                        'Value is an expression, so if you want a string, surround it in double quotes.'
+                    )}
+                </div>
+            </div>
             {metadataKeys.map((keyEntry) => {
                 const key = typeof keyEntry === 'string' ? keyEntry : keyEntry.name;
+                if (!key) return null;
+
                 const label =
                     typeof keyEntry === 'string' ? keyEntry : keyEntry.label || key;
                 const description =
@@ -92,8 +103,8 @@ export function SpiffExtensionTaskMetadata(props) {
                         key={key}
                         id={`extension_task_metadata_${key}`}
                         element={element}
-                        label={label}
-                        description={description}
+                        label={translate(label)}
+                        description={translate(description)}
                         getValue={() => getMetadataValue(key)}
                         setValue={(value) => setMetadataValue(key, value)}
                         debounce={debounce}

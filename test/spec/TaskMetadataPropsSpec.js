@@ -149,4 +149,40 @@ describe('Properties Panel for Task Metadata', function () {
         const description = domQuery('.bio-properties-panel-description', group);
         expect(description).to.not.exist;
     });
+
+    it('should display correctly with mixed string and object keys', async function () {
+        await preparePropertiesPanelWithXml(diagram_xml)();
+        const modeler = getBpmnJS();
+        const eventBus = modeler.get('eventBus');
+
+        eventBus.on('spiff.task_metadata_keys.requested', (event) => {
+            event.eventBus.fire('spiff.task_metadata_keys.returned', {
+                keys: [
+                    {
+                        name: 'due_days_after_open',
+                        label: 'Due Days After Open',
+                        description: 'Number of days after opening until due',
+                    },
+                    'due_days_before_closing',
+                ],
+            });
+        });
+
+        await expectSelected('task_confirm');
+        const group = findGroupEntry('task_metadata_properties', container);
+
+        // Check first entry (object)
+        const entry1 = findEntry('extension_task_metadata_due_days_after_open', group);
+        expect(entry1).to.exist;
+        const label1 = domQuery('.bio-properties-panel-label', entry1);
+        expect(label1.innerText).to.equal('Due Days After Open');
+        const desc1 = domQuery('.bio-properties-panel-description', entry1);
+        expect(desc1.innerText).to.equal('Number of days after opening until due');
+
+        // Check second entry (string)
+        const entry2 = findEntry('extension_task_metadata_due_days_before_closing', group);
+        expect(entry2).to.exist;
+        const label2 = domQuery('.bio-properties-panel-label', entry2);
+        expect(label2.innerText).to.equal('due_days_before_closing');
+    });
 });
