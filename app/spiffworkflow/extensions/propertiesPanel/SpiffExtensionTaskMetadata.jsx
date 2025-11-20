@@ -103,7 +103,7 @@ export function SpiffExtensionTaskMetadata(props) {
     const allKeys = [...new Set([...configuredKeyNames, ...existingKeys])];
 
     if (allKeys.length === 0) {
-        return null;
+        return <style>{`[data-group-id="group-task_metadata_properties"] { display: none !important; }`}</style>;
     }
 
     return (
