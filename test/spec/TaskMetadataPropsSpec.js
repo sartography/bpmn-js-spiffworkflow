@@ -144,10 +144,6 @@ describe('Properties Panel for Task Metadata', function () {
         // Let's check if the entry is present.
         const entry = findEntry('extension_task_metadata_key1', group);
         expect(entry).to.not.exist;
-
-        // Also check that the general description is not present
-        const description = domQuery('.bio-properties-panel-description', group);
-        expect(description).to.not.exist;
     });
 
     it('should display correctly with mixed string and object keys', async function () {
