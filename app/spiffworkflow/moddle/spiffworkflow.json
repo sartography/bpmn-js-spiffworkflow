@@ -3,11 +3,13 @@
   "uri": "http://spiffworkflow.org/bpmn/schema/1.0/core",
   "prefix": "spiffworkflow",
   "associations": [],
-  "xml": { "tagAlias": "lowerCase" },
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
   "types": [
     {
       "name": "PreScript",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -18,7 +20,7 @@
     },
     {
       "name": "PostScript",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -29,7 +31,7 @@
     },
     {
       "name": "MessagePayload",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -40,7 +42,7 @@
     },
     {
       "name": "MessageVariable",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -51,7 +53,7 @@
     },
     {
       "name": "ProcessVariableCorrelation",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "propertyId",
@@ -71,7 +73,7 @@
     },
     {
       "name": "CalledDecisionId",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -82,7 +84,7 @@
     },
     {
       "name": "InstructionsForEndUser",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -93,7 +95,7 @@
     },
     {
       "name": "AllowGuest",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -104,7 +106,7 @@
     },
     {
       "name": "GuestConfirmation",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -115,7 +117,7 @@
     },
     {
       "name": "Category",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -126,7 +128,7 @@
     },
     {
       "name": "SignalButtonLabel",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -137,9 +139,7 @@
     },
     {
       "name": "Properties",
-      "superClass": [
-        "Element"
-      ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "properties",
@@ -150,7 +150,7 @@
     },
     {
       "name": "Property",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "name",
@@ -166,9 +166,7 @@
     },
     {
       "name": "ServiceTaskOperator",
-      "superClass": [
-        "Element"
-      ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "id",
@@ -188,9 +186,7 @@
     },
     {
       "name": "Parameters",
-      "superClass": [
-        "Element"
-      ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "parameters",
@@ -201,7 +197,7 @@
     },
     {
       "name": "Parameter",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "id",
@@ -222,9 +218,7 @@
     },
     {
       "name": "UnitTests",
-      "superClass": [
-        "Element"
-      ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "unitTests",
@@ -235,7 +229,7 @@
     },
     {
       "name": "UnitTest",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "id",
@@ -254,7 +248,7 @@
     },
     {
       "name": "InputJson",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -265,7 +259,7 @@
     },
     {
       "name": "ExpectedOutputJson",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -276,7 +270,7 @@
     },
     {
       "name": "PayloadExpression",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -287,7 +281,7 @@
     },
     {
       "name": "VariableName",
-      "superClass": [ "Element" ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "value",
@@ -309,6 +303,34 @@
           "type": "Boolean"
         }
       ]
+    },
+    {
+      "name": "TaskMetadataValues",
+      "superClass": ["Element"],
+      "properties": [
+        {
+          "name": "values",
+          "type": "TaskMetadataValue",
+          "isMany": true
+        }
+      ]
+    },
+    {
+      "name": "TaskMetadataValue",
+      "superClass": ["Element"],
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "value",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
     }
   ]
 }
+

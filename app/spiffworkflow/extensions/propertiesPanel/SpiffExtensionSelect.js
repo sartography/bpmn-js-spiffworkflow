@@ -7,6 +7,7 @@ export const spiffExtensionOptions = {};
 export const OPTION_TYPE = {
   json_schema_files: 'json_schema_files',
   dmn_files: 'dmn_files',
+  task_metadata_keys: 'task_metadata_keys',
 };
 
 /**

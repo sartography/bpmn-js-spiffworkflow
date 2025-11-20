@@ -2,8 +2,9 @@ import React from 'react';
 import {
   ListGroup,
   CheckboxEntry,
+  DescriptionEntry,
   isCheckboxEntryEdited,
-  isTextAreaEntryEdited
+  isTextAreaEntryEdited,
 } from '@bpmn-io/properties-panel';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import scriptGroup, { SCRIPT_TYPE } from './SpiffScriptGroup';
@@ -21,9 +22,10 @@ import { SpiffExtensionLaunchButton } from './SpiffExtensionLaunchButton';
 import { SpiffExtensionTextArea } from './SpiffExtensionTextArea';
 import { SpiffExtensionTextInput } from './SpiffExtensionTextInput';
 import { SpiffExtensionCheckboxEntry } from './SpiffExtensionCheckboxEntry';
+import { SpiffExtensionTaskMetadata } from './SpiffExtensionTaskMetadata';
 import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { setExtensionValue } from '../extensionHelpers';
-import { checkIfServiceTaskHasParameters } from '../../helpers'
+import { checkIfServiceTaskHasParameters } from '../../helpers';
 
 const LOW_PRIORITY = 500;
 
@@ -32,19 +34,19 @@ export default function ExtensionsPropertiesProvider(
   translate,
   moddle,
   commandStack,
-  elementRegistry,
+  elementRegistry
 ) {
   this.getGroups = function (element) {
     return function (groups) {
       if (is(element, 'bpmn:ScriptTask')) {
         groups.push(
-          createScriptGroup(element, translate, moddle, commandStack),
+          createScriptGroup(element, translate, moddle, commandStack)
         );
       } else if (
         isAny(element, ['bpmn:Task', 'bpmn:CallActivity', 'bpmn:SubProcess'])
       ) {
         groups.push(
-          preScriptPostScriptGroup(element, translate, moddle, commandStack),
+          preScriptPostScriptGroup(element, translate, moddle, commandStack)
         );
       }
       if (is(element, 'bpmn:UserTask')) {
@@ -53,7 +55,7 @@ export default function ExtensionsPropertiesProvider(
 
       if (is(element, 'bpmn:BusinessRuleTask')) {
         groups.push(
-          createBusinessRuleGroup(element, translate, moddle, commandStack),
+          createBusinessRuleGroup(element, translate, moddle, commandStack)
         );
       }
       if (
@@ -69,12 +71,12 @@ export default function ExtensionsPropertiesProvider(
         ])
       ) {
         groups.push(
-          createUserInstructionsGroup(element, translate, moddle, commandStack),
+          createUserInstructionsGroup(element, translate, moddle, commandStack)
         );
       }
       if (isAny(element, ['bpmn:ManualTask', 'bpmn:UserTask'])) {
         groups.push(
-          createAllowGuestGroup(element, translate, moddle, commandStack),
+          createAllowGuestGroup(element, translate, moddle, commandStack)
         );
       }
       if (
@@ -86,13 +88,19 @@ export default function ExtensionsPropertiesProvider(
         ])
       ) {
         groups.push(
-          createSignalButtonGroup(element, translate, moddle, commandStack),
+          createSignalButtonGroup(element, translate, moddle, commandStack)
         );
       }
 
       if (is(element, 'bpmn:ServiceTask')) {
         groups.push(
-          createServiceGroup(element, translate, moddle, commandStack),
+          createServiceGroup(element, translate, moddle, commandStack)
+        );
+      }
+
+      if (isAny(element, ['bpmn:UserTask', 'bpmn:ManualTask'])) {
+        groups.push(
+          createTaskMetadataGroup(element, translate, moddle, commandStack)
         );
       }
 
@@ -216,7 +224,7 @@ function createUserGroup(element, translate, moddle, commandStack) {
     name,
     value,
     moddle,
-    commandStack,
+    commandStack
   ) => {
     const uiName = value.replace('schema.json', 'uischema.json');
     setExtensionValue(
@@ -224,17 +232,17 @@ function createUserGroup(element, translate, moddle, commandStack) {
       'formJsonSchemaFilename',
       value,
       moddle,
-      commandStack,
+      commandStack
     );
     setExtensionValue(
       element,
       'formUiSchemaFilename',
       uiName,
       moddle,
-      commandStack,
+      commandStack
     );
     const matches = spiffExtensionOptions[OPTION_TYPE.json_schema_files].filter(
-      (opt) => opt.value === value,
+      (opt) => opt.value === value
     );
     if (matches.length === 0) {
       spiffExtensionOptions[OPTION_TYPE.json_schema_files].push({
@@ -339,8 +347,9 @@ function createUserInstructionsGroup(element, translate, moddle, commandStack) {
         component: SpiffExtensionTextArea,
         name: 'spiffworkflow:InstructionsForEndUser',
         label: 'Instructions',
-        description: 'Displayed above user forms or when this task is executing.',
-        isEdited: isTextAreaEntryEdited
+        description:
+          'Displayed above user forms or when this task is executing.',
+        isEdited: isTextAreaEntryEdited,
       },
       {
         id: 'extension_spiffworkflow:InstructionsForEndUser',
@@ -461,8 +470,10 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       translate,
     },
   ];
-  if (typeof (element.businessObject.extensionElements) !== 'undefined' &&
-    checkIfServiceTaskHasParameters(element.businessObject.extensionElements)) {
+  if (
+    typeof element.businessObject.extensionElements !== 'undefined' &&
+    checkIfServiceTaskHasParameters(element.businessObject.extensionElements)
+  ) {
     entries.push({
       id: 'serviceTaskParameters',
       label: translate('Parameters'),
@@ -476,9 +487,42 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       }),
     });
   }
+
   return {
     id: 'service_task_properties',
     label: translate('Spiffworkflow Service Properties'),
     entries: entries,
+  };
+}
+
+/**
+ * Create a group on the main panel for editing task metadata
+ * @param element
+ * @param translate
+ * @param moddle
+ * @param commandStack
+ * @returns entries
+ */
+function createTaskMetadataGroup(element, translate, moddle, commandStack) {
+  return {
+    id: 'task_metadata_properties',
+    label: translate('Task Metadata'),
+    entries: [
+      {
+        id: `infos-textField`,
+        component: DescriptionEntry,
+        value:
+          translate('ℹ️ Value is an expression, so if you want a string, surround it in double quotes.'),
+        element,
+        translate,
+        commandStack,
+      },
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionTaskMetadata,
+      },
+    ],
   };
 }
