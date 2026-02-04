@@ -1,4 +1,5 @@
 import { useService } from 'bpmn-js-properties-panel';
+import { useCallback } from '@bpmn-io/properties-panel/preact/hooks';
 import { SpiffExtensionTextInput } from '../../extensions/propertiesPanel/SpiffExtensionTextInput';
 import {
   isTextFieldEntryEdited,
@@ -13,7 +14,8 @@ import {
   idToHumanReadableName,
   findDataObject,
 } from '../DataObjectHelpers';
-import { processId } from '../../helpers';
+import { validateDataId } from '../../helpers';
+
 
 /**
  * Provides a list of data objects, and allows you to add / remove data objects, and change their ids.
@@ -140,33 +142,34 @@ function DataObjectTextField(props) {
   const commandStack = useService('commandStack');
   const debounce = useService('debounceInput');
 
-  const setValue = (value) => {
-    try {
-      // Check if new dataObject Id is not unique
-      if (findDataObject(element.businessObject, value) !== undefined) {
-        alert('Data Object ID Should be unique');
-        return;
-      }
+  const setValue = (value, error) => {
+    if (error)
+      return;
 
-      // let doName = idToHumanReadableName(value);
-      commandStack.execute('element.updateModdleProperties', {
-        element,
-        moddleElement: dataObject,
-        properties: {
-          id: processId(value),
-          // name: doName
-        },
-      });
-      // Update references name
-      // updateDataObjectReferencesName(element, doName, value, commandStack);
-    } catch (error) {
-      console.log('Set Value Error : ', error);
-    }
+    // let doName = idToHumanReadableName(value);
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: dataObject,
+      properties: {
+        id: value,
+        // name: doName
+      },
+    });
+    // Update references name
+    // updateDataObjectReferencesName(element, doName, value, commandStack);
   };
 
   const getValue = () => {
     return dataObject.id;
   };
+
+  const validate = useCallback(value => {
+    const current = findDataObject(element.businessObject, value);
+    let message = validateDataId(value);
+    if (current !== undefined && current !== dataObject)
+      message = 'ID must be unique';
+    return message;
+  }, [element]);
 
   return TextFieldEntry({
     element: parameter,
@@ -175,6 +178,7 @@ function DataObjectTextField(props) {
     getValue,
     setValue,
     debounce,
+    validate
   });
 }
 

@@ -59,3 +59,14 @@ export function checkIfServiceTaskHasParameters(extensionElements) {
   });
   return hasParameters;
 }
+
+export function validateDataId (value) {
+  let message;
+  if (!value)
+    message = 'ID must not be empty.';
+  else if (/\s+/.test(value))
+    message = 'ID must not contain spaces';
+  else if (/\-/.test(value))
+    message = 'ID must not contain dashes';
+  return message;
+}
