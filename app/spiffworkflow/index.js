@@ -17,6 +17,7 @@ import ErrorPropertiesProvider from './errors/propertiesPanel/ErrorPropertiesPro
 import EscalationPropertiesProvider from './escalations/propertiesPanel/EscalationPropertiesProvider';
 import CallActivityPropertiesProvider from './callActivity/propertiesPanel/CallActivityPropertiesProvider';
 import IoPropertiesProvider from './InputOutput/propertiesProvider/IoPropertiesProvider';
+import DataInputOutputPropertiesProvider from './InputOutput/propertiesProvider/DataInputOutputPropertiesProvider';
 import StandardLoopPropertiesProvider from './loops/StandardLoopPropertiesProvider';
 import MultiInstancePropertiesProvider from './loops/MultiInstancePropertiesProvider';
 import CallActivityInterceptor from './callActivity/CallActivityInterceptor';
@@ -48,6 +49,7 @@ export default {
     'multiInstancePropertiesProvider',
     'standardLoopPropertiesProvider',
     'IoPropertiesProvider',
+    'DataInputOutputPropertiesProvider',
     'callActivityInterceptor',
   ],
   dataObjectInterceptor: ['type', DataObjectInterceptor],
@@ -72,5 +74,6 @@ export default {
   multiInstancePropertiesProvider: ['type', MultiInstancePropertiesProvider],
   standardLoopPropertiesProvider: ['type', StandardLoopPropertiesProvider],
   IoPropertiesProvider: ['type', IoPropertiesProvider],
+  DataInputOutputPropertiesProvider: ['type', DataInputOutputPropertiesProvider],
   callActivityInterceptor: ['type', CallActivityInterceptor],
 };

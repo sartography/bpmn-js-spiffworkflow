@@ -32,6 +32,7 @@ export default class IoInterceptor extends CommandInterceptor {
         let di = context.shape.di;
         let generator = new IdGenerator(type_name);
         let dataIO = bpmnFactory.create(type, { id: generator.next() });
+        dataIO.id = dataIO.id.replaceAll('-', '_');
         context.shape.businessObject = dataIO;
         dataIO.$parent = ioSpec;
         di.businessObject = dataIO;
