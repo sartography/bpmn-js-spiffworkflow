@@ -23,7 +23,6 @@ export default function DataInputOutputPropertiesProvider(
           isEdited: isTextFieldEntryEdited,
           inputOrOutput: element.businessObject,
         });
-        console.log();
       }
       return groups;
     };
