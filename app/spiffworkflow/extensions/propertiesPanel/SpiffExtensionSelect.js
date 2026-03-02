@@ -29,6 +29,7 @@ export function SpiffExtensionSelect(props) {
 
   const { name } = props;
   const { optionType } = props;
+  const { updateFunction } = props;
 
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
@@ -38,7 +39,10 @@ export function SpiffExtensionSelect(props) {
   };
 
   const setValue = (value) => {
-    setExtensionValue(element, name, value, moddle, commandStack);
+    if (typeof(updateFunction) !== 'undefined')
+      updateFunction(element, name, value, moddle, commandStack);
+    else
+      setExtensionValue(element, name, value, moddle, commandStack);
   };
 
   const getOptions = () => {
