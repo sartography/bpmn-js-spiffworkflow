@@ -265,6 +265,7 @@ function createUserGroup(element, translate, moddle, commandStack) {
         name: 'formJsonSchemaFilename',
         label: translate('JSON Schema Filename'),
         description: translate('Form Description (RSJF)'),
+        updateFunction: updateExtensionProperties,
       },
       {
         component: SpiffExtensionLaunchButton,
