@@ -19,9 +19,8 @@ export function IsOutputElSync(props) {
 
   const getValue = () => {
     const { businessObject } = element;
-    return businessObject.get('spiffworkflow:isOutputSynced')
-      ? businessObject.get('spiffworkflow:isOutputSynced')
-      : false;
+    const value = businessObject.get('spiffworkflow:isOutputSynced');
+    return value === true || value === 'true';
   };
 
   const setValue = (value) => {
