@@ -70,7 +70,7 @@ function MultiInstanceProps(props) {
       component: OutputCollection,
       isEdited: isTextFieldEntryEdited,
     },
-    !businessObject.get('spiffworkflow:isOutputSynced')
+    !(businessObject.get('spiffworkflow:isOutputSynced') === true || businessObject.get('spiffworkflow:isOutputSynced') === 'true')
       ? {
           id: 'dataOutputItem',
           component: OutputItem,
