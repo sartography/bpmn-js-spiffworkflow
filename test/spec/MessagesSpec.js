@@ -21,6 +21,7 @@ import messages from '../../app/spiffworkflow/messages';
 import { fireEvent } from '@testing-library/preact';
 import { getBpmnJS, inject } from 'bpmn-js/test/helper';
 import { findCorrelationProperties, findMessageModdleElements } from '../../app/spiffworkflow/messages/MessageHelpers';
+import { SPIFF_ADD_MESSAGE_RETURNED_EVENT } from '../../app/spiffworkflow/constants';
 
 
 describe('Messages should work', function () {
@@ -174,6 +175,73 @@ describe('Messages should work', function () {
     expect(updatedSelector.options.length).to.equal(3);
     expect(updatedSelector.options[2].value).to.equal('msgName');
   });
+
+  it('should remove stale correlation properties and matching conditions after a rename', inject(async function (canvas, commandStack, moddle) {
+    const modeler = getBpmnJS();
+    const eventBus = modeler.get('eventBus');
+    const rootShape = canvas.getRootElement();
+
+    const receiveShape = await expectSelected('EventReceiveLetter');
+    expect(receiveShape, "Can't find Receive Event").to.exist;
+
+    const messageEventDefinition = receiveShape.businessObject.eventDefinitions[0];
+    const extensionElements = moddle.create('bpmn:ExtensionElements', {
+      values: [],
+    });
+
+    extensionElements.get('values').push(
+      moddle.create('spiffworkflow:ProcessVariableCorrelation', {
+        propertyId: 'singer_name',
+        expression: 'payload.singer',
+      })
+    );
+
+    messageEventDefinition.set('extensionElements', extensionElements);
+
+    commandStack.execute('element.updateProperties', {
+      element: receiveShape,
+      properties: {
+        'spiffworkflow:isMatchingCorrelation': true,
+      },
+    });
+
+    eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
+      elementId: receiveShape.id,
+      name: 'love_letter_response',
+      correlation_properties: {
+        lover_instrument: { retrieval_expression: 'from.instrument' },
+        lover_name: { retrieval_expression: 'from.name' },
+        singer_full_name: { retrieval_expression: 'to.name' },
+      },
+    });
+
+    const updatedIds = findCorrelationProperties(rootShape.businessObject)
+      .filter((property) =>
+        property.correlationPropertyRetrievalExpression?.some(
+          (expr) => expr.messageRef?.id === 'love_letter_response'
+        )
+      )
+      .map((property) => property.id);
+
+    expect(updatedIds).to.include('singer_full_name');
+    expect(updatedIds).not.to.include('singer_name');
+
+    const variableCorrelationIds = (
+      messageEventDefinition.extensionElements?.values || []
+    )
+      .filter((value) =>
+        value.$instanceOf('spiffworkflow:ProcessVariableCorrelation')
+      )
+      .map((value) => value.propertyId);
+
+    expect(variableCorrelationIds).not.to.include('singer_name');
+
+    const { xml: updatedXml } = await modeler.saveXML({ format: true });
+
+    expect(updatedXml).to.include('singer_full_name');
+    expect(updatedXml).not.to.include('propertyId="singer_name"');
+    expect(updatedXml).not.to.include('<bpmn:correlationProperty id="singer_name"');
+  }));
 
 
 

@@ -828,58 +828,76 @@ export function syncCorrelationProperties(
 ) {
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
-  const expressionsToDelete = [];
+  const messageId = msgObject?.identifier;
+  const activePropertyIds = new Set(
+    (msgObject?.correlation_properties || []).map((obj) => obj.identifier)
+  );
 
-  for (let cProperty of correlationProps) {
-    let isUsed = false;
-    for (const cpExpression of cProperty.correlationPropertyRetrievalExpression) {
-      const msgRef = cpExpression.messageRef
-        ? findMessageElement(
-            businessObject,
-            cpExpression.messageRef.id,
-            definitions
-          )
-        : undefined;
-      isUsed =
-        msgRef &&
-        msgObject &&
-        cpExpression.messageRef.id !== msgObject.identifier
-          ? true
-          : isUsed;
-      // if unused  false, delete retrival expression
+  for (const cProperty of correlationProps) {
+    const nextExpressions = (
+      cProperty.correlationPropertyRetrievalExpression || []
+    ).filter((cpExpression) => {
+      if (!cpExpression.messageRef?.id) {
+        return false;
+      }
+
+      const msgRef = findMessageElement(
+        businessObject,
+        cpExpression.messageRef.id,
+        definitions
+      );
+
       if (!msgRef) {
-        expressionsToDelete.push(cpExpression);
+        return false;
       }
+
+      if (messageId && cpExpression.messageRef.id === messageId) {
+        return activePropertyIds.has(cProperty.id);
+      }
+
+      return true;
+    });
+
+    cProperty.correlationPropertyRetrievalExpression = nextExpressions;
+
+    const hasOtherMessageReferences = nextExpressions.some(
+      (cpExpression) => cpExpression.messageRef?.id !== messageId
+    );
+    const keepProperty =
+      activePropertyIds.has(cProperty.id) || hasOtherMessageReferences;
+    const cPropertyIndex = definitions.get('rootElements').indexOf(cProperty);
+
+    if (!keepProperty) {
+      if (cPropertyIndex > -1) {
+        definitions.rootElements.splice(cPropertyIndex, 1);
+      }
+      continue;
     }
 
-    // Delete the retrieval expressions that are not used
-    for (const expression of expressionsToDelete) {
-      const index =
-        cProperty.correlationPropertyRetrievalExpression.indexOf(expression);
-      if (index > -1) {
-        cProperty.correlationPropertyRetrievalExpression.splice(index, 1);
-        const cPropertyIndex = definitions
-          .get('rootElements')
-          .indexOf(cProperty);
-        definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
-      }
-    }
-
-    // If Unused, delete the correlation property
-    const propertyToBeDeleted =
-      isUsed ||
-      (msgObject &&
-        msgObject.correlation_properties &&
-        msgObject.correlation_properties.some(
-          (obj) => obj.identifier === cProperty.id
-        ));
-    if (!propertyToBeDeleted) {
-      const index = definitions.get('rootElements').indexOf(cProperty);
-      if (index > -1) {
-        definitions.rootElements.splice(index, 1);
-      }
+    if (cPropertyIndex > -1) {
+      definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
     }
   }
+
+  removeUnusedProcessVariableCorrelations(element, activePropertyIds);
+}
+
+function removeUnusedProcessVariableCorrelations(element, activePropertyIds) {
+  const extensionHost = isMessageEvent(element)
+    ? element.businessObject.eventDefinitions?.[0]
+    : element.businessObject;
+  const extensionElements = extensionHost?.get('extensionElements');
+
+  if (!extensionElements?.values) {
+    return;
+  }
+
+  extensionElements.values = extensionElements.values.filter((value) => {
+    return (
+      !value.$instanceOf('spiffworkflow:ProcessVariableCorrelation') ||
+      activePropertyIds.has(value.propertyId)
+    );
+  });
 }
 
 export function deleteMessage(definitions, messageId) {
