@@ -801,9 +801,15 @@ export function setParentCorrelationKeys(
 }
 
 function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
-  let mainCorrelationKey = definitions
+  const collaboration = definitions
     .get('rootElements')
-    .find(
+    .find((element) => element.$type === 'bpmn:Collaboration');
+
+  let mainCorrelationKey =
+    collaboration
+      ?.get('correlationKeys')
+      ?.find((element) => element.name === 'MainCorrelationKey') ||
+    definitions.get('rootElements').find(
       (element) =>
         element.$type === 'bpmn:CorrelationKey' &&
         element.name === 'MainCorrelationKey'
