@@ -1,6 +1,6 @@
 import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
 
-import { attr as svgAttr } from 'tiny-svg';
+import { attr as svgAttr, select as svgSelect } from 'tiny-svg';
 
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
 import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil';
@@ -19,7 +19,7 @@ export default class DataObjectRenderer extends BaseRenderer {
   }
 
   canRender(element) {
-    return isAny(element, ['bpmn:DataObjectReference']) && !element.labelTarget;
+    return isAny(element, ['bpmn:DataObjectReference', 'bpmn:DataOutput']) && !element.labelTarget;
   }
 
   drawShape(parentNode, element) {
@@ -33,6 +33,16 @@ export default class DataObjectRenderer extends BaseRenderer {
       }
       if (!dataObject) {
         svgAttr(shape, 'stroke', 'red');
+      }
+      return shape;
+    }
+    if (is(element, 'bpmn:DataOutput')) {
+      // Fix: bpmn-js renders the DataOutput arrow with background fill,
+      // but it should be filled with the stroke color (solid arrow).
+      const arrowPath = svgSelect(parentNode, 'path:nth-of-type(2)');
+      if (arrowPath) {
+        const strokeColor = svgAttr(arrowPath, 'stroke') || '#000';
+        svgAttr(arrowPath, 'fill', strokeColor);
       }
       return shape;
     }
