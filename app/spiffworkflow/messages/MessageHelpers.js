@@ -723,78 +723,55 @@ export function setParentCorrelationKeys(
   );
   correlationProperties = correlationProperties || [];
 
-  let mainCorrelationKey = findOrCreateMainCorrelationKey(
-    definitions,
-    bpmnFactory,
-    moddle
-  );
-
-  // Clear existing ones
-  mainCorrelationKey.get('correlationPropertyRef').length = 0;
-
-  // Sync correlation properties
-  for (const cP of correlationProperties) {
-    const cPElement = bpmnFactory.create('bpmn:CorrelationProperty', {
-      id: cP.id,
-      name: cP.name,
-    });
-    mainCorrelationKey.get('correlationPropertyRef').push(cPElement);
-  }
-
   // check if process has collaboration
   let collaboration = definitions
     .get('rootElements')
     .find((element) => element.$type === 'bpmn:Collaboration');
 
   if (collaboration) {
-    // Remove existing correlation keys other than the main correlation key
-    collaboration.get('correlationKeys').forEach((key, index) => {
-      if (key.name !== 'MainCorrelationKey') {
-        collaboration.get('correlationKeys').splice(index, 1);
-      }
-    });
+    let mainCorrelationKey = findOrCreateMainCorrelationKey(
+      definitions,
+      bpmnFactory,
+      moddle
+    );
 
-    const existingKey = collaboration
-      .get('correlationKeys')
-      .find((key) => key.name === 'MainCorrelationKey');
+    // Reuse the real correlation property references instead of recreating
+    // detached moddle elements on each sync.
+    mainCorrelationKey.correlationPropertyRef = correlationProperties.slice();
 
-    if (!existingKey) {
-      collaboration.get('correlationKeys').push(mainCorrelationKey);
+    if (!collaboration.correlationKeys) {
+      collaboration.correlationKeys = [];
+    }
+
+    const correlationKeys = collaboration.correlationKeys;
+    const existingKey = correlationKeys.find(
+      (key) => key.name === 'MainCorrelationKey'
+    );
+
+    if (existingKey) {
+      mainCorrelationKey = existingKey;
+      mainCorrelationKey.correlationPropertyRef = correlationProperties.slice();
     } else {
-      // Replace the existing key with mainCorrelationKey
-      const index = collaboration.get('correlationKeys').indexOf(existingKey);
-      if (index !== -1) {
-        collaboration
-          .get('correlationKeys')
-          .splice(index, 1, mainCorrelationKey);
+      correlationKeys.push(mainCorrelationKey);
+    }
+
+    for (let index = correlationKeys.length - 1; index >= 0; index -= 1) {
+      if (
+        correlationKeys[index].name === 'MainCorrelationKey' &&
+        correlationKeys[index] !== mainCorrelationKey
+      ) {
+        correlationKeys.splice(index, 1);
       }
     }
   } else {
-    // Handle case where no collaboration is found
-    definitions.get('rootElements').forEach((element, index) => {
+    const rootElements = definitions.get('rootElements');
+
+    for (let index = rootElements.length - 1; index >= 0; index -= 1) {
       if (
-        element.$type === 'bpmn:CorrelationKey' &&
-        element.name !== 'MainCorrelationKey'
+        rootElements[index].$type === 'bpmn:CorrelationKey' &&
+        rootElements[index].name === 'MainCorrelationKey'
       ) {
-        definitions.get('rootElements').splice(index, 1);
-      }
-    });
-
-    const existingKey = definitions
-      .get('rootElements')
-      .find(
-        (key) =>
-          key.$type === 'bpmn:CorrelationKey' &&
-          key.name === 'MainCorrelationKey'
-      );
-
-    if (!existingKey) {
-      definitions.get('rootElements').push(mainCorrelationKey);
-    } else {
-      // Replace the existing key with mainCorrelationKey
-      const index = definitions.get('rootElements').indexOf(existingKey);
-      if (index !== -1) {
-        definitions.get('rootElements').splice(index, 1, mainCorrelationKey);
+        rootElements.splice(index, 1);
       }
     }
   }

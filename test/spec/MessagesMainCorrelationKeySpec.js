@@ -13,6 +13,8 @@ import { getBpmnJS } from 'bpmn-js/test/helper';
 
 describe('Main correlation key should remain stable', function () {
   const xml = require('./bpmn/message_receive_main_key.bpmn').default;
+  const nonCollaborationXml =
+    require('./bpmn/message_boundary_no_collaboration.bpmn').default;
   let container;
 
   beforeEach(function () {
@@ -73,5 +75,51 @@ describe('Main correlation key should remain stable', function () {
     expect(secondSaveXml).to.include(
       '<bpmn:correlationPropertyRef>uid</bpmn:correlationPropertyRef>'
     );
+  });
+
+  it('should not create a main correlation key for non-collaboration diagrams', async function () {
+    await bootstrapPropertiesPanel(nonCollaborationXml, {
+      container,
+      debounceInput: false,
+      additionalModules: [
+        messages,
+        BpmnPropertiesPanelModule,
+        BpmnPropertiesProviderModule,
+      ],
+      moddleExtensions: {
+        spiffworkflow: spiffModdleExtension,
+      },
+    }).call(this);
+
+    const modeler = getBpmnJS();
+
+    const boundaryEvent = await expectSelected('Event_0zmku0c');
+    expect(boundaryEvent, "Can't find Boundary Event").to.exist;
+
+    const updateEvent = {
+      elementId: 'Event_0zmku0c',
+      name: 'document-uploaded',
+      correlation_properties: {
+        tenant_uuid: {
+          retrieval_expression: 'tenant_uuid',
+        },
+        document_type: {
+          retrieval_expression: 'document_type',
+        },
+        order_sqid: {
+          retrieval_expression: 'order_sqid',
+        },
+      },
+    };
+
+    modeler.get('eventBus').fire('spiff.add_message.returned', updateEvent);
+    const { xml: firstSaveXml } = await modeler.saveXML({ format: true });
+    expect(firstSaveXml).not.to.include('MainCorrelationKey');
+    expect(firstSaveXml).not.to.include('correlationPropertyRef');
+
+    modeler.get('eventBus').fire('spiff.add_message.returned', updateEvent);
+    const { xml: secondSaveXml } = await modeler.saveXML({ format: true });
+    expect(secondSaveXml).not.to.include('MainCorrelationKey');
+    expect(secondSaveXml).not.to.include('correlationPropertyRef');
   });
 });

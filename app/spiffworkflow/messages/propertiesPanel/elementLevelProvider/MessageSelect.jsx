@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import {
@@ -91,52 +91,65 @@ export function MessageSelect(props) {
     }
   };
 
-  eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, async (event) => {
-    // Check if the received element matches the current element
-    if (event.elementId !== element.id) {
-      ELEMENT_ID = event.elementId;
-    }
-
-    const cProperties = Object.entries(event.correlation_properties).map(
-      ([identifier, properties]) => ({
-        identifier,
-        retrieval_expression: Array.isArray(properties.retrieval_expression)
-          ? properties.retrieval_expression[0]
-          : properties.retrieval_expression,
-      })
-    );
-
-    let newMsg = {
-      identifier: event.name,
-      correlation_properties: cProperties,
+  useEffect(() => {
+    const handleMessagesReturned = (event) => {
+      spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
     };
 
-    // Delete the original message object if one exists, so we can replace it with the new definition.
-    const { businessObject } = element;
-    const definitions = getRoot(businessObject);
-    let oldMessage = findMessageById(definitions, newMsg.identifier);
-    if (oldMessage) {
-      deleteMessage(definitions, oldMessage.id);
-    }
+    const handleAddMessageReturned = async (event) => {
+      // Check if the received element matches the current element
+      if (event.elementId !== element.id) {
+        ELEMENT_ID = event.elementId;
+      }
 
-    // Update the list of options to display
-    spiffExtensionOptions['spiff.messages'] =
-      Array.isArray(spiffExtensionOptions['spiff.messages']) &&
-      spiffExtensionOptions['spiff.messages']
-        ? spiffExtensionOptions['spiff.messages']
-        : [];
-    const messageIndex = spiffExtensionOptions['spiff.messages'].findIndex(
-      (msg) => msg.identifier === newMsg.identifier
-    );
-    if (messageIndex !== -1) {
-      spiffExtensionOptions['spiff.messages'][messageIndex] = newMsg;
-    } else {
-      spiffExtensionOptions['spiff.messages'].push(newMsg);
-    }
-    setValue(event.name);
-  });
+      const cProperties = Object.entries(event.correlation_properties).map(
+        ([identifier, properties]) => ({
+          identifier,
+          retrieval_expression: Array.isArray(properties.retrieval_expression)
+            ? properties.retrieval_expression[0]
+            : properties.retrieval_expression,
+        })
+      );
 
-  requestOptions(eventBus, bpmnFactory, element, moddle);
+      let newMsg = {
+        identifier: event.name,
+        correlation_properties: cProperties,
+      };
+
+      // Delete the original message object if one exists, so we can replace it with the new definition.
+      const { businessObject } = element;
+      const definitions = getRoot(businessObject);
+      let oldMessage = findMessageById(definitions, newMsg.identifier);
+      if (oldMessage) {
+        deleteMessage(definitions, oldMessage.id);
+      }
+
+      // Update the list of options to display
+      spiffExtensionOptions['spiff.messages'] =
+        Array.isArray(spiffExtensionOptions['spiff.messages']) &&
+        spiffExtensionOptions['spiff.messages']
+          ? spiffExtensionOptions['spiff.messages']
+          : [];
+      const messageIndex = spiffExtensionOptions['spiff.messages'].findIndex(
+        (msg) => msg.identifier === newMsg.identifier
+      );
+      if (messageIndex !== -1) {
+        spiffExtensionOptions['spiff.messages'][messageIndex] = newMsg;
+      } else {
+        spiffExtensionOptions['spiff.messages'].push(newMsg);
+      }
+      setValue(event.name);
+    };
+
+    eventBus.on('spiff.messages.returned', handleMessagesReturned);
+    eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, handleAddMessageReturned);
+    eventBus.fire('spiff.messages.requested', { eventBus });
+
+    return () => {
+      eventBus.off('spiff.messages.returned', handleMessagesReturned);
+      eventBus.off(SPIFF_ADD_MESSAGE_RETURNED_EVENT, handleAddMessageReturned);
+    };
+  }, [bpmnFactory, element, eventBus, moddle]);
 
   const getOptions = () => {
     // Load messages from XML
@@ -176,13 +189,6 @@ export function MessageSelect(props) {
       debounce={debounce}
     />
   );
-}
-
-function requestOptions(eventBus, bpmnFactory, element, moddle) {
-  eventBus.on(`spiff.messages.returned`, (event) => {
-    spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
-  });
-  eventBus.fire(`spiff.messages.requested`, { eventBus });
 }
 
 function removeDuplicatesByLabel(array) {

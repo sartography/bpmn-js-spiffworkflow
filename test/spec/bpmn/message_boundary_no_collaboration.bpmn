@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:manualTask id="Activity_0nhvq9v" name="Survey Received">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:endEvent id="EndEvent_1">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="Event_0zmku0c" attachedToRef="Activity_0nhvq9v" spiffworkflow:isMatchingCorrelation="true">
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1" messageRef="document-uploaded">
+        <bpmn:extensionElements>
+          <spiffworkflow:processVariableCorrelation>
+            <spiffworkflow:propertyId>tenant_uuid</spiffworkflow:propertyId>
+            <spiffworkflow:expression>tenant_uuid</spiffworkflow:expression>
+          </spiffworkflow:processVariableCorrelation>
+          <spiffworkflow:processVariableCorrelation>
+            <spiffworkflow:propertyId>document_type</spiffworkflow:propertyId>
+            <spiffworkflow:expression>"Survey"</spiffworkflow:expression>
+          </spiffworkflow:processVariableCorrelation>
+          <spiffworkflow:processVariableCorrelation>
+            <spiffworkflow:propertyId>order_sqid</spiffworkflow:propertyId>
+            <spiffworkflow:expression>order_sqid</spiffworkflow:expression>
+          </spiffworkflow:processVariableCorrelation>
+        </bpmn:extensionElements>
+      </bpmn:messageEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_0nhvq9v" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Activity_0nhvq9v" targetRef="EndEvent_1" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Event_0zmku0c" targetRef="EndEvent_1" />
+  </bpmn:process>
+  <bpmn:correlationProperty id="tenant_uuid" name="tenant_uuid">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="document-uploaded">
+      <bpmn:formalExpression>tenant_uuid</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+  <bpmn:correlationProperty id="document_type" name="document_type">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="document-uploaded">
+      <bpmn:formalExpression>document_type</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+  <bpmn:correlationProperty id="order_sqid" name="order_sqid">
+    <bpmn:correlationPropertyRetrievalExpression messageRef="document-uploaded">
+      <bpmn:formalExpression>order_sqid</bpmn:formalExpression>
+    </bpmn:correlationPropertyRetrievalExpression>
+  </bpmn:correlationProperty>
+  <bpmn:message id="document-uploaded" name="document-uploaded" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="172" y="92" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0nhvq9v_di" bpmnElement="Activity_0nhvq9v">
+        <dc:Bounds x="270" y="70" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="462" y="92" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0zmku0c_di" bpmnElement="Event_0zmku0c">
+        <dc:Bounds x="332" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="208" y="110" />
+        <di:waypoint x="270" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="370" y="110" />
+        <di:waypoint x="462" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="350" y="168" />
+        <di:waypoint x="350" y="210" />
+        <di:waypoint x="480" y="210" />
+        <di:waypoint x="480" y="128" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
