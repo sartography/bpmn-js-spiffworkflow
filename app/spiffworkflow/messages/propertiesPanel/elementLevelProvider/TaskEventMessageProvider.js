@@ -1,5 +1,6 @@
 import { useService } from 'bpmn-js-properties-panel';
 import {
+  Group,
   HeaderButton,
   ListGroup,
   isTextFieldEntryEdited,
@@ -104,6 +105,7 @@ export function createMessageGroup(
       id: 'messages',
       label: translate('Message'),
       isDefault: true,
+      component: Group,
       entries,
     },
   ];
@@ -161,6 +163,7 @@ export function createMessageGroup(
     results.push({
       id: 'correlationConditions',
       label: translate('Matching Conditions'),
+      component: Group,
       ...MatchingCorrelationEntries({
         idPrefix: id,
         element,

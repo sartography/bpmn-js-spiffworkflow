@@ -763,18 +763,13 @@ export function setParentCorrelationKeys(
         correlationKeys.splice(index, 1);
       }
     }
-  } else {
-    const rootElements = definitions.get('rootElements');
-
-    for (let index = rootElements.length - 1; index >= 0; index -= 1) {
-      if (
-        rootElements[index].$type === 'bpmn:CorrelationKey' &&
-        rootElements[index].name === 'MainCorrelationKey'
-      ) {
-        rootElements.splice(index, 1);
-      }
-    }
   }
+  // No collaboration — bpmn:CorrelationKey belongs inside bpmn:Collaboration
+  // per the BPMN spec.  bpmn-moddle silently drops any correlationKey that
+  // appears as a direct child of bpmn:Definitions, so creating one here would
+  // just produce a new random ID on every save (ID churn).  Leave rootElements
+  // untouched; the backend uses spiffworkflow:processVariableCorrelation
+  // extension elements for correlation in non-collaboration processes.
 }
 
 function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {

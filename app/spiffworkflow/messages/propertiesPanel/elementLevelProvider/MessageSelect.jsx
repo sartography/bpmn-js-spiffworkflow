@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useEffect, useState } from '@bpmn-io/properties-panel/preact/hooks';
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import {
@@ -29,6 +30,9 @@ export function MessageSelect(props) {
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
   const bpmnFactory = useService('bpmnFactory');
+
+  // Per-mount state — avoids stale module-level data leaking between renders.
+  const [apiMessages, setApiMessages] = useState(null);
 
   const getValue = () => {
     const messageRefElement = getMessageRefElement(shapeElement);
@@ -92,8 +96,15 @@ export function MessageSelect(props) {
   };
 
   useEffect(() => {
+    // Clear stale module-level data from previous mounts so getOptions()
+    // starts fresh on each component mount.
+    spiffExtensionOptions['spiff.messages'] = null;
+
     const handleMessagesReturned = (event) => {
+      // Keep spiffExtensionOptions in sync for synchronous findMessageObject()
+      // lookups, and update Preact state to trigger a dropdown re-render.
       spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
+      setApiMessages(event.configuration.messages);
     };
 
     const handleAddMessageReturned = async (event) => {
@@ -124,20 +135,24 @@ export function MessageSelect(props) {
         deleteMessage(definitions, oldMessage.id);
       }
 
-      // Update the list of options to display
-      spiffExtensionOptions['spiff.messages'] =
-        Array.isArray(spiffExtensionOptions['spiff.messages']) &&
-        spiffExtensionOptions['spiff.messages']
-          ? spiffExtensionOptions['spiff.messages']
-          : [];
-      const messageIndex = spiffExtensionOptions['spiff.messages'].findIndex(
+      // Update spiffExtensionOptions synchronously so findMessageObject() in
+      // setValue() can look up the new message immediately.
+      const current = Array.isArray(spiffExtensionOptions['spiff.messages'])
+        ? spiffExtensionOptions['spiff.messages']
+        : [];
+      const messageIndex = current.findIndex(
         (msg) => msg.identifier === newMsg.identifier
       );
       if (messageIndex !== -1) {
-        spiffExtensionOptions['spiff.messages'][messageIndex] = newMsg;
+        current[messageIndex] = newMsg;
       } else {
-        spiffExtensionOptions['spiff.messages'].push(newMsg);
+        current.push(newMsg);
       }
+      spiffExtensionOptions['spiff.messages'] = current;
+
+      // Also update Preact state to trigger a dropdown re-render.
+      setApiMessages([...current]);
+
       setValue(event.name);
     };
 
@@ -160,11 +175,8 @@ export function MessageSelect(props) {
     }
 
     // Load messages from API
-    if (
-      spiffExtensionOptions['spiff.messages'] &&
-      spiffExtensionOptions['spiff.messages'] !== null
-    ) {
-      spiffExtensionOptions['spiff.messages'].forEach((opt) => {
+    if (Array.isArray(apiMessages)) {
+      apiMessages.forEach((opt) => {
         options.push({
           label: opt.identifier,
           value: opt.identifier,
