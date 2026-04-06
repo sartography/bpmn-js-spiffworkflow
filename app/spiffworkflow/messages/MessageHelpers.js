@@ -763,13 +763,22 @@ export function setParentCorrelationKeys(
         correlationKeys.splice(index, 1);
       }
     }
+  } else {
+    // No collaboration — update correlationPropertyRef on any existing
+    // definitions-level correlationKey (loaded via the spiffworkflow moddle
+    // extension into definitions.correlationKeys).  Do not create a new key
+    // here; the backend uses spiffworkflow:processVariableCorrelation for
+    // non-collaboration processes, and we only want to preserve existing keys.
+    const definitionKeys = definitions.get('correlationKeys');
+    if (definitionKeys) {
+      const existingKey = definitionKeys.find(
+        (key) => key.name === 'MainCorrelationKey'
+      );
+      if (existingKey) {
+        existingKey.correlationPropertyRef = correlationProperties.slice();
+      }
+    }
   }
-  // No collaboration — bpmn:CorrelationKey belongs inside bpmn:Collaboration
-  // per the BPMN spec.  bpmn-moddle silently drops any correlationKey that
-  // appears as a direct child of bpmn:Definitions, so creating one here would
-  // just produce a new random ID on every save (ID churn).  Leave rootElements
-  // untouched; the backend uses spiffworkflow:processVariableCorrelation
-  // extension elements for correlation in non-collaboration processes.
 }
 
 function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
@@ -777,10 +786,17 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
     .get('rootElements')
     .find((element) => element.$type === 'bpmn:Collaboration');
 
+  // bpmn:CorrelationKey extends BaseElement (not RootElement), so bpmn-moddle
+  // would silently drop <bpmn:correlationKey> from rootElements on parse.
+  // The spiffworkflow moddle extension adds a typed `correlationKeys` property
+  // to bpmn:Definitions so they are correctly round-tripped there instead.
   let mainCorrelationKey =
     collaboration
       ?.get('correlationKeys')
       ?.find((element) => element.name === 'MainCorrelationKey') ||
+    definitions.get('correlationKeys')?.find(
+      (element) => element.name === 'MainCorrelationKey'
+    ) ||
     definitions.get('rootElements').find(
       (element) =>
         element.$type === 'bpmn:CorrelationKey' &&
