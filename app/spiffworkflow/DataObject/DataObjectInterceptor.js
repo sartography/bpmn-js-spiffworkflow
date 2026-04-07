@@ -130,6 +130,7 @@ export default class DataObjectInterceptor extends CommandInterceptor {
       const { shape } = context;
       if (is(shape, 'bpmn:DataObjectReference') && shape.type !== 'label') {
         const dataObject = shape.businessObject.dataObjectRef;
+
         let parent = shape.businessObject.$parent;
         if (parent.processRef) {
           // Our immediate parent may be a pool, so we need to get the process
@@ -137,13 +138,15 @@ export default class DataObjectInterceptor extends CommandInterceptor {
         }
         const flowElements = parent.get('flowElements');
         collectionRemove(flowElements, shape.businessObject);
-        const references = findDataObjectReferences(
-          flowElements,
-          dataObject.id
-        );
-        if (references.length === 0) {
-          const dataFlowElements = dataObject.$parent.get('flowElements');
-          collectionRemove(dataFlowElements, dataObject);
+        if (dataObject) {
+          const references = findDataObjectReferences(
+            flowElements,
+            dataObject.id
+          );
+          if (references.length === 0) {
+            const dataFlowElements = dataObject.$parent.get('flowElements');
+            collectionRemove(dataFlowElements, dataObject);
+          }
         }
       }
     });
