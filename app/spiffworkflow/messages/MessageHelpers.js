@@ -828,54 +828,59 @@ export function syncCorrelationProperties(
 ) {
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
-  const messageId = msgObject?.identifier;
   const activePropertyIds = new Set(
     (msgObject?.correlation_properties || []).map((obj) => obj.identifier)
   );
 
-  for (const cProperty of correlationProps) {
-    const nextExpressions = (
-      cProperty.correlationPropertyRetrievalExpression || []
-    ).filter((cpExpression) => {
-      if (!cpExpression.messageRef?.id) {
-        return false;
-      }
-
-      const msgRef = findMessageElement(
-        businessObject,
-        cpExpression.messageRef.id,
-        definitions
-      );
-
+  for (let cProperty of correlationProps) {
+    let isUsed = false;
+    const expressionsToDelete = [];
+    for (const cpExpression of cProperty.correlationPropertyRetrievalExpression) {
+      const msgRef = cpExpression.messageRef
+        ? findMessageElement(
+            businessObject,
+            cpExpression.messageRef.id,
+            definitions
+          )
+        : undefined;
+      isUsed =
+        msgRef &&
+        msgObject &&
+        cpExpression.messageRef.id !== msgObject.identifier
+          ? true
+          : isUsed;
+      // if unused  false, delete retrival expression
       if (!msgRef) {
-        return false;
+        expressionsToDelete.push(cpExpression);
       }
-
-      if (messageId && cpExpression.messageRef.id === messageId) {
-        return activePropertyIds.has(cProperty.id);
-      }
-
-      return true;
-    });
-
-    cProperty.correlationPropertyRetrievalExpression = nextExpressions;
-
-    const hasOtherMessageReferences = nextExpressions.some(
-      (cpExpression) => cpExpression.messageRef?.id !== messageId
-    );
-    const keepProperty =
-      activePropertyIds.has(cProperty.id) || hasOtherMessageReferences;
-    const cPropertyIndex = definitions.get('rootElements').indexOf(cProperty);
-
-    if (!keepProperty) {
-      if (cPropertyIndex > -1) {
-        definitions.rootElements.splice(cPropertyIndex, 1);
-      }
-      continue;
     }
 
-    if (cPropertyIndex > -1) {
-      definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
+    // Delete the retrieval expressions that are not used
+    for (const expression of expressionsToDelete) {
+      const index =
+        cProperty.correlationPropertyRetrievalExpression.indexOf(expression);
+      if (index > -1) {
+        cProperty.correlationPropertyRetrievalExpression.splice(index, 1);
+        const cPropertyIndex = definitions
+          .get('rootElements')
+          .indexOf(cProperty);
+        definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
+      }
+    }
+
+    // If Unused, delete the correlation property
+    const propertyToBeDeleted =
+      isUsed ||
+      (msgObject &&
+        msgObject.correlation_properties &&
+        msgObject.correlation_properties.some(
+          (obj) => obj.identifier === cProperty.id
+        ));
+    if (!propertyToBeDeleted) {
+      const index = definitions.get('rootElements').indexOf(cProperty);
+      if (index > -1) {
+        definitions.rootElements.splice(index, 1);
+      }
     }
   }
 
@@ -898,6 +903,41 @@ function removeUnusedProcessVariableCorrelations(element, activePropertyIds) {
       activePropertyIds.has(value.propertyId)
     );
   });
+}
+
+export function getMessageSchemaFile(messageBo) {
+  if (!messageBo?.extensionElements) return '';
+  const props = messageBo.extensionElements
+    .get('values')
+    .find((e) => e.$instanceOf('spiffworkflow:Properties'));
+  if (!props) return '';
+  const prop = props
+    .get('properties')
+    .find((p) => p.name === 'formJsonSchemaFilename');
+  return prop?.value ?? '';
+}
+
+export function setMessageSchemaFile(messageBo, schemaFile, moddle) {
+  if (!messageBo.extensionElements) {
+    messageBo.extensionElements = moddle.create('bpmn:ExtensionElements');
+  }
+  const exts = messageBo.extensionElements;
+  let props = exts
+    .get('values')
+    .find((e) => e.$instanceOf('spiffworkflow:Properties'));
+  if (!props) {
+    props = moddle.create('spiffworkflow:Properties');
+    exts.get('values').push(props);
+  }
+  let prop = props
+    .get('properties')
+    .find((p) => p.name === 'formJsonSchemaFilename');
+  if (!prop) {
+    prop = moddle.create('spiffworkflow:Property');
+    props.get('properties').push(prop);
+  }
+  prop.name = 'formJsonSchemaFilename';
+  prop.value = schemaFile;
 }
 
 export function deleteMessage(definitions, messageId) {

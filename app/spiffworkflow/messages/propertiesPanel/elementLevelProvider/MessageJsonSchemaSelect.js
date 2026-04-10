@@ -1,6 +1,11 @@
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
-import { getMessageRefElement, getRoot } from '../../MessageHelpers';
+import {
+  getMessageRefElement,
+  getRoot,
+  getMessageSchemaFile,
+  setMessageSchemaFile,
+} from '../../MessageHelpers';
 
 export const spiffExtensionOptions = {};
 
@@ -13,6 +18,7 @@ export function MessageJsonSchemaSelect(props) {
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
   const bpmnFactory = useService('bpmnFactory');
+  const moddle = useService('moddle');
 
   const optionType = 'messages_schemas';
 
@@ -29,20 +35,19 @@ export function MessageJsonSchemaSelect(props) {
       definitions.set('rootElements', []);
     }
 
-    // Retrieve Message
     let bpmnMessage = definitions
       .get('rootElements')
       .find(
-        (element) =>
-          element.$type === 'bpmn:Message' &&
-          (element.id === msgRef.id || element.name === msgRef.id)
+        (el) =>
+          el.$type === 'bpmn:Message' &&
+          (el.id === msgRef.id || el.name === msgRef.id)
       );
 
     if (!bpmnMessage) {
       return '';
     }
 
-    return bpmnMessage.get('jsonSchemaId');
+    return getMessageSchemaFile(bpmnMessage);
   };
 
   const setValue = (value) => {
@@ -63,32 +68,14 @@ export function MessageJsonSchemaSelect(props) {
     let bpmnMessage = definitions
       .get('rootElements')
       .find(
-        (element) =>
-          element.$type === 'bpmn:Message' &&
-          (element.id === msgRef.id || element.name === msgRef.id)
+        (el) =>
+          el.$type === 'bpmn:Message' &&
+          (el.id === msgRef.id || el.name === msgRef.id)
       );
-    bpmnMessage.set('jsonSchemaId', value);
 
-    // let extensions = businessObject.extensionElements;
-    // if (!extensions) {
-    //     extensions = moddle.create('bpmn:ExtensionElements');
-    //     extensions.values = []
-    // }
-    // const properties = moddle.create(
-    //     MESSAGE_JSONSCHEMA_PARAMETER_ELEMENT_NAME
-    // );
-    // properties.values = []
-    // const property = moddle.create(
-    //     'spiffworkflow:Property'
-    // );
-    // property.name = "jsonSchemaId";
-    // property.value = value;
-    // properties.values.push(property)
-    // extensions.values.push(properties)
-    // let definitions = getRoot(businessObject);
-    // if (!definitions.get('rootElements')) {
-    //     definitions.set('rootElements', []);
-    // }
+    if (bpmnMessage) {
+      setMessageSchemaFile(bpmnMessage, value, moddle);
+    }
   };
 
   if (

@@ -12,6 +12,7 @@ import {
   setParentCorrelationKeys,
   syncCorrelationProperties,
   deleteMessage,
+  setMessageSchemaFile,
 } from '../../MessageHelpers';
 import { SPIFF_ADD_MESSAGE_RETURNED_EVENT } from '../../../constants';
 
@@ -133,7 +134,15 @@ export function MessageSelect(props) {
     } else {
       spiffExtensionOptions['spiff.messages'].push(newMsg);
     }
-    setValue(event.name);
+    await setValue(event.name);
+
+    if (event.schema_file) {
+      const defs = getRoot(element.businessObject);
+      const bpmnMessage = findMessageById(defs, event.name);
+      if (bpmnMessage) {
+        setMessageSchemaFile(bpmnMessage, event.schema_file, moddle);
+      }
+    }
   });
 
   requestOptions(eventBus, bpmnFactory, element, moddle);
