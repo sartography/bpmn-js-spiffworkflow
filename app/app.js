@@ -5,6 +5,7 @@ import {
 } from 'bpmn-js-properties-panel';
 import diagramXML from '../test/spec/bpmn/user_form.bpmn';
 import spiffworkflow from './spiffworkflow';
+import nativeCopyPasteModule from 'bpmn-js-native-copy-paste';
 import setupFileOperations from './fileOperations';
 import {
   SPIFF_ADD_MESSAGE_REQUESTED_EVENT,
@@ -32,6 +33,7 @@ try {
       spiffworkflow,
       BpmnPropertiesPanelModule,
       BpmnPropertiesProviderModule,
+      nativeCopyPasteModule,
     ],
     moddleExtensions: {
       spiffworkflowModdle: spiffModdleExtension,
