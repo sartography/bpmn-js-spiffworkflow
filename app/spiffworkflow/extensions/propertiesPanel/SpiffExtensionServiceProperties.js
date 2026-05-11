@@ -17,6 +17,7 @@ const LOW_PRIORITY = 500;
 const SERVICE_TASK_OPERATOR_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:ServiceTaskOperator`;
 const SERVICE_TASK_PARAMETERS_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:Parameters`;
 const SERVICE_TASK_PARAMETER_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:Parameter`;
+const SERVICE_TASK_RETRY_ELEMENT_NAME = `${SPIFFWORKFLOW_XML_NAMESPACE}:Retry`;
 
 /**
  * A generic properties' editor for text input.
@@ -138,6 +139,10 @@ export function ServiceTaskOperatorSelect(props) {
       SERVICE_TASK_OPERATOR_ELEMENT_NAME
     );
     newServiceTaskOperatorModdleElement.id = value;
+    if (oldServiceTaskOperatorModdleElement?.retry) {
+      newServiceTaskOperatorModdleElement.retry =
+        oldServiceTaskOperatorModdleElement.retry;
+    }
     let newParameterList;
 
     if (previouslyUsedServiceTaskParameterValues) {
@@ -307,4 +312,87 @@ export function ServiceTaskResultTextInput(props) {
     });
   }
   return null;
+}
+
+function getOrCreateRetryModdleElement(serviceTaskOperatorModdleElement, moddle) {
+  if (serviceTaskOperatorModdleElement.retry) {
+    return serviceTaskOperatorModdleElement.retry;
+  }
+
+  serviceTaskOperatorModdleElement.retry = moddle.create(
+    SERVICE_TASK_RETRY_ELEMENT_NAME
+  );
+  return serviceTaskOperatorModdleElement.retry;
+}
+
+function ServiceTaskRetryTextInput(props) {
+  const {
+    element,
+    translate,
+    commandStack,
+    moddle,
+    label,
+    description,
+    id,
+    propertyName,
+  } = props;
+
+  const debounce = useService('debounceInput');
+  const serviceTaskOperatorModdleElement =
+    getServiceTaskOperatorModdleElement(element);
+
+  if (!serviceTaskOperatorModdleElement) {
+    return null;
+  }
+
+  const setValue = (value) => {
+    const retryModdleElement = getOrCreateRetryModdleElement(
+      serviceTaskOperatorModdleElement,
+      moddle
+    );
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: retryModdleElement,
+      properties: {
+        [propertyName]: value || undefined,
+      },
+    });
+  };
+
+  const getValue = () => {
+    if (serviceTaskOperatorModdleElement.retry) {
+      return serviceTaskOperatorModdleElement.retry[propertyName];
+    }
+    return '';
+  };
+
+  return TextFieldEntry({
+    element,
+    label: translate(label),
+    description: translate(description),
+    id,
+    getValue,
+    setValue,
+    debounce,
+  });
+}
+
+export function ServiceTaskRetriesTextInput(props) {
+  return ServiceTaskRetryTextInput({
+    ...props,
+    id: 'retries-textField',
+    label: 'Retries',
+    description: 'number of times to retry transient service task failures.',
+    propertyName: 'retries',
+  });
+}
+
+export function ServiceTaskRetryBackoffBaseTextInput(props) {
+  return ServiceTaskRetryTextInput({
+    ...props,
+    id: 'retry-backoff-base-textField',
+    label: 'Retry Backoff Base',
+    description: 'base for exponential retry backoff delays.',
+    propertyName: 'backoff_base',
+  });
 }
