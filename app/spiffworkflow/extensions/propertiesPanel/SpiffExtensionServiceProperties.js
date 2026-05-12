@@ -314,7 +314,10 @@ export function ServiceTaskResultTextInput(props) {
   return null;
 }
 
-function getOrCreateRetryModdleElement(serviceTaskOperatorModdleElement, moddle) {
+function getOrCreateRetryModdleElement(
+  serviceTaskOperatorModdleElement,
+  moddle
+) {
   if (serviceTaskOperatorModdleElement.retry) {
     return serviceTaskOperatorModdleElement.retry;
   }
@@ -392,7 +395,7 @@ export function ServiceTaskRetryBackoffBaseTextInput(props) {
     ...props,
     id: 'retry-backoff-base-textField',
     label: 'Retry Backoff Base',
-    description: 'base for exponential retry backoff delays.',
+    description: 'base, in seconds, for exponential retry backoff delays.',
     propertyName: 'backoff_base',
   });
 }
