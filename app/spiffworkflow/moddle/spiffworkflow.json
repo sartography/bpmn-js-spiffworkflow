@@ -181,6 +181,10 @@
         {
           "name": "parameterList",
           "type": "Parameters"
+        },
+        {
+          "name": "retry",
+          "type": "Retry"
         }
       ]
     },
@@ -211,6 +215,22 @@
         },
         {
           "name": "value",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Retry",
+      "superClass": ["Element"],
+      "properties": [
+        {
+          "name": "retries",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "backoff_base",
           "isAttr": true,
           "type": "String"
         }
@@ -333,4 +353,3 @@
     }
   ]
 }
-

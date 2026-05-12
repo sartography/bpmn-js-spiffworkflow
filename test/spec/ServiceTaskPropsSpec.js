@@ -104,6 +104,30 @@ describe('Properties Panel for Service Tasks', function () {
     expect(selectList.options[1].label).to.equal('ExampleService2')
   });
 
+  it('should serialize retry properties for selected service tasks.', async function () {
+    await preparePropertiesPanelWithXml(diagramXml)();
+    const modeler = getBpmnJS();
+    addServicesToModeler(modeler);
+
+    await expectSelected('my_service_task');
+    const group = findGroupEntry('service_task_properties', container);
+    const serviceEntry = findEntry('selectOperatorId', group);
+    const selectList = findSelect(serviceEntry);
+    changeInput(selectList, 'ExampleService');
+
+    const retriesEntry = findEntry('retries-textField', group);
+    const retriesInput = findInput('text', retriesEntry);
+    changeInput(retriesInput, '3');
+
+    const backoffEntry = findEntry('retry-backoff-base-textField', group);
+    const backoffInput = findInput('text', backoffEntry);
+    changeInput(backoffInput, '2');
+
+    const { xml } = await modeler.saveXML({ format: true });
+
+    expect(xml).to.include('<spiffworkflow:retry retries="3" backoff_base="2" />');
+  });
+
 
 
 });
