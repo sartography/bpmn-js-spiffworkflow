@@ -31,7 +31,7 @@ function messagesFromBpmn(definitions) {
     if (el.$type === 'bpmn:Message') {
       messages.push({
         identifier: el.name,
-        schema_file: '',
+        schema_file: el.jsonSchemaId ?? '',
         correlation_properties: corrPropsByMsgId[el.id] ?? [],
       });
     }
@@ -81,6 +81,7 @@ function syncMessagesToBpmn(bpmnFactory, definitions, updated) {
       });
       definitions.rootElements.push(bpmnMsg);
     }
+    bpmnMsg.jsonSchemaId = msg.schema_file || undefined;
 
     for (const cp of msg.correlation_properties ?? []) {
       let corrProp = definitions.rootElements.find(
