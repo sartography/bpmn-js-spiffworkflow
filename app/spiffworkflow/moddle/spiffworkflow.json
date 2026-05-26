@@ -291,6 +291,17 @@
       ]
     },
     {
+      "name": "MessageSchema",
+      "extends": ["bpmn:Message"],
+      "properties": [
+        {
+          "name": "jsonSchemaId",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
       "name": "ScriptsOnInstances",
       "extends": [
         "bpmn:MultiInstanceLoopCharacteristics",
