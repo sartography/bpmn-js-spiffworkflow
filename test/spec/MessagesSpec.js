@@ -20,7 +20,7 @@ import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.j
 import messages from '../../app/spiffworkflow/messages';
 import { fireEvent } from '@testing-library/preact';
 import { getBpmnJS, inject } from 'bpmn-js/test/helper';
-import { findCorrelationProperties, findMessageModdleElements } from '../../app/spiffworkflow/messages/MessageHelpers';
+import { findCorrelationProperties, findMessageModdleElements, getMessageSchemaFile, setMessageSchemaFile } from '../../app/spiffworkflow/messages/MessageHelpers';
 import { SPIFF_ADD_MESSAGE_RETURNED_EVENT } from '../../app/spiffworkflow/constants';
 
 
@@ -96,7 +96,6 @@ describe('Messages should work', function () {
     const selector = findSelect(entry);
     expect(selector).to.exist;
     expect(selector.length).to.equal(2);
-    console.log(selector);
     await expectSelected('my_collaboration');
   });
 
@@ -243,7 +242,105 @@ describe('Messages should work', function () {
     expect(updatedXml).not.to.include('<bpmn:correlationProperty id="singer_name"');
   }));
 
+  it('should store a schema file on a message via the add_message event', inject(async function (canvas, moddle) {
+    const modeler = getBpmnJS();
+    const eventBus = modeler.get('eventBus');
+    const rootShape = canvas.getRootElement();
 
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
+
+    eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
+      elementId: sendShape.id,
+      name: 'love_letter',
+      correlation_properties: {
+        lover_instrument: { retrieval_expression: 'lover.instrument' },
+        lover_name: { retrieval_expression: 'lover.name' },
+      },
+      schema_file: 'my_schema.json',
+    });
+
+    // Allow the async event handler to complete (schema_file is set after await)
+    await new Promise((r) => setTimeout(r, 0));
+
+    const definitions = modeler.getDefinitions();
+    const bpmnMessage = definitions.rootElements.find(
+      (el) => el.$type === 'bpmn:Message' && (el.id === 'love_letter' || el.name === 'love_letter')
+    );
+    expect(bpmnMessage, 'Message should exist in definitions').to.exist;
+
+    const schemaFile = getMessageSchemaFile(bpmnMessage);
+    expect(schemaFile).to.equal('my_schema.json');
+
+    const { xml: updatedXml } = await modeler.saveXML({ format: true });
+    expect(updatedXml).to.include('formJsonSchemaFilename');
+    expect(updatedXml).to.include('my_schema.json');
+  }));
+
+  it('should update an existing schema file on a message', inject(async function (canvas, moddle) {
+    const modeler = getBpmnJS();
+    const eventBus = modeler.get('eventBus');
+
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
+
+    // Set an initial schema file on the love_letter message
+    const definitions = modeler.getDefinitions();
+    const bpmnMessage = definitions.rootElements.find(
+      (el) => el.$type === 'bpmn:Message' && el.id === 'love_letter'
+    );
+    setMessageSchemaFile(bpmnMessage, 'old_schema.json', moddle);
+    expect(getMessageSchemaFile(bpmnMessage)).to.equal('old_schema.json');
+
+    // Fire event with updated schema_file
+    eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
+      elementId: sendShape.id,
+      name: 'love_letter',
+      correlation_properties: {
+        lover_instrument: { retrieval_expression: 'lover.instrument' },
+        lover_name: { retrieval_expression: 'lover.name' },
+      },
+      schema_file: 'new_schema.json',
+    });
+
+    // Allow the async event handler to complete (schema_file is set after await)
+    await new Promise((r) => setTimeout(r, 0));
+
+    const updatedMessage = definitions.rootElements.find(
+      (el) => el.$type === 'bpmn:Message' && (el.id === 'love_letter' || el.name === 'love_letter')
+    );
+    expect(getMessageSchemaFile(updatedMessage)).to.equal('new_schema.json');
+  }));
+
+  it('should not add schema extensions when no schema_file is provided', inject(async function (canvas) {
+    const modeler = getBpmnJS();
+    const eventBus = modeler.get('eventBus');
+
+    const sendShape = await expectSelected('ActivitySendLetter');
+    expect(sendShape, "Can't find Send Task").to.exist;
+
+    // Fire event without schema_file (simulating older systems)
+    eventBus.fire(SPIFF_ADD_MESSAGE_RETURNED_EVENT, {
+      elementId: sendShape.id,
+      name: 'love_letter',
+      correlation_properties: {
+        lover_instrument: { retrieval_expression: 'lover.instrument' },
+        lover_name: { retrieval_expression: 'lover.name' },
+      },
+    });
+
+    await new Promise((r) => setTimeout(r, 0));
+
+    const definitions = modeler.getDefinitions();
+    const bpmnMessage = definitions.rootElements.find(
+      (el) => el.$type === 'bpmn:Message' && (el.id === 'love_letter' || el.name === 'love_letter')
+    );
+    expect(bpmnMessage, 'Message should exist').to.exist;
+    expect(getMessageSchemaFile(bpmnMessage)).to.equal('');
+
+    const { xml: updatedXml } = await modeler.saveXML({ format: true });
+    expect(updatedXml).to.not.include('formJsonSchemaFilename');
+  }));
 
   // 🔶🔶 OLD Features
 
