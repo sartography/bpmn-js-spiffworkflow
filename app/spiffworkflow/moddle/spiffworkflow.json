@@ -361,6 +361,17 @@
           "type": "String"
         }
       ]
+    },
+    {
+      "name": "DefinitionsCorrelationKeys",
+      "extends": ["bpmn:Definitions"],
+      "properties": [
+        {
+          "name": "correlationKeys",
+          "type": "bpmn:CorrelationKey",
+          "isMany": true
+        }
+      ]
     }
   ]
 }

@@ -723,87 +723,81 @@ export function setParentCorrelationKeys(
   );
   correlationProperties = correlationProperties || [];
 
-  let mainCorrelationKey = findOrCreateMainCorrelationKey(
-    definitions,
-    bpmnFactory,
-    moddle
-  );
-
-  // Clear existing ones
-  mainCorrelationKey.get('correlationPropertyRef').length = 0;
-
-  // Sync correlation properties
-  for (const cP of correlationProperties) {
-    const cPElement = bpmnFactory.create('bpmn:CorrelationProperty', {
-      id: cP.id,
-      name: cP.name,
-    });
-    mainCorrelationKey.get('correlationPropertyRef').push(cPElement);
-  }
-
   // check if process has collaboration
   let collaboration = definitions
     .get('rootElements')
     .find((element) => element.$type === 'bpmn:Collaboration');
 
   if (collaboration) {
-    // Remove existing correlation keys other than the main correlation key
-    collaboration.get('correlationKeys').forEach((key, index) => {
-      if (key.name !== 'MainCorrelationKey') {
-        collaboration.get('correlationKeys').splice(index, 1);
-      }
-    });
+    let mainCorrelationKey = findOrCreateMainCorrelationKey(
+      definitions,
+      bpmnFactory,
+      moddle
+    );
 
-    const existingKey = collaboration
-      .get('correlationKeys')
-      .find((key) => key.name === 'MainCorrelationKey');
+    // Reuse the real correlation property references instead of recreating
+    // detached moddle elements on each sync.
+    mainCorrelationKey.correlationPropertyRef = correlationProperties.slice();
 
-    if (!existingKey) {
-      collaboration.get('correlationKeys').push(mainCorrelationKey);
+    if (!collaboration.correlationKeys) {
+      collaboration.correlationKeys = [];
+    }
+
+    const correlationKeys = collaboration.correlationKeys;
+    const existingKey = correlationKeys.find(
+      (key) => key.name === 'MainCorrelationKey'
+    );
+
+    if (existingKey) {
+      mainCorrelationKey = existingKey;
+      mainCorrelationKey.correlationPropertyRef = correlationProperties.slice();
     } else {
-      // Replace the existing key with mainCorrelationKey
-      const index = collaboration.get('correlationKeys').indexOf(existingKey);
-      if (index !== -1) {
-        collaboration
-          .get('correlationKeys')
-          .splice(index, 1, mainCorrelationKey);
+      correlationKeys.push(mainCorrelationKey);
+    }
+
+    for (let index = correlationKeys.length - 1; index >= 0; index -= 1) {
+      if (
+        correlationKeys[index].name === 'MainCorrelationKey' &&
+        correlationKeys[index] !== mainCorrelationKey
+      ) {
+        correlationKeys.splice(index, 1);
       }
     }
   } else {
-    // Handle case where no collaboration is found
-    definitions.get('rootElements').forEach((element, index) => {
-      if (
-        element.$type === 'bpmn:CorrelationKey' &&
-        element.name !== 'MainCorrelationKey'
-      ) {
-        definitions.get('rootElements').splice(index, 1);
-      }
-    });
-
-    const existingKey = definitions
-      .get('rootElements')
-      .find(
-        (key) =>
-          key.$type === 'bpmn:CorrelationKey' &&
-          key.name === 'MainCorrelationKey'
+    // No collaboration — update correlationPropertyRef on any existing
+    // definitions-level correlationKey (loaded via the spiffworkflow moddle
+    // extension into definitions.correlationKeys).  Do not create a new key
+    // here; the backend uses spiffworkflow:processVariableCorrelation for
+    // non-collaboration processes, and we only want to preserve existing keys.
+    const definitionKeys = definitions.get('correlationKeys');
+    if (definitionKeys) {
+      const existingKey = definitionKeys.find(
+        (key) => key.name === 'MainCorrelationKey'
       );
-
-    if (!existingKey) {
-      definitions.get('rootElements').push(mainCorrelationKey);
-    } else {
-      // Replace the existing key with mainCorrelationKey
-      const index = definitions.get('rootElements').indexOf(existingKey);
-      if (index !== -1) {
-        definitions.get('rootElements').splice(index, 1, mainCorrelationKey);
+      if (existingKey) {
+        existingKey.correlationPropertyRef = correlationProperties.slice();
       }
     }
   }
 }
 
 function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
-  let mainCorrelationKey = definitions
+  const collaboration = definitions
     .get('rootElements')
-    .find(
+    .find((element) => element.$type === 'bpmn:Collaboration');
+
+  // bpmn:CorrelationKey extends BaseElement (not RootElement), so bpmn-moddle
+  // would silently drop <bpmn:correlationKey> from rootElements on parse.
+  // The spiffworkflow moddle extension adds a typed `correlationKeys` property
+  // to bpmn:Definitions so they are correctly round-tripped there instead.
+  let mainCorrelationKey =
+    collaboration
+      ?.get('correlationKeys')
+      ?.find((element) => element.name === 'MainCorrelationKey') ||
+    definitions.get('correlationKeys')?.find(
+      (element) => element.name === 'MainCorrelationKey'
+    ) ||
+    definitions.get('rootElements').find(
       (element) =>
         element.$type === 'bpmn:CorrelationKey' &&
         element.name === 'MainCorrelationKey'

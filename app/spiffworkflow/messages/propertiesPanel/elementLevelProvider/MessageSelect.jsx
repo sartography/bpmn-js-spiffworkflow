@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect, useState } from '@bpmn-io/properties-panel/preact/hooks';
 import { useService } from 'bpmn-js-properties-panel';
 import { SelectEntry } from '@bpmn-io/properties-panel';
 import {
@@ -29,6 +30,9 @@ export function MessageSelect(props) {
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
   const bpmnFactory = useService('bpmnFactory');
+
+  // Per-mount state — avoids stale module-level data leaking between renders.
+  const [apiMessages, setApiMessages] = useState(null);
 
   const getValue = () => {
     const messageRefElement = getMessageRefElement(shapeElement);
@@ -91,52 +95,76 @@ export function MessageSelect(props) {
     }
   };
 
-  eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, async (event) => {
-    // Check if the received element matches the current element
-    if (event.elementId !== element.id) {
-      ELEMENT_ID = event.elementId;
-    }
+  useEffect(() => {
+    // Clear stale module-level data from previous mounts so getOptions()
+    // starts fresh on each component mount.
+    spiffExtensionOptions['spiff.messages'] = null;
 
-    const cProperties = Object.entries(event.correlation_properties).map(
-      ([identifier, properties]) => ({
-        identifier,
-        retrieval_expression: Array.isArray(properties.retrieval_expression)
-          ? properties.retrieval_expression[0]
-          : properties.retrieval_expression,
-      })
-    );
-
-    let newMsg = {
-      identifier: event.name,
-      correlation_properties: cProperties,
+    const handleMessagesReturned = (event) => {
+      // Keep spiffExtensionOptions in sync for synchronous findMessageObject()
+      // lookups, and update Preact state to trigger a dropdown re-render.
+      spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
+      setApiMessages(event.configuration.messages);
     };
 
-    // Delete the original message object if one exists, so we can replace it with the new definition.
-    const { businessObject } = element;
-    const definitions = getRoot(businessObject);
-    let oldMessage = findMessageById(definitions, newMsg.identifier);
-    if (oldMessage) {
-      deleteMessage(definitions, oldMessage.id);
-    }
+    const handleAddMessageReturned = async (event) => {
+      // Check if the received element matches the current element
+      if (event.elementId !== element.id) {
+        ELEMENT_ID = event.elementId;
+      }
 
-    // Update the list of options to display
-    spiffExtensionOptions['spiff.messages'] =
-      Array.isArray(spiffExtensionOptions['spiff.messages']) &&
-      spiffExtensionOptions['spiff.messages']
+      const cProperties = Object.entries(event.correlation_properties).map(
+        ([identifier, properties]) => ({
+          identifier,
+          retrieval_expression: Array.isArray(properties.retrieval_expression)
+            ? properties.retrieval_expression[0]
+            : properties.retrieval_expression,
+        })
+      );
+
+      let newMsg = {
+        identifier: event.name,
+        correlation_properties: cProperties,
+      };
+
+      // Delete the original message object if one exists, so we can replace it with the new definition.
+      const { businessObject } = element;
+      const definitions = getRoot(businessObject);
+      let oldMessage = findMessageById(definitions, newMsg.identifier);
+      if (oldMessage) {
+        deleteMessage(definitions, oldMessage.id);
+      }
+
+      // Update spiffExtensionOptions synchronously so findMessageObject() in
+      // setValue() can look up the new message immediately.
+      const current = Array.isArray(spiffExtensionOptions['spiff.messages'])
         ? spiffExtensionOptions['spiff.messages']
         : [];
-    const messageIndex = spiffExtensionOptions['spiff.messages'].findIndex(
-      (msg) => msg.identifier === newMsg.identifier
-    );
-    if (messageIndex !== -1) {
-      spiffExtensionOptions['spiff.messages'][messageIndex] = newMsg;
-    } else {
-      spiffExtensionOptions['spiff.messages'].push(newMsg);
-    }
-    setValue(event.name);
-  });
+      const messageIndex = current.findIndex(
+        (msg) => msg.identifier === newMsg.identifier
+      );
+      if (messageIndex !== -1) {
+        current[messageIndex] = newMsg;
+      } else {
+        current.push(newMsg);
+      }
+      spiffExtensionOptions['spiff.messages'] = current;
 
-  requestOptions(eventBus, bpmnFactory, element, moddle);
+      // Also update Preact state to trigger a dropdown re-render.
+      setApiMessages([...current]);
+
+      setValue(event.name);
+    };
+
+    eventBus.on('spiff.messages.returned', handleMessagesReturned);
+    eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, handleAddMessageReturned);
+    eventBus.fire('spiff.messages.requested', { eventBus });
+
+    return () => {
+      eventBus.off('spiff.messages.returned', handleMessagesReturned);
+      eventBus.off(SPIFF_ADD_MESSAGE_RETURNED_EVENT, handleAddMessageReturned);
+    };
+  }, [bpmnFactory, element, eventBus, moddle]);
 
   const getOptions = () => {
     // Load messages from XML
@@ -147,11 +175,8 @@ export function MessageSelect(props) {
     }
 
     // Load messages from API
-    if (
-      spiffExtensionOptions['spiff.messages'] &&
-      spiffExtensionOptions['spiff.messages'] !== null
-    ) {
-      spiffExtensionOptions['spiff.messages'].forEach((opt) => {
+    if (Array.isArray(apiMessages)) {
+      apiMessages.forEach((opt) => {
         options.push({
           label: opt.identifier,
           value: opt.identifier,
@@ -176,13 +201,6 @@ export function MessageSelect(props) {
       debounce={debounce}
     />
   );
-}
-
-function requestOptions(eventBus, bpmnFactory, element, moddle) {
-  eventBus.on(`spiff.messages.returned`, (event) => {
-    spiffExtensionOptions['spiff.messages'] = event.configuration.messages;
-  });
-  eventBus.fire(`spiff.messages.requested`, { eventBus });
 }
 
 function removeDuplicatesByLabel(array) {
