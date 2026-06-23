@@ -81,6 +81,9 @@ export default function ExtensionsPropertiesProvider(
           createAllowGuestGroup(element, translate, moddle, commandStack)
         );
       }
+      if (isAny(element, ['bpmn:ManualTask', 'bpmn:UserTask'])) {
+        groups.push(createHooksGroup(element, translate, moddle, commandStack));
+      }
       if (
         is(element, 'bpmn:BoundaryEvent') &&
         hasEventDefinition(element, 'bpmn:SignalEventDefinition') &&
@@ -325,6 +328,32 @@ function createBusinessRuleGroup(element, translate, moddle, commandStack) {
         label: translate('Launch Editor'),
         event: 'spiff.dmn.edit',
         description: translate('Modify the Decision Table'),
+      },
+    ],
+  };
+}
+
+/**
+ * Create a group for task lifecycle hooks.
+ * @param element
+ * @param translate
+ * @param moddle
+ * @param commandStack
+ * @returns entries
+ */
+function createHooksGroup(element, translate, moddle, commandStack) {
+  return {
+    id: 'hooks',
+    label: translate('Task Hooks'),
+    entries: [
+      {
+        element,
+        moddle,
+        commandStack,
+        component: SpiffExtensionTextInput,
+        name: 'spiffworkflow:ProcessModelToStartOnTaskAvailable',
+        label: 'Process Model to Start on Task Available',
+        description: 'Start this process model when the task becomes available',
       },
     ],
   };
