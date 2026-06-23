@@ -109,6 +109,52 @@ describe('Properties Panel for User Tasks', function () {
     expect(formJsonSchemaFilenameInput.value).to.equal('give_me_a_number_form.json');
   });
 
+  it('should serialize the process model to start on task available extension', async function () {
+    await preparePropertiesPanelWithXml(user_form_xml)();
+
+    const userTask = await expectSelected('my_user_task');
+    const group = findGroupEntry('hooks', container);
+    const entry = findEntry(
+      'extension_spiffworkflow:ProcessModelToStartOnTaskAvailable',
+      group
+    );
+    const input = findInput('text', entry);
+    expect(input).to.exist;
+
+    changeInput(input, 'task-hooks/task-available');
+
+    const processModelToStartOnTaskAvailable = getExtensionValue(
+      userTask.businessObject,
+      'spiffworkflow:ProcessModelToStartOnTaskAvailable'
+    );
+    expect(processModelToStartOnTaskAvailable).to.equal(
+      'task-hooks/task-available'
+    );
+  });
+
+  it('should display the process model to start on task available extension for manual tasks', async function () {
+    await preparePropertiesPanelWithXml(diagram_xml)();
+
+    const manualTask = await expectSelected('Activity_15zz6ya');
+    const group = findGroupEntry('hooks', container);
+    const entry = findEntry(
+      'extension_spiffworkflow:ProcessModelToStartOnTaskAvailable',
+      group
+    );
+    const input = findInput('text', entry);
+    expect(input).to.exist;
+
+    changeInput(input, 'task-hooks/manual-task-available');
+
+    const processModelToStartOnTaskAvailable = getExtensionValue(
+      manualTask.businessObject,
+      'spiffworkflow:ProcessModelToStartOnTaskAvailable'
+    );
+    expect(processModelToStartOnTaskAvailable).to.equal(
+      'task-hooks/manual-task-available'
+    );
+  });
+
   it('should update both the json and ui extensions if the json file is set', async function () {
     await preparePropertiesPanelWithXml(diagram_xml)();
     const modeler = getBpmnJS();
