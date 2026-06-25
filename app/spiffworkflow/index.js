@@ -23,6 +23,7 @@ import MultiInstancePropertiesProvider from './loops/MultiInstancePropertiesProv
 import CallActivityInterceptor from './callActivity/CallActivityInterceptor';
 import MessageInterceptor from './messages/MessageInterceptor';
 import CustomContextPadProvider from './extensions/contextPad/CustomContextPadProvider';
+import AdHocSubProcessPropertiesProvider from './adHocSubProcess/propertiesPanel/AdHocSubProcessPropertiesProvider';
 
 export default {
   __depends__: [RulesModule],
@@ -51,6 +52,7 @@ export default {
     'IoPropertiesProvider',
     'DataInputOutputPropertiesProvider',
     'callActivityInterceptor',
+    'adHocSubProcessPropertiesProvider',
   ],
   dataObjectInterceptor: ['type', DataObjectInterceptor],
   dataObjectRules: ['type', DataObjectRules],
@@ -76,4 +78,5 @@ export default {
   IoPropertiesProvider: ['type', IoPropertiesProvider],
   DataInputOutputPropertiesProvider: ['type', DataInputOutputPropertiesProvider],
   callActivityInterceptor: ['type', CallActivityInterceptor],
+  adHocSubProcessPropertiesProvider: ['type', AdHocSubProcessPropertiesProvider],
 };
