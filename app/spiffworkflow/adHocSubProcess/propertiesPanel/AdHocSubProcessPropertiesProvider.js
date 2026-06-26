@@ -31,7 +31,6 @@ export default function AdHocSubProcessPropertiesProvider(propertiesPanel) {
 AdHocSubProcessPropertiesProvider.$inject = ['propertiesPanel'];
 
 function AdHocSubProcessProps(props) {
-  const { element } = props;
   return [
     {
       id: 'completionCondition',
