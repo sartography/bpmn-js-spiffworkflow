@@ -3,6 +3,7 @@ import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
 import { SPIFFWORKFLOW_XML_NAMESPACE } from '../../constants';
 
 let serviceTaskOperators = [];
+let schemaFiles = [];
 
 // This stores the parameters for a given service task operator
 //  so that we can remember the values when switching between them
@@ -309,6 +310,52 @@ export function ServiceTaskResultTextInput(props) {
       getValue,
       setValue,
       debounce,
+    });
+  }
+  return null;
+}
+
+export function ServiceTaskResultSchemaSelect(props) {
+  const { element } = props;
+  const { commandStack } = props;
+  const { translate } = props;
+
+  const eventBus = useService('eventBus');
+  eventBus.fire('spiff.json_schema_files.requested', { eventBus });
+  eventBus.on('spiff.json_schema_files.returned', (event) => schemaFiles = event.options);
+
+  const serviceTaskOperatorModdleElement = getServiceTaskOperatorModdleElement(element);
+
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: serviceTaskOperatorModdleElement,
+      properties: {
+        resultSchema: value,
+      },
+    });
+  };
+
+  const getValue = () => {
+    if (serviceTaskOperatorModdleElement) {
+      return serviceTaskOperatorModdleElement.resultSchema;
+    }
+    return '';
+  };
+
+  const getOptions = () => {
+    return schemaFiles;
+  };
+
+  if (serviceTaskOperatorModdleElement) {
+    return SelectEntry({
+      id: 'selectSchemaId',
+      element,
+      label: translate('Result Schema'),
+      description: translate('Response should match this format.'),
+      getValue,
+      setValue,
+      getOptions,
     });
   }
   return null;

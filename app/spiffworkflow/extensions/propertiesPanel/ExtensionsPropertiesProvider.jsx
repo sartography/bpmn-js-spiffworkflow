@@ -13,6 +13,7 @@ import {
   ServiceTaskOperatorSelect,
   ServiceTaskRetriesTextInput,
   ServiceTaskRetryBackoffBaseTextInput,
+  ServiceTaskResultSchemaSelect,
   ServiceTaskResultTextInput,
 } from './SpiffExtensionServiceProperties';
 import {
@@ -499,6 +500,13 @@ function createServiceGroup(element, translate, moddle, commandStack) {
       moddle,
       commandStack,
       component: ServiceTaskResultTextInput,
+      translate,
+    },
+    {
+      element,
+      moddle,
+      commandStack,
+      component: ServiceTaskResultSchemaSelect,
       translate,
     },
     {
