@@ -190,6 +190,11 @@
           "type": "String"
         },
         {
+          "name": "resultSchema",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
           "name": "parameterList",
           "type": "Parameters"
         },
