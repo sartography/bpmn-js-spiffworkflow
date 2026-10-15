@@ -9,24 +9,20 @@ import {
   getRoot,
   isMessageElement,
   isMessageEvent,
-  isMessageRefUsed,
   setParentCorrelationKeys,
   syncCorrelationProperties,
-  deleteMessage,
 } from '../../MessageHelpers';
 import { SPIFF_ADD_MESSAGE_RETURNED_EVENT } from '../../../constants';
 
 export const spiffExtensionOptions = {};
 
-let ELEMENT_ID;
-
 /**
  * Allows the selection, or creation, of Message at the Definitions level of a BPMN document.
  */
 export function MessageSelect(props) {
-  let shapeElement = props.element;
+  const shapeElement = props.element;
   const { commandStack, moddle, elementRegistry } = props;
-  let { element } = props;
+  const { element } = props;
   const debounce = useService('debounceInput');
   const eventBus = useService('eventBus');
   const bpmnFactory = useService('bpmnFactory');
@@ -42,23 +38,28 @@ export function MessageSelect(props) {
     return '';
   };
 
-  const setValue = async (value) => {
+  const setMessage = async (value, targetElement) => {
     const messageId = value;
-    const { businessObject } = element;
+    const { businessObject } = targetElement;
     const oldMessageRef =
       businessObject.eventDefinitions?.[0].messageRef ||
       businessObject.messageRef;
     const definitions = getRoot(businessObject);
 
-    if (ELEMENT_ID) {
-      // This condition verify if Setvalue trigger is about the same element triggered from spifarena
-      const nwElement = elementRegistry.get(ELEMENT_ID);
-      shapeElement = nwElement ? nwElement : shapeElement;
-      element = nwElement ? nwElement : element;
-    }
-
     if (!definitions?.rootElements) {
       definitions.rootElements = [];
+    }
+
+    if (!messageId) {
+      const moddleElement = isMessageEvent(targetElement)
+        ? targetElement.businessObject.eventDefinitions[0]
+        : targetElement.businessObject;
+      commandStack.execute('element.updateModdleProperties', {
+        element: targetElement,
+        moddleElement,
+        properties: { messageRef: undefined },
+      });
+      return;
     }
 
     let bpmnMessage = findMessageById(definitions, messageId);
@@ -66,11 +67,9 @@ export function MessageSelect(props) {
     if (!bpmnMessage) {
       bpmnMessage = createMessage(bpmnFactory, messageId);
       definitions.rootElements.push(bpmnMessage);
-    } else if (bpmnMessage.id !== bpmnMessage.name) {
-      bpmnMessage.id = bpmnMessage.name;
     }
 
-    updateElementMessageRef(element, bpmnMessage, moddle, commandStack);
+    updateElementMessageRef(targetElement, bpmnMessage, moddle, commandStack);
 
     const messageObject = findMessageObject(messageId);
 
@@ -78,18 +77,18 @@ export function MessageSelect(props) {
       createOrUpdateCorrelationPropertiesV2(
         bpmnFactory,
         commandStack,
-        element,
+        targetElement,
         messageObject.correlation_properties,
         messageId
       );
     }
 
     if (oldMessageRef) {
-      syncCorrelationProperties(element, definitions, moddle, messageObject);
+      syncCorrelationProperties(targetElement, definitions, moddle, messageObject);
     }
 
     try {
-      setParentCorrelationKeys(definitions, bpmnFactory, element, moddle);
+      setParentCorrelationKeys(definitions, bpmnFactory, targetElement, moddle);
     } catch (error) {
       console.error('Error caught while synchronizing Correlation key', error);
     }
@@ -108,11 +107,6 @@ export function MessageSelect(props) {
     };
 
     const handleAddMessageReturned = async (event) => {
-      // Check if the received element matches the current element
-      if (event.elementId !== element.id) {
-        ELEMENT_ID = event.elementId;
-      }
-
       const cProperties = Object.entries(event.correlation_properties).map(
         ([identifier, properties]) => ({
           identifier,
@@ -126,14 +120,6 @@ export function MessageSelect(props) {
         identifier: event.name,
         correlation_properties: cProperties,
       };
-
-      // Delete the original message object if one exists, so we can replace it with the new definition.
-      const { businessObject } = element;
-      const definitions = getRoot(businessObject);
-      let oldMessage = findMessageById(definitions, newMsg.identifier);
-      if (oldMessage) {
-        deleteMessage(definitions, oldMessage.id);
-      }
 
       // Update spiffExtensionOptions synchronously so findMessageObject() in
       // setValue() can look up the new message immediately.
@@ -153,7 +139,7 @@ export function MessageSelect(props) {
       // Also update Preact state to trigger a dropdown re-render.
       setApiMessages([...current]);
 
-      setValue(event.name);
+      setMessage(event.name, elementRegistry.get(event.elementId) || element);
     };
 
     eventBus.on('spiff.messages.returned', handleMessagesReturned);
@@ -168,7 +154,7 @@ export function MessageSelect(props) {
 
   const getOptions = () => {
     // Load messages from XML
-    const options = [];
+    const options = [{ label: '-- none --', value: '' }];
     const messages = findMessageModdleElements(shapeElement.businessObject);
     for (const message of messages) {
       options.push({ label: message.name, value: message.id });
@@ -196,7 +182,7 @@ export function MessageSelect(props) {
       description="Select the Message to associate with this task or event."
       label="Which message is this associated with?"
       getValue={getValue}
-      setValue={setValue}
+      setValue={(value) => setMessage(value, element)}
       getOptions={getOptions}
       debounce={debounce}
     />

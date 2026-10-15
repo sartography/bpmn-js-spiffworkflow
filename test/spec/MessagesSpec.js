@@ -95,7 +95,9 @@ describe('Messages should work', function () {
     // AND - There should be two entries in it, one for each message.
     const selector = findSelect(entry);
     expect(selector).to.exist;
-    expect(selector.length).to.equal(2);
+    expect(Array.from(selector.options, (option) => option.value)).to.have.members([
+      '', 'love_letter', 'love_letter_response',
+    ]);
     console.log(selector);
     await expectSelected('my_collaboration');
   });
@@ -135,7 +137,7 @@ describe('Messages should work', function () {
     expect(entry).to.exist;
 
     let selector = findSelect(entry);
-    expect(selector.options.length).to.equal(2);
+    expect(selector.options.length).to.equal(3);
 
     changeInput(selector, 'love_letter_response');
     const messageElement = findMessageModdleElements(rootShape.businessObject);
@@ -157,7 +159,7 @@ describe('Messages should work', function () {
 
     // Expect to find two existing messages
     let selector = findSelect(entry);
-    expect(selector.options.length).to.equal(2);
+    expect(selector.options.length).to.equal(3);
 
     // Fire add new message event
     modeler.get('eventBus').on('spiff.add_message.requested', (event) => {
@@ -172,8 +174,8 @@ describe('Messages should work', function () {
     expect(updatedEntry).to.exist;
 
     const updatedSelector = findSelect(updatedEntry);
-    expect(updatedSelector.options.length).to.equal(3);
-    expect(updatedSelector.options[2].value).to.equal('msgName');
+    expect(updatedSelector.options.length).to.equal(4);
+    expect(Array.from(updatedSelector.options, (option) => option.value)).to.include('msgName');
   });
 
   it('should remove stale correlation properties and matching conditions after a rename', inject(async function (canvas, commandStack, moddle) {

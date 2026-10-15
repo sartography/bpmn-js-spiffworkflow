@@ -273,7 +273,7 @@ export function findMessageElement(businessObject, messageId, definitions) {
     for (const rootElement of root.rootElements) {
       if (
         rootElement.$type === 'bpmn:Message' &&
-        rootElement.name == messageId
+        (rootElement.id === messageId || rootElement.name === messageId)
       ) {
         return rootElement;
       }
@@ -400,7 +400,7 @@ export function createOrUpdateCorrelationPropertiesV2(
         correlationProperty.correlationPropertyRetrievalExpression.findIndex(
           (retrievalExpr) =>
             retrievalExpr.messageRef &&
-            retrievalExpr.messageRef.id === messageId
+            retrievalExpr.messageRef.id === msgElement?.id
         );
 
       if (existingExpressionIndex === -1) {
@@ -822,7 +822,9 @@ export function syncCorrelationProperties(
 ) {
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
-  const messageId = msgObject?.identifier;
+  const messageId = msgObject
+    ? findMessageElement(businessObject, msgObject.identifier)?.id
+    : undefined;
   const activePropertyIds = new Set(
     (msgObject?.correlation_properties || []).map((obj) => obj.identifier)
   );
