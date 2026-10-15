@@ -7,7 +7,6 @@ import {
   findMessageModdleElements,
   getMessageRefElement,
   getRoot,
-  isMessageElement,
   isMessageEvent,
   setParentCorrelationKeys,
   syncCorrelationProperties,
@@ -54,44 +53,76 @@ export function MessageSelect(props) {
       const moddleElement = isMessageEvent(targetElement)
         ? targetElement.businessObject.eventDefinitions[0]
         : targetElement.businessObject;
-      commandStack.execute('element.updateModdleProperties', {
-        element: targetElement,
-        moddleElement,
-        properties: { messageRef: undefined },
+      commandStack.execute('spiff.message.update', {
+        update: (set) => {
+          set(moddleElement, 'messageRef', undefined);
+          const extensions = moddleElement.extensionElements;
+          if (extensions?.values) {
+            set(
+              extensions,
+              'values',
+              extensions.values.filter(
+                (extension) =>
+                  extension.$type !== 'spiffworkflow:ProcessVariableCorrelation'
+              )
+            );
+          }
+        },
       });
       return;
     }
 
-    let bpmnMessage = findMessageById(definitions, messageId);
-
-    if (!bpmnMessage) {
-      bpmnMessage = createMessage(bpmnFactory, messageId);
-      definitions.rootElements.push(bpmnMessage);
-    }
-
-    updateElementMessageRef(targetElement, bpmnMessage, moddle, commandStack);
-
-    const messageObject = findMessageObject(messageId);
-
-    if (messageObject) {
-      createOrUpdateCorrelationPropertiesV2(
-        bpmnFactory,
-        commandStack,
-        targetElement,
-        messageObject.correlation_properties,
-        messageId
-      );
-    }
-
-    if (oldMessageRef) {
-      syncCorrelationProperties(targetElement, definitions, moddle, messageObject);
-    }
-
-    try {
-      setParentCorrelationKeys(definitions, bpmnFactory, targetElement, moddle);
-    } catch (error) {
-      console.error('Error caught while synchronizing Correlation key', error);
-    }
+    commandStack.execute('spiff.message.update', {
+      update: (set) => {
+        let bpmnMessage = findMessageById(definitions, messageId);
+        if (!bpmnMessage) {
+          bpmnMessage = createMessage(bpmnFactory, messageId);
+          set(definitions, 'rootElements', [
+            ...definitions.rootElements,
+            bpmnMessage,
+          ]);
+        }
+        const host = isMessageEvent(targetElement)
+          ? businessObject.eventDefinitions[0]
+          : businessObject;
+        if (!host.extensionElements) {
+          set(
+            host,
+            'extensionElements',
+            moddle.create('bpmn:ExtensionElements')
+          );
+        }
+        set(host, 'messageRef', bpmnMessage);
+        const messageObject =
+          findMessageObject(bpmnMessage.name) || findMessageObject(messageId);
+        if (messageObject) {
+          createOrUpdateCorrelationPropertiesV2(
+            bpmnFactory,
+            commandStack,
+            targetElement,
+            messageObject.correlation_properties,
+            bpmnMessage.id,
+            set
+          );
+        }
+        if (oldMessageRef) {
+          syncCorrelationProperties(
+            targetElement,
+            definitions,
+            moddle,
+            messageObject,
+            set
+          );
+        }
+        setParentCorrelationKeys(
+          definitions,
+          bpmnFactory,
+          targetElement,
+          moddle,
+          set
+        );
+      },
+    });
   };
 
   useEffect(() => {
@@ -165,13 +196,15 @@ export function MessageSelect(props) {
       apiMessages.forEach((opt) => {
         options.push({
           label: opt.identifier,
-          value: opt.identifier,
+          value:
+            messages.find((message) => message.name === opt.identifier)?.id ||
+            opt.identifier,
         });
       });
     }
 
     // Remove duplicated options
-    const uniqueArray = removeDuplicatesByLabel(options);
+    const uniqueArray = removeDuplicatesByValue(options);
     return uniqueArray;
   };
 
@@ -189,10 +222,10 @@ export function MessageSelect(props) {
   );
 }
 
-function removeDuplicatesByLabel(array) {
+function removeDuplicatesByValue(array) {
   const seen = new Map();
   return array.filter((item) => {
-    return seen.has(item.label) ? false : seen.set(item.label, true);
+    return seen.has(item.value) ? false : seen.set(item.value, true);
   });
 }
 
@@ -209,32 +242,6 @@ function createMessage(bpmnFactory, messageId) {
     id: messageId,
     name: messageId,
   });
-}
-
-function updateElementMessageRef(element, bpmnMessage, moddle, commandStack) {
-  if (isMessageEvent(element) && element.businessObject) {
-    const messageEventDefinition = element.businessObject.eventDefinitions[0];
-    messageEventDefinition.extensionElements =
-      messageEventDefinition.extensionElements
-        ? messageEventDefinition.extensionElements
-        : moddle.create('bpmn:ExtensionElements');
-    messageEventDefinition.messageRef = bpmnMessage;
-    commandStack.execute('element.updateModdleProperties', {
-      element: element,
-      moddleElement: element.businessObject,
-      properties: {},
-    });
-  } else if (isMessageElement(element) && element.businessObject) {
-    element.businessObject.extensionElements = element.businessObject
-      .extensionElements
-      ? element.businessObject.extensionElements
-      : moddle.create('bpmn:ExtensionElements');
-    element.businessObject.messageRef = bpmnMessage;
-    commandStack.execute('element.updateProperties', {
-      element: element,
-      properties: {},
-    });
-  }
 }
 
 function findMessageObject(messageId) {

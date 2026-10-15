@@ -14,6 +14,7 @@ import {
 } from './helpers';
 import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.json';
 import messages from '../../app/spiffworkflow/messages';
+import { createOrUpdateCorrelationPropertiesV2 } from '../../app/spiffworkflow/messages/MessageHelpers';
 
 describe('Message catalog lifecycle', function () {
   const xml = require('./bpmn/message_receive_main_key.bpmn').default;
@@ -59,6 +60,7 @@ describe('Message catalog lifecycle', function () {
     const task = await selectReceive();
     const originalMessage = task.businessObject.messageRef;
     const commandStack = modeler.get('commandStack');
+    const originalValues = [...task.businessObject.extensionElements.values];
 
     await act(() =>
       fireEvent.input(
@@ -67,10 +69,21 @@ describe('Message catalog lifecycle', function () {
       )
     );
     expect(task.businessObject.messageRef).not.to.exist;
+    expect(
+      task.businessObject.extensionElements.values.filter(
+        (value) => value.$type === 'spiffworkflow:ProcessVariableCorrelation'
+      )
+    ).to.be.empty;
+    expect(task.businessObject.extensionElements.values).to.include(
+      originalValues[0]
+    );
     expect(modeler.getDefinitions().rootElements).to.include(originalMessage);
 
     await act(() => commandStack.undo());
     expect(task.businessObject.messageRef).to.equal(originalMessage);
+    expect(task.businessObject.extensionElements.values).to.deep.equal(
+      originalValues
+    );
     await act(() => commandStack.redo());
     expect(task.businessObject.messageRef).not.to.exist;
 
@@ -86,6 +99,13 @@ describe('Message catalog lifecycle', function () {
     const definition = boundary.businessObject.eventDefinitions[0];
     const originalMessage = definition.messageRef;
     const originalExtensions = definition.extensionElements;
+    const matchingCondition = modeler
+      .get('moddle')
+      .create('spiffworkflow:ProcessVariableCorrelation', {
+        propertyId: 'uid',
+        expression: 'order["id"]',
+      });
+    originalExtensions.get('values').push(matchingCondition);
 
     await act(() =>
       fireEvent.input(
@@ -95,9 +115,11 @@ describe('Message catalog lifecycle', function () {
     );
     expect(definition.messageRef).not.to.exist;
     expect(definition.extensionElements).to.equal(originalExtensions);
+    expect(originalExtensions.values).not.to.include(matchingCondition);
     expect(modeler.getDefinitions().rootElements).to.include(originalMessage);
     await act(() => modeler.get('commandStack').undo());
     expect(definition.messageRef).to.equal(originalMessage);
+    expect(originalExtensions.values).to.include(matchingCondition);
   });
 
   it('preserves an unused message, its schema, and correlations after deleting its task', async function () {
@@ -112,6 +134,7 @@ describe('Message catalog lifecycle', function () {
     expect(roots).to.include(originalMessage);
     expect(roots).to.include(originalProperty);
     expect(catalog(modeler.get('eventBus'))).to.deep.include({
+      bpmn_id: 'B',
       identifier: 'B',
       schema_file: 'callback-schema.json',
       correlation_properties: [
@@ -233,5 +256,226 @@ describe('Message catalog lifecycle', function () {
         /unresolved reference/.test(warning.message)
       )
     ).to.be.empty;
+  });
+
+  it('restores the complete catalog and bindings on undo and reapplies deletion on redo', async function () {
+    const modeler = getBpmnJS();
+    const task = await selectReceive();
+    const eventBus = modeler.get('eventBus');
+    const stack = modeler.get('commandStack');
+    const before = (await modeler.saveXML()).xml;
+    const original = task.businessObject.messageRef;
+    await act(() =>
+      eventBus.fire('spiff.messages.save', {
+        messages: catalog(eventBus).filter(
+          (message) => message.identifier !== 'B'
+        ),
+      })
+    );
+    const deleted = (await modeler.saveXML()).xml;
+    expect(task.businessObject.messageRef).not.to.exist;
+    await act(() => stack.undo());
+    expect((await modeler.saveXML()).xml).to.equal(before);
+    expect(task.businessObject.messageRef).to.equal(original);
+    expect(modeler.get('moddle').ids.assigned('B')).to.equal(original);
+    await act(() => stack.redo());
+    expect((await modeler.saveXML()).xml).to.equal(deleted);
+    expect(modeler.get('moddle').ids.assigned('B')).not.to.be.ok;
+  });
+
+  it('prunes dropped properties from a retained message and restores them on undo', async function () {
+    const modeler = getBpmnJS();
+    const task = await selectReceive();
+    const eventBus = modeler.get('eventBus');
+    const before = (await modeler.saveXML()).xml;
+    await act(() =>
+      eventBus.fire('spiff.messages.save', {
+        messages: catalog(eventBus).map((message) => ({
+          ...message,
+          correlation_properties: [],
+        })),
+      })
+    );
+    expect(task.businessObject.messageRef.id).to.equal('B');
+    expect(
+      modeler.getDefinitions().rootElements.some((root) => root.id === 'uid')
+    ).to.equal(false);
+    expect(
+      task.businessObject.extensionElements.values.some(
+        (value) => value.$type === 'spiffworkflow:ProcessVariableCorrelation'
+      )
+    ).to.equal(false);
+    const saved = (await modeler.saveXML()).xml;
+    expect(saved).not.to.include('correlationPropertyRef>uid');
+    await act(() => modeler.get('commandStack').undo());
+    expect((await modeler.saveXML()).xml).to.equal(before);
+    const imported = await modeler.importXML(saved);
+    expect(
+      imported.warnings.filter((warning) =>
+        /unresolved reference/.test(warning.message)
+      )
+    ).to.be.empty;
+  });
+
+  it('keeps shared properties while removing bindings only for the changed message', async function () {
+    const modeler = getBpmnJS();
+    const task = await selectReceive();
+    const eventBus = modeler.get('eventBus');
+    await act(() =>
+      eventBus.fire('spiff.messages.save', {
+        messages: catalog(eventBus).map((message) => ({
+          ...message,
+          correlation_properties: [
+            { identifier: 'uid', retrieval_expression: 'uid' },
+          ],
+        })),
+      })
+    );
+    await act(() =>
+      eventBus.fire('spiff.messages.save', {
+        messages: catalog(eventBus).map((message) =>
+          message.identifier === 'B'
+            ? { ...message, correlation_properties: [] }
+            : message
+        ),
+      })
+    );
+    const property = modeler
+      .getDefinitions()
+      .rootElements.find((root) => root.id === 'uid');
+    expect(
+      property.correlationPropertyRetrievalExpression.map(
+        (expression) => expression.messageRef.id
+      )
+    ).to.deep.equal(['A']);
+    expect(
+      task.businessObject.extensionElements.values.some(
+        (value) => value.propertyId === 'uid'
+      )
+    ).to.equal(false);
+  });
+
+  it('uses the API correlation expression when selecting a message by its BPMN id', async function () {
+    const modeler = getBpmnJS();
+    const task = await selectReceive();
+    task.businessObject.messageRef.name = 'Shared callback';
+    await act(() =>
+      modeler.get('eventBus').fire('spiff.messages.returned', {
+        configuration: {
+          messages: [
+            {
+              identifier: 'Shared callback',
+              correlation_properties: [
+                { identifier: 'uid', retrieval_expression: 'callback["id"]' },
+              ],
+            },
+          ],
+        },
+      })
+    );
+    await act(() =>
+      fireEvent.input(
+        findSelect(findEntry('selectMessage', getPropertiesPanel())),
+        {
+          target: { value: 'B' },
+        }
+      )
+    );
+    const property = modeler
+      .getDefinitions()
+      .rootElements.find((root) => root.id === 'uid');
+    expect(
+      property.correlationPropertyRetrievalExpression[0].messagePath.body
+    ).to.equal('callback["id"]');
+  });
+
+  it('renames a catalog message without changing its identity or task references', async function () {
+    const modeler = getBpmnJS();
+    const task = await selectReceive();
+    const original = task.businessObject.messageRef;
+    const eventBus = modeler.get('eventBus');
+    const before = (await modeler.saveXML()).xml;
+    await act(() =>
+      eventBus.fire('spiff.messages.save', {
+        messages: catalog(eventBus).map((message) =>
+          message.identifier === 'B'
+            ? { ...message, identifier: 'Renamed callback' }
+            : message
+        ),
+      })
+    );
+    expect(task.businessObject.messageRef).to.equal(original);
+    expect(original.id).to.equal('B');
+    expect(original.name).to.equal('Renamed callback');
+    const saved = (await modeler.saveXML()).xml;
+    await act(() => modeler.get('commandStack').undo());
+    expect((await modeler.saveXML()).xml).to.equal(before);
+    const imported = await modeler.importXML(saved);
+    expect(
+      imported.warnings.filter((warning) =>
+        /unresolved reference/.test(warning.message)
+      )
+    ).to.be.empty;
+  });
+
+  it('undoes and redoes selection together with its correlation updates', async function () {
+    const modeler = getBpmnJS();
+    await selectReceive();
+    const eventBus = modeler.get('eventBus');
+    const before = (await modeler.saveXML()).xml;
+    await act(() =>
+      eventBus.fire('spiff.add_message.returned', {
+        elementId: receiveId,
+        name: 'NewCallback',
+        correlation_properties: {
+          new_uid: { retrieval_expression: 'payload["id"]' },
+        },
+      })
+    );
+    const after = (await modeler.saveXML()).xml;
+    expect(after).to.include('NewCallback');
+    await act(() => modeler.get('commandStack').undo());
+    expect((await modeler.saveXML()).xml).to.equal(before);
+    expect(modeler.get('moddle').ids.assigned('NewCallback')).not.to.be.ok;
+    expect(modeler.get('moddle').ids.assigned('new_uid')).not.to.be.ok;
+    await act(() => modeler.get('commandStack').redo());
+    expect((await modeler.saveXML()).xml).to.equal(after);
+  });
+
+  it('ignores correlation updates for a missing message', async function () {
+    const modeler = getBpmnJS();
+    const task = await selectReceive();
+    const before = (await modeler.saveXML()).xml;
+    createOrUpdateCorrelationPropertiesV2(
+      modeler.get('bpmnFactory'),
+      modeler.get('commandStack'),
+      task,
+      [{ identifier: 'orphan', retrieval_expression: 'id' }],
+      'MissingMessage'
+    );
+    expect((await modeler.saveXML()).xml).to.equal(before);
+  });
+
+  it('prunes definitions-level correlation keys and restores them on undo', async function () {
+    const modeler = getBpmnJS();
+    await selectReceive();
+    const definitions = modeler.getDefinitions();
+    const property = definitions.rootElements.find((root) => root.id === 'uid');
+    const key = modeler.get('moddle').create('bpmn:CorrelationKey', {
+      id: 'DefinitionsKey',
+      correlationPropertyRef: [property],
+    });
+    definitions.set('correlationKeys', [key]);
+    const eventBus = modeler.get('eventBus');
+    await act(() =>
+      eventBus.fire('spiff.messages.save', {
+        messages: catalog(eventBus).filter(
+          (message) => message.identifier !== 'B'
+        ),
+      })
+    );
+    expect(key.correlationPropertyRef).to.be.empty;
+    await act(() => modeler.get('commandStack').undo());
+    expect(key.correlationPropertyRef).to.deep.equal([property]);
   });
 });
