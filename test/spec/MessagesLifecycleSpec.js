@@ -92,6 +92,45 @@ describe('Message catalog lifecycle', function () {
     expect(saved).not.to.include('id=""');
   });
 
+  it('can apply an externally created message after the originating panel unmounts, with undo', async function () {
+    const modeler = getBpmnJS();
+    const task = await selectReceive();
+    await act(() =>
+      fireEvent.input(
+        findSelect(findEntry('selectMessage', getPropertiesPanel())),
+        { target: { value: '' } }
+      )
+    );
+    const { xml: before } = await modeler.saveXML();
+    const eventBus = modeler.get('eventBus');
+    let launch;
+    eventBus.once('spiff.message.edit', (event) => {
+      launch = event;
+    });
+    eventBus.fire('spiff.message.edit', {
+      value: { elementId: receiveId },
+      eventBus,
+    });
+    expect(launch.element).to.equal(task);
+    expect(launch.applyMessage).to.be.a('function');
+    await act(() => modeler.get('selection').select(null));
+    await act(() =>
+      launch.applyMessage({
+        identifier: 'NewReply',
+        correlation_properties: [
+          { identifier: 'order_id', retrieval_expression: 'id' },
+        ],
+      })
+    );
+    expect(task.businessObject.messageRef.id).to.equal('NewReply');
+    const { xml: after } = await modeler.saveXML();
+    expect(after).to.include('id="order_id"');
+    await act(() => modeler.get('commandStack').undo());
+    expect((await modeler.saveXML()).xml).to.equal(before);
+    await act(() => modeler.get('commandStack').redo());
+    expect((await modeler.saveXML()).xml).to.equal(after);
+  });
+
   it('clears a message event without losing its other extensions', async function () {
     await bootstrap(boundaryXml).call(this);
     const modeler = getBpmnJS();
@@ -489,12 +528,12 @@ describe('Message catalog lifecycle', function () {
         messages: catalog(eventBus).map((message) =>
           message.identifier === 'B'
             ? {
-              ...message,
-              correlation_properties: [
-                ...message.correlation_properties,
-                { identifier: 'uid2', retrieval_expression: 'uid2' },
-              ],
-            }
+                ...message,
+                correlation_properties: [
+                  ...message.correlation_properties,
+                  { identifier: 'uid2', retrieval_expression: 'uid2' },
+                ],
+              }
             : message
         ),
       })
@@ -609,9 +648,7 @@ describe('Message catalog lifecycle', function () {
     expect(failed).to.exist;
     expect((await modeler.saveXML()).xml).to.equal(before);
     expect(
-      modeler
-        .getDefinitions()
-        .rootElements.filter((root) => root.id === 'DUP')
+      modeler.getDefinitions().rootElements.filter((root) => root.id === 'DUP')
     ).to.be.empty;
   });
 });

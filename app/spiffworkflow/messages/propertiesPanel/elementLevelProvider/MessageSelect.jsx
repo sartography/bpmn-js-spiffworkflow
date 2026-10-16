@@ -37,7 +37,7 @@ export function MessageSelect(props) {
     return '';
   };
 
-  const setMessage = async (value, targetElement) => {
+  const setMessage = async (value, targetElement, savedMessage) => {
     const messageId = value;
     const { businessObject } = targetElement;
     const oldMessageRef =
@@ -74,7 +74,10 @@ export function MessageSelect(props) {
 
     // Never silently duplicate a live id: claiming it would corrupt the id
     // index and export duplicate BPMN ids.
-    if (!findMessageById(definitions, messageId) && moddle.ids.assigned(messageId)) {
+    if (
+      !findMessageById(definitions, messageId) &&
+      moddle.ids.assigned(messageId)
+    ) {
       // eslint-disable-next-line no-console
       console.warn(`message id <${messageId}> is already in use`);
       return;
@@ -102,7 +105,9 @@ export function MessageSelect(props) {
         }
         set(host, 'messageRef', bpmnMessage);
         const messageObject =
-          findMessageObject(bpmnMessage.name) || findMessageObject(messageId);
+          savedMessage ||
+          findMessageObject(bpmnMessage.name) ||
+          findMessageObject(messageId);
         if (messageObject) {
           createOrUpdateCorrelationPropertiesV2(
             bpmnFactory,
@@ -181,11 +186,23 @@ export function MessageSelect(props) {
       setMessage(event.name, elementRegistry.get(event.elementId) || element);
     };
 
+    // Give the host a command-backed action that remains usable when this panel
+    // unmounts while its external message editor is open.
+    const prepareMessageEditor = (event) => {
+      if (event.value?.elementId !== element.id) return;
+      event.element = element;
+      event.applyMessage = (message) => {
+        if (elementRegistry.get(element.id) !== element) return;
+        return setMessage(message.identifier, element, message);
+      };
+    };
+    eventBus.on('spiff.message.edit', 1500, prepareMessageEditor);
     eventBus.on('spiff.messages.returned', handleMessagesReturned);
     eventBus.on(SPIFF_ADD_MESSAGE_RETURNED_EVENT, handleAddMessageReturned);
     eventBus.fire('spiff.messages.requested', { eventBus });
 
     return () => {
+      eventBus.off('spiff.message.edit', prepareMessageEditor);
       eventBus.off('spiff.messages.returned', handleMessagesReturned);
       eventBus.off(SPIFF_ADD_MESSAGE_RETURNED_EVENT, handleAddMessageReturned);
     };
