@@ -50,6 +50,7 @@ export function createMessageGroup(
       translate,
       component: MessageLaunchEditorButton,
       moddle,
+      commandStack,
     },
   ];
 

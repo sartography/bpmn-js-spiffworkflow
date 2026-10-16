@@ -72,6 +72,14 @@ export function MessageSelect(props) {
       return;
     }
 
+    // Never silently duplicate a live id: claiming it would corrupt the id
+    // index and export duplicate BPMN ids.
+    if (!findMessageById(definitions, messageId) && moddle.ids.assigned(messageId)) {
+      // eslint-disable-next-line no-console
+      console.warn(`message id <${messageId}> is already in use`);
+      return;
+    }
+
     commandStack.execute('spiff.message.update', {
       update: (set) => {
         let bpmnMessage = findMessageById(definitions, messageId);

@@ -743,6 +743,36 @@ export function setParentCorrelationKeys(
     moddle
   );
   correlationProperties = correlationProperties || [];
+  reconcileMainCorrelationKey(
+    definitions,
+    bpmnFactory,
+    moddle,
+    correlationProperties,
+    set,
+    true
+  );
+}
+
+/**
+ * Reconciles the MainCorrelationKey with the current correlation properties.
+ * Shared by the message-selection path and the catalog-save path so a
+ * save-only edit cannot leave the key pointing at a stale property set.
+ *
+ * @param {boolean} createIfMissing allow creating the collaboration key.
+ *   The selection path always allowed this; the save path only creates when
+ *   there is at least one property, so a schema-only save never invents XML.
+ */
+export function reconcileMainCorrelationKey(
+  definitions,
+  bpmnFactory,
+  moddle,
+  correlationProperties,
+  update,
+  createIfMissing = true
+) {
+  const set =
+    update || ((target, property, value) => target.set(property, value));
+  correlationProperties = correlationProperties || [];
 
   // check if process has collaboration
   let collaboration = definitions
@@ -750,11 +780,17 @@ export function setParentCorrelationKeys(
     .find((element) => element.$type === 'bpmn:Collaboration');
 
   if (collaboration) {
-    let mainCorrelationKey = findOrCreateMainCorrelationKey(
-      definitions,
-      bpmnFactory,
-      moddle
-    );
+    let mainCorrelationKey = findExistingMainCorrelationKey(definitions);
+    if (!mainCorrelationKey) {
+      if (!createIfMissing || correlationProperties.length === 0) {
+        return;
+      }
+      const newCorrelationKeyId = moddle.ids.nextPrefixed('CorrelationKey_');
+      mainCorrelationKey = bpmnFactory.create('bpmn:CorrelationKey', {
+        id: newCorrelationKeyId,
+        name: 'MainCorrelationKey',
+      });
+    }
 
     // Reuse the real correlation property references instead of recreating
     // detached moddle elements on each sync.
@@ -815,7 +851,7 @@ export function setParentCorrelationKeys(
   }
 }
 
-function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
+function findExistingMainCorrelationKey(definitions) {
   const collaboration = definitions
     .get('rootElements')
     .find((element) => element.$type === 'bpmn:Collaboration');
@@ -824,7 +860,7 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
   // would silently drop <bpmn:correlationKey> from rootElements on parse.
   // The spiffworkflow moddle extension adds a typed `correlationKeys` property
   // to bpmn:Definitions so they are correctly round-tripped there instead.
-  let mainCorrelationKey =
+  return (
     collaboration
       ?.get('correlationKeys')
       ?.find((element) => element.name === 'MainCorrelationKey') ||
@@ -837,17 +873,33 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
         (element) =>
           element.$type === 'bpmn:CorrelationKey' &&
           element.name === 'MainCorrelationKey'
-      );
+      ) ||
+    null
+  );
+}
 
-  if (!mainCorrelationKey) {
-    const newCorrelationKeyId = moddle.ids.nextPrefixed('CorrelationKey_');
-    mainCorrelationKey = bpmnFactory.create('bpmn:CorrelationKey', {
-      id: newCorrelationKeyId,
-      name: 'MainCorrelationKey',
-    });
-  }
-
-  return mainCorrelationKey;
+/**
+ * Reconciles MainCorrelationKey entries with the properties currently present
+ * in the definitions. Used by the catalog-save path, which has no diagram
+ * element to derive the property list from.
+ */
+export function syncCatalogCorrelationKeys(
+  definitions,
+  bpmnFactory,
+  moddle,
+  update
+) {
+  const correlationProperties = (
+    definitions.get('rootElements') || []
+  ).filter((element) => element.$type === 'bpmn:CorrelationProperty');
+  reconcileMainCorrelationKey(
+    definitions,
+    bpmnFactory,
+    moddle,
+    correlationProperties,
+    update,
+    correlationProperties.length > 0
+  );
 }
 
 export function syncCorrelationProperties(

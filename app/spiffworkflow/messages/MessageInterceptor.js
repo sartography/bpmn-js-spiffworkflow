@@ -1,6 +1,136 @@
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
-import { getRoot } from './MessageHelpers';
+import {
+  getRoot,
+  syncCatalogCorrelationKeys,
+} from './MessageHelpers';
 import MessageUpdateHandler from './MessageUpdateHandler';
+
+function findCatalogMessage(definitions, message) {
+  return definitions.rootElements.find(
+    (root) =>
+      root.$type === 'bpmn:Message' &&
+      (message.bpmn_id
+        ? root.id === message.bpmn_id
+        : root.name === message.identifier)
+  );
+}
+
+/**
+ * Pre-validates a catalog save so `commandStack.execute` is never called with
+ * a payload that would corrupt the model. Duplicate BPMN ids do not throw on
+ * claim (the id index silently overwrites) and the serializer does not check
+ * them either, so without this the save would write duplicate ids that fail
+ * on the next import. Returns an error reason string, or null when valid.
+ */
+function validateCatalogUpdate(moddle, definitions, updated) {
+  if (!Array.isArray(updated)) {
+    return 'catalog messages must be an array';
+  }
+  const roots = definitions.rootElements || [];
+  const retained = new Map(
+    updated.map((message) => [
+      roots.find(
+        (root) =>
+          root.$type === 'bpmn:Message' &&
+          (message.bpmn_id
+            ? root.id === message.bpmn_id
+            : root.name === message.identifier)
+      ),
+      message,
+    ])
+  );
+  const removedMsgIds = new Set();
+  for (const el of roots) {
+    if (el.$type === 'bpmn:Message' && !retained.has(el)) {
+      removedMsgIds.add(el.id);
+    }
+  }
+  // Mirror of the property-pruning rule in syncMessagesToBpmn: a property
+  // survives when it keeps at least one retrieval expression or is still
+  // referenced by the updated catalog.
+  const propertySurvives = (property) => {
+    for (const expression of property.correlationPropertyRetrievalExpression ?? []) {
+      const message = expression.messageRef;
+      if (!message) {
+        continue;
+      }
+      if (removedMsgIds.has(message.id)) {
+        continue;
+      }
+      const config = retained.get(message);
+      if (
+        config &&
+        !(config.correlation_properties || []).some(
+          (prop) => prop.identifier === property.id
+        )
+      ) {
+        continue;
+      }
+      return true;
+    }
+    return updated.some((message) =>
+      (message.correlation_properties || []).some(
+        (prop) => prop.identifier === property.id
+      )
+    );
+  };
+  const removedPropertyIds = new Set(
+    roots
+      .filter(
+        (el) =>
+          el.$type === 'bpmn:CorrelationProperty' && !propertySurvives(el)
+      )
+      .map((el) => el.id)
+  );
+  const freedIds = new Set([...removedMsgIds, ...removedPropertyIds]);
+  const isFreed = (id) => freedIds.has(id);
+  const isTakenBySurvivor = (id) => {
+    const assigned = moddle.ids.assigned(id);
+    if (!assigned) {
+      return false;
+    }
+    const assignedId = assigned === true ? id : assigned.id;
+    return !isFreed(assignedId);
+  };
+  const newMessageIds = new Set();
+  for (const message of updated) {
+    if (typeof message.identifier !== 'string' || !message.identifier) {
+      return 'catalog message is missing an identifier';
+    }
+    if (findCatalogMessage(definitions, message)) {
+      continue;
+    }
+    if (newMessageIds.has(message.identifier)) {
+      return `duplicate catalog message identifier <${message.identifier}>`;
+    }
+    newMessageIds.add(message.identifier);
+    if (isTakenBySurvivor(message.identifier)) {
+      return `catalog message identifier <${message.identifier}> is already in use`;
+    }
+  }
+  for (const message of updated) {
+    for (const property of message.correlation_properties ?? []) {
+      if (typeof property.identifier !== 'string' || !property.identifier) {
+        return 'catalog correlation property is missing an identifier';
+      }
+      const existing = roots.find(
+        (el) =>
+          el.$type === 'bpmn:CorrelationProperty' &&
+          el.id === property.identifier
+      );
+      if (existing && !removedPropertyIds.has(existing.id)) {
+        continue;
+      }
+      if (newMessageIds.has(property.identifier)) {
+        return `duplicate catalog identifier <${property.identifier}>`;
+      }
+      if (isTakenBySurvivor(property.identifier)) {
+        return `catalog correlation property identifier <${property.identifier}> is already in use`;
+      }
+    }
+  }
+  return null;
+}
 
 function messagesFromBpmn(definitions) {
   const messages = [];
@@ -83,16 +213,7 @@ function clearRemovedReferences(
 
 function syncMessagesToBpmn(bpmnFactory, moddle, definitions, updated, set) {
   const retained = new Map(
-    updated.map((message) => [
-      definitions.rootElements.find(
-        (root) =>
-          root.$type === 'bpmn:Message' &&
-          (message.bpmn_id
-            ? root.id === message.bpmn_id
-            : root.name === message.identifier)
-      ),
-      message,
-    ])
+    updated.map((message) => [findCatalogMessage(definitions, message), message])
   );
   const droppedByMessage = new Map();
 
@@ -175,11 +296,7 @@ function syncMessagesToBpmn(bpmnFactory, moddle, definitions, updated, set) {
   );
 
   for (const msg of updated) {
-    let bpmnMsg = definitions.rootElements.find(
-      (el) =>
-        el.$type === 'bpmn:Message' &&
-        (msg.bpmn_id ? el.id === msg.bpmn_id : el.name === msg.identifier)
-    );
+    let bpmnMsg = findCatalogMessage(definitions, msg);
     if (!bpmnMsg) {
       bpmnMsg = bpmnFactory.create('bpmn:Message', {
         id: msg.identifier,
@@ -205,9 +322,8 @@ function syncMessagesToBpmn(bpmnFactory, moddle, definitions, updated, set) {
           ...definitions.rootElements,
           corrProp,
         ]);
-      } else {
-        corrProp.correlationPropertyRetrievalExpression =
-          corrProp.correlationPropertyRetrievalExpression ?? [];
+      } else if (!corrProp.correlationPropertyRetrievalExpression) {
+        set(corrProp, 'correlationPropertyRetrievalExpression', []);
       }
 
       const existingIdx =
@@ -261,9 +377,19 @@ export default class MessageInterceptor extends CommandInterceptor {
       const { messages: updated } = event;
       const definitions = getRoot(null, moddle);
       if (!definitions?.rootElements) return;
+      const failure = validateCatalogUpdate(moddle, definitions, updated);
+      if (failure) {
+        eventBus.fire('spiff.messages.save.failed', {
+          messages: updated,
+          reason: failure,
+        });
+        return;
+      }
       commandStack.execute('spiff.message.update', {
-        update: (set) =>
-          syncMessagesToBpmn(bpmnFactory, moddle, definitions, updated, set),
+        update: (set) => {
+          syncMessagesToBpmn(bpmnFactory, moddle, definitions, updated, set);
+          syncCatalogCorrelationKeys(definitions, bpmnFactory, moddle, set);
+        },
       });
     });
   }
