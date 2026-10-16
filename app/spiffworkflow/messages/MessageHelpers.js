@@ -755,7 +755,7 @@ export function setParentCorrelationKeys(
 
 /**
  * Reconciles the MainCorrelationKey with the current correlation properties.
- * Shared by the message-selection path and the catalog-save path so a
+ * Shared by the message-selection path and the shared-message-save path so a
  * save-only edit cannot leave the key pointing at a stale property set.
  *
  * @param {boolean} createIfMissing allow creating the collaboration key.
@@ -880,18 +880,18 @@ function findExistingMainCorrelationKey(definitions) {
 
 /**
  * Reconciles MainCorrelationKey entries with the properties currently present
- * in the definitions. Used by the catalog-save path, which has no diagram
+ * in the definitions. Used by the shared-message-save path, which has no diagram
  * element to derive the property list from.
  */
-export function syncCatalogCorrelationKeys(
+export function syncSharedMessageCorrelationKeys(
   definitions,
   bpmnFactory,
   moddle,
   update
 ) {
-  const correlationProperties = (
-    definitions.get('rootElements') || []
-  ).filter((element) => element.$type === 'bpmn:CorrelationProperty');
+  const correlationProperties = (definitions.get('rootElements') || []).filter(
+    (element) => element.$type === 'bpmn:CorrelationProperty'
+  );
   reconcileMainCorrelationKey(
     definitions,
     bpmnFactory,

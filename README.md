@@ -73,7 +73,7 @@ this in the app.js file.
 
 `spiff.message.edit` includes `value.elementId`, `value.messageId`, `eventBus`,
 the originating `element`, and `applyMessage(message)`. A host can retain this callback
-while an external editor is open, then pass a saved catalog entry with `identifier` and
+while an external editor is open, then pass a saved shared message entry with `identifier` and
 `correlation_properties` (`identifier` / `retrieval_expression` pairs). The callback
 assigns the message and its correlation definitions as an undoable operation, even if
 the originating properties panel has since unmounted. It does nothing if that element

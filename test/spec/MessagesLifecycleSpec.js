@@ -16,7 +16,7 @@ import spiffModdleExtension from '../../app/spiffworkflow/moddle/spiffworkflow.j
 import messages from '../../app/spiffworkflow/messages';
 import { createOrUpdateCorrelationPropertiesV2 } from '../../app/spiffworkflow/messages/MessageHelpers';
 
-describe('Message catalog lifecycle', function () {
+describe('Shared message lifecycle', function () {
   const xml = require('./bpmn/message_receive_main_key.bpmn').default;
   const boundaryXml =
     require('./bpmn/message_boundary_no_collaboration.bpmn').default;
@@ -38,7 +38,7 @@ describe('Message catalog lifecycle', function () {
   });
   beforeEach(bootstrap(xml));
 
-  const catalog = (eventBus) => {
+  const sharedMessages = (eventBus) => {
     let current;
     eventBus.once('spiff.messages.got', (event) => {
       current = event.messages;
@@ -172,7 +172,7 @@ describe('Message catalog lifecycle', function () {
     await act(() => modeler.get('modeling').removeShape(task));
     expect(roots).to.include(originalMessage);
     expect(roots).to.include(originalProperty);
-    expect(catalog(modeler.get('eventBus'))).to.deep.include({
+    expect(sharedMessages(modeler.get('eventBus'))).to.deep.include({
       bpmn_id: 'B',
       identifier: 'B',
       schema_file: 'callback-schema.json',
@@ -184,7 +184,7 @@ describe('Message catalog lifecycle', function () {
     const { xml: saved } = await modeler.saveXML({ format: true });
     await modeler.importXML(saved);
     expect(
-      catalog(modeler.get('eventBus')).find(
+      sharedMessages(modeler.get('eventBus')).find(
         (message) => message.identifier === 'B'
       ).schema_file
     ).to.equal('callback-schema.json');
@@ -227,7 +227,7 @@ describe('Message catalog lifecycle', function () {
     await act(() =>
       eventBus.fire('spiff.messages.save', {
         elementId: receiveId,
-        messages: catalog(eventBus),
+        messages: sharedMessages(eventBus),
       })
     );
     expect(property.correlationPropertyRetrievalExpression).to.have.length(1);
@@ -243,7 +243,7 @@ describe('Message catalog lifecycle', function () {
     await act(() =>
       eventBus.fire('spiff.messages.save', {
         elementId: receiveId,
-        messages: catalog(eventBus).filter(
+        messages: sharedMessages(eventBus).filter(
           (message) => message.identifier !== 'B'
         ),
       })
@@ -266,7 +266,7 @@ describe('Message catalog lifecycle', function () {
       eventBus.fire('spiff.messages.save', {
         elementId: receiveId,
         messages: [
-          ...catalog(eventBus),
+          ...sharedMessages(eventBus),
           {
             identifier: 'B',
             schema_file: 'replacement-schema.json',
@@ -297,7 +297,7 @@ describe('Message catalog lifecycle', function () {
     ).to.be.empty;
   });
 
-  it('restores the complete catalog and bindings on undo and reapplies deletion on redo', async function () {
+  it('restores the complete shared messages and bindings on undo and reapplies deletion on redo', async function () {
     const modeler = getBpmnJS();
     const task = await selectReceive();
     const eventBus = modeler.get('eventBus');
@@ -306,7 +306,7 @@ describe('Message catalog lifecycle', function () {
     const original = task.businessObject.messageRef;
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).filter(
+        messages: sharedMessages(eventBus).filter(
           (message) => message.identifier !== 'B'
         ),
       })
@@ -329,7 +329,7 @@ describe('Message catalog lifecycle', function () {
     const before = (await modeler.saveXML()).xml;
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).map((message) => ({
+        messages: sharedMessages(eventBus).map((message) => ({
           ...message,
           correlation_properties: [],
         })),
@@ -362,7 +362,7 @@ describe('Message catalog lifecycle', function () {
     const eventBus = modeler.get('eventBus');
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).map((message) => ({
+        messages: sharedMessages(eventBus).map((message) => ({
           ...message,
           correlation_properties: [
             { identifier: 'uid', retrieval_expression: 'uid' },
@@ -372,7 +372,7 @@ describe('Message catalog lifecycle', function () {
     );
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).map((message) =>
+        messages: sharedMessages(eventBus).map((message) =>
           message.identifier === 'B'
             ? { ...message, correlation_properties: [] }
             : message
@@ -428,7 +428,7 @@ describe('Message catalog lifecycle', function () {
     ).to.equal('callback["id"]');
   });
 
-  it('renames a catalog message without changing its identity or task references', async function () {
+  it('renames a shared message without changing its identity or task references', async function () {
     const modeler = getBpmnJS();
     const task = await selectReceive();
     const original = task.businessObject.messageRef;
@@ -436,7 +436,7 @@ describe('Message catalog lifecycle', function () {
     const before = (await modeler.saveXML()).xml;
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).map((message) =>
+        messages: sharedMessages(eventBus).map((message) =>
           message.identifier === 'B'
             ? { ...message, identifier: 'Renamed callback' }
             : message
@@ -508,7 +508,7 @@ describe('Message catalog lifecycle', function () {
     const eventBus = modeler.get('eventBus');
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).filter(
+        messages: sharedMessages(eventBus).filter(
           (message) => message.identifier !== 'B'
         ),
       })
@@ -518,14 +518,14 @@ describe('Message catalog lifecycle', function () {
     expect(key.correlationPropertyRef).to.deep.equal([property]);
   });
 
-  it('adds new catalog properties to the main correlation key on save alone', async function () {
+  it('adds new shared message properties to the main correlation key on save alone', async function () {
     const modeler = getBpmnJS();
     await selectReceive();
     const eventBus = modeler.get('eventBus');
     const before = (await modeler.saveXML()).xml;
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).map((message) =>
+        messages: sharedMessages(eventBus).map((message) =>
           message.identifier === 'B'
             ? {
                 ...message,
@@ -564,7 +564,7 @@ describe('Message catalog lifecycle', function () {
     const eventBus = modeler.get('eventBus');
     await act(() =>
       eventBus.fire('spiff.messages.save', {
-        messages: catalog(eventBus).map((message) =>
+        messages: sharedMessages(eventBus).map((message) =>
           message.identifier === 'B'
             ? { ...message, identifier: 'Shared callback' }
             : message
@@ -627,7 +627,7 @@ describe('Message catalog lifecycle', function () {
     ).to.be.empty;
   });
 
-  it('rejects a catalog save with duplicate new identifiers without changing the model', async function () {
+  it('rejects a shared message save with duplicate new identifiers without changing the model', async function () {
     const modeler = getBpmnJS();
     await selectReceive();
     const eventBus = modeler.get('eventBus');
@@ -639,7 +639,7 @@ describe('Message catalog lifecycle', function () {
     await act(() =>
       eventBus.fire('spiff.messages.save', {
         messages: [
-          ...catalog(eventBus),
+          ...sharedMessages(eventBus),
           { identifier: 'DUP', correlation_properties: [] },
           { identifier: 'DUP', correlation_properties: [] },
         ],
@@ -650,5 +650,28 @@ describe('Message catalog lifecycle', function () {
     expect(
       modeler.getDefinitions().rootElements.filter((root) => root.id === 'DUP')
     ).to.be.empty;
+  });
+
+  it('rejects shared message entries that resolve to the same message', async function () {
+    const modeler = getBpmnJS();
+    await selectReceive();
+    const eventBus = modeler.get('eventBus');
+    const before = (await modeler.saveXML()).xml;
+    let failed;
+    eventBus.once('spiff.messages.save.failed', (event) => {
+      failed = event;
+    });
+    const [first] = sharedMessages(eventBus);
+    await act(() =>
+      eventBus.fire('spiff.messages.save', {
+        messages: [
+          ...sharedMessages(eventBus),
+          { identifier: first.identifier, correlation_properties: [] },
+        ],
+      })
+    );
+    expect(failed).to.exist;
+    expect(failed.reason).to.include('resolve to the same message');
+    expect((await modeler.saveXML()).xml).to.equal(before);
   });
 });
