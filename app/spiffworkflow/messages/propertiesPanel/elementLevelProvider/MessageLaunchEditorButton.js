@@ -11,7 +11,7 @@ import {
  * update the value and send it back.
  */
 export function MessageLaunchEditorButton(props) {
-  const { element, moddle } = props;
+  const { element, commandStack } = props;
 
   const sendEvent = 'spiff.message.edit';
   const listenEvent = 'spiff.message.update';
@@ -50,9 +50,20 @@ export function MessageLaunchEditorButton(props) {
         listenEvent,
       });
 
-      // Listen for a response, to update the script.
+      // Listen for a response, to update the message name. The BPMN id is
+      // the stable correlation identity (see the bpmn_id rename contract)
+      // and must not be rewritten here; the change goes through the command
+      // stack so the id index stays intact and the edit is undoable.
       eventBus.once(listenEvent, (response) => {
-        messageRef.id = response.value;
+        const nextName = response && response.value;
+        if (!messageRef || nextName == null || nextName === '') {
+          return;
+        }
+        commandStack.execute('spiff.message.update', {
+          update: (set) => {
+            set(messageRef, 'name', nextName);
+          },
+        });
       });
     },
     children: 'Open message editor',

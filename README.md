@@ -69,6 +69,21 @@ npm run all
 You can use the EventBus to communicate with this UI, sending and receiving messages to change 
 the behavior of the editor making it easier for your end users.  There are many examples of 
 this in the app.js file.  
+## External message editors
+
+`spiff.message.edit` includes `value.elementId`, `value.messageId`, `eventBus`,
+the originating `element`, and `applyMessage(message)`. A host can retain this callback
+while an external editor is open, then pass a saved shared message entry with `identifier` and
+`correlation_properties` (`identifier` / `retrieval_expression` pairs). The callback
+assigns the message and its correlation definitions as an undoable operation, even if
+the originating properties panel has since unmounted. It does nothing if that element
+is no longer in the diagram. It does not save the diagram.
+
+The host should check that the user has not changed the element's message selection,
+that the saved definition is in scope, and that the response belongs to its editor request
+before applying it. Refresh dropdown options without changing the diagram by firing
+`spiff.messages.returned` with `{ configuration: { messages: [...] } }`.
+
 Below is a table of all the events that are sent and accepted:
 
 | Event Name                     | Description                                                      | Fired or Acceped | Parameters           | Description                                                              |

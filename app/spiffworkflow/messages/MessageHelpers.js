@@ -273,7 +273,7 @@ export function findMessageElement(businessObject, messageId, definitions) {
     for (const rootElement of root.rootElements) {
       if (
         rootElement.$type === 'bpmn:Message' &&
-        rootElement.name == messageId
+        (rootElement.id === messageId || rootElement.name === messageId)
       ) {
         return rootElement;
       }
@@ -371,8 +371,11 @@ export function createOrUpdateCorrelationPropertiesV2(
   commandStack,
   element,
   propertiesConfig,
-  messageId
+  messageId,
+  update
 ) {
+  const set =
+    update || ((target, property, value) => target.set(property, value));
   let definitions = getRoot(element.businessObject);
   if (propertiesConfig) {
     // Iterate over each property configuration
@@ -383,11 +386,13 @@ export function createOrUpdateCorrelationPropertiesV2(
       );
 
       const msgElement = findMessageElement(element.businessObject, messageId);
+      if (!msgElement) continue;
 
       if (correlationProperty === null) {
-        correlationProperty = bpmnFactory.create('bpmn:CorrelationProperty');
-        correlationProperty.id = propConfig.identifier;
-        correlationProperty.name = propConfig.identifier;
+        correlationProperty = bpmnFactory.create('bpmn:CorrelationProperty', {
+          id: propConfig.identifier,
+          name: propConfig.identifier,
+        });
         correlationProperty.correlationPropertyRetrievalExpression = [];
       }
 
@@ -400,7 +405,7 @@ export function createOrUpdateCorrelationPropertiesV2(
         correlationProperty.correlationPropertyRetrievalExpression.findIndex(
           (retrievalExpr) =>
             retrievalExpr.messageRef &&
-            retrievalExpr.messageRef.id === messageId
+            retrievalExpr.messageRef.id === msgElement?.id
         );
 
       if (existingExpressionIndex === -1) {
@@ -413,9 +418,10 @@ export function createOrUpdateCorrelationPropertiesV2(
           : '';
         retrievalExpression.messagePath = formalExpression;
         retrievalExpression.messageRef = msgElement;
-        correlationProperty.correlationPropertyRetrievalExpression.push(
-          retrievalExpression
-        );
+        set(correlationProperty, 'correlationPropertyRetrievalExpression', [
+          ...correlationProperty.correlationPropertyRetrievalExpression,
+          retrievalExpression,
+        ]);
       } else {
         const existingRetrievalExpression =
           correlationProperty.correlationPropertyRetrievalExpression[
@@ -423,9 +429,11 @@ export function createOrUpdateCorrelationPropertiesV2(
           ];
         const existingFormalExpression =
           existingRetrievalExpression.messagePath;
-        existingFormalExpression.body = propConfig.retrieval_expression
-          ? propConfig.retrieval_expression
-          : '';
+        set(
+          existingFormalExpression,
+          'body',
+          propConfig.retrieval_expression ? propConfig.retrieval_expression : ''
+        );
       }
 
       const existingIndex = definitions.rootElements.findIndex(
@@ -436,16 +444,26 @@ export function createOrUpdateCorrelationPropertiesV2(
 
       if (existingIndex !== -1) {
         // Update existing correlationProperty
-        definitions.rootElements[existingIndex] = correlationProperty;
+        set(
+          definitions,
+          'rootElements',
+          definitions.rootElements.map((root, index) =>
+            index === existingIndex ? correlationProperty : root
+          )
+        );
       } else {
         // Add new correlationProperty
-        definitions.rootElements.push(correlationProperty);
+        set(definitions, 'rootElements', [
+          ...definitions.rootElements,
+          correlationProperty,
+        ]);
       }
 
-      commandStack.execute('element.updateProperties', {
-        element,
-        properties: {},
-      });
+      if (!update)
+        commandStack.execute('element.updateProperties', {
+          element,
+          properties: {},
+        });
     }
   }
 }
@@ -714,13 +732,46 @@ export function setParentCorrelationKeys(
   definitions,
   bpmnFactory,
   element,
-  moddle
+  moddle,
+  update
 ) {
+  const set =
+    update || ((target, property, value) => target.set(property, value));
   // Retrieve all correlation properties
   let correlationProperties = findCorrelationProperties(
     element.businessObject,
     moddle
   );
+  correlationProperties = correlationProperties || [];
+  reconcileMainCorrelationKey(
+    definitions,
+    bpmnFactory,
+    moddle,
+    correlationProperties,
+    set,
+    true
+  );
+}
+
+/**
+ * Reconciles the MainCorrelationKey with the current correlation properties.
+ * Shared by the message-selection path and the shared-message-save path so a
+ * save-only edit cannot leave the key pointing at a stale property set.
+ *
+ * @param {boolean} createIfMissing allow creating the collaboration key.
+ *   The selection path always allowed this; the save path only creates when
+ *   there is at least one property, so a schema-only save never invents XML.
+ */
+export function reconcileMainCorrelationKey(
+  definitions,
+  bpmnFactory,
+  moddle,
+  correlationProperties,
+  update,
+  createIfMissing = true
+) {
+  const set =
+    update || ((target, property, value) => target.set(property, value));
   correlationProperties = correlationProperties || [];
 
   // check if process has collaboration
@@ -729,28 +780,42 @@ export function setParentCorrelationKeys(
     .find((element) => element.$type === 'bpmn:Collaboration');
 
   if (collaboration) {
-    let mainCorrelationKey = findOrCreateMainCorrelationKey(
-      definitions,
-      bpmnFactory,
-      moddle
-    );
+    let mainCorrelationKey = findExistingMainCorrelationKey(definitions);
+    if (!mainCorrelationKey) {
+      if (!createIfMissing || correlationProperties.length === 0) {
+        return;
+      }
+      const newCorrelationKeyId = moddle.ids.nextPrefixed('CorrelationKey_');
+      mainCorrelationKey = bpmnFactory.create('bpmn:CorrelationKey', {
+        id: newCorrelationKeyId,
+        name: 'MainCorrelationKey',
+      });
+    }
 
     // Reuse the real correlation property references instead of recreating
     // detached moddle elements on each sync.
-    mainCorrelationKey.correlationPropertyRef = correlationProperties.slice();
+    set(
+      mainCorrelationKey,
+      'correlationPropertyRef',
+      correlationProperties.slice()
+    );
 
     if (!collaboration.correlationKeys) {
-      collaboration.correlationKeys = [];
+      set(collaboration, 'correlationKeys', []);
     }
 
-    const correlationKeys = collaboration.correlationKeys;
+    const correlationKeys = [...collaboration.correlationKeys];
     const existingKey = correlationKeys.find(
       (key) => key.name === 'MainCorrelationKey'
     );
 
     if (existingKey) {
       mainCorrelationKey = existingKey;
-      mainCorrelationKey.correlationPropertyRef = correlationProperties.slice();
+      set(
+        mainCorrelationKey,
+        'correlationPropertyRef',
+        correlationProperties.slice()
+      );
     } else {
       correlationKeys.push(mainCorrelationKey);
     }
@@ -763,6 +828,7 @@ export function setParentCorrelationKeys(
         correlationKeys.splice(index, 1);
       }
     }
+    set(collaboration, 'correlationKeys', correlationKeys);
   } else {
     // No collaboration — update correlationPropertyRef on any existing
     // definitions-level correlationKey (loaded via the spiffworkflow moddle
@@ -775,13 +841,17 @@ export function setParentCorrelationKeys(
         (key) => key.name === 'MainCorrelationKey'
       );
       if (existingKey) {
-        existingKey.correlationPropertyRef = correlationProperties.slice();
+        set(
+          existingKey,
+          'correlationPropertyRef',
+          correlationProperties.slice()
+        );
       }
     }
   }
 }
 
-function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
+function findExistingMainCorrelationKey(definitions) {
   const collaboration = definitions
     .get('rootElements')
     .find((element) => element.$type === 'bpmn:Collaboration');
@@ -790,39 +860,62 @@ function findOrCreateMainCorrelationKey(definitions, bpmnFactory, moddle) {
   // would silently drop <bpmn:correlationKey> from rootElements on parse.
   // The spiffworkflow moddle extension adds a typed `correlationKeys` property
   // to bpmn:Definitions so they are correctly round-tripped there instead.
-  let mainCorrelationKey =
+  return (
     collaboration
       ?.get('correlationKeys')
       ?.find((element) => element.name === 'MainCorrelationKey') ||
-    definitions.get('correlationKeys')?.find(
-      (element) => element.name === 'MainCorrelationKey'
-    ) ||
-    definitions.get('rootElements').find(
-      (element) =>
-        element.$type === 'bpmn:CorrelationKey' &&
-        element.name === 'MainCorrelationKey'
-    );
+    definitions
+      .get('correlationKeys')
+      ?.find((element) => element.name === 'MainCorrelationKey') ||
+    definitions
+      .get('rootElements')
+      .find(
+        (element) =>
+          element.$type === 'bpmn:CorrelationKey' &&
+          element.name === 'MainCorrelationKey'
+      ) ||
+    null
+  );
+}
 
-  if (!mainCorrelationKey) {
-    const newCorrelationKeyId = moddle.ids.nextPrefixed('CorrelationKey_');
-    mainCorrelationKey = bpmnFactory.create('bpmn:CorrelationKey', {
-      id: newCorrelationKeyId,
-      name: 'MainCorrelationKey',
-    });
-  }
-
-  return mainCorrelationKey;
+/**
+ * Reconciles MainCorrelationKey entries with the properties currently present
+ * in the definitions. Used by the shared-message-save path, which has no diagram
+ * element to derive the property list from.
+ */
+export function syncSharedMessageCorrelationKeys(
+  definitions,
+  bpmnFactory,
+  moddle,
+  update
+) {
+  const correlationProperties = (definitions.get('rootElements') || []).filter(
+    (element) => element.$type === 'bpmn:CorrelationProperty'
+  );
+  reconcileMainCorrelationKey(
+    definitions,
+    bpmnFactory,
+    moddle,
+    correlationProperties,
+    update,
+    correlationProperties.length > 0
+  );
 }
 
 export function syncCorrelationProperties(
   element,
   definitions,
   moddle,
-  msgObject
+  msgObject,
+  update
 ) {
+  const set =
+    update || ((target, property, value) => target.set(property, value));
   const { businessObject } = element;
   const correlationProps = findCorrelationProperties(businessObject, moddle);
-  const messageId = msgObject?.identifier;
+  const messageId = msgObject
+    ? findMessageElement(businessObject, msgObject.identifier)?.id
+    : undefined;
   const activePropertyIds = new Set(
     (msgObject?.correlation_properties || []).map((obj) => obj.identifier)
   );
@@ -852,7 +945,7 @@ export function syncCorrelationProperties(
       return true;
     });
 
-    cProperty.correlationPropertyRetrievalExpression = nextExpressions;
+    set(cProperty, 'correlationPropertyRetrievalExpression', nextExpressions);
 
     const hasOtherMessageReferences = nextExpressions.some(
       (cpExpression) => cpExpression.messageRef?.id !== messageId
@@ -863,20 +956,34 @@ export function syncCorrelationProperties(
 
     if (!keepProperty) {
       if (cPropertyIndex > -1) {
-        definitions.rootElements.splice(cPropertyIndex, 1);
+        set(
+          definitions,
+          'rootElements',
+          definitions.rootElements.filter((root) => root !== cProperty)
+        );
       }
       continue;
     }
 
     if (cPropertyIndex > -1) {
-      definitions.rootElements.splice(cPropertyIndex, 1, cProperty);
+      set(
+        definitions,
+        'rootElements',
+        definitions.rootElements.map((root, index) =>
+          index === cPropertyIndex ? cProperty : root
+        )
+      );
     }
   }
 
-  removeUnusedProcessVariableCorrelations(element, activePropertyIds);
+  removeUnusedProcessVariableCorrelations(element, activePropertyIds, set);
 }
 
-function removeUnusedProcessVariableCorrelations(element, activePropertyIds) {
+function removeUnusedProcessVariableCorrelations(
+  element,
+  activePropertyIds,
+  set
+) {
   const extensionHost = isMessageEvent(element)
     ? element.businessObject.eventDefinitions?.[0]
     : element.businessObject;
@@ -886,36 +993,14 @@ function removeUnusedProcessVariableCorrelations(element, activePropertyIds) {
     return;
   }
 
-  extensionElements.values = extensionElements.values.filter((value) => {
-    return (
-      !value.$instanceOf('spiffworkflow:ProcessVariableCorrelation') ||
-      activePropertyIds.has(value.propertyId)
-    );
-  });
-}
-
-export function deleteMessage(definitions, messageId) {
-  const rootElements = definitions.rootElements;
-
-  // Delete correlation retrieval expressions (Which live outside the message)
-  const corProps = findCorrelationPropertiesByMessage;
-
-  // Delete the message object
-  const index = rootElements.findIndex(
-    (element) => element.$type === 'bpmn:Message' && element.id === messageId
+  set(
+    extensionElements,
+    'values',
+    extensionElements.values.filter((value) => {
+      return (
+        !value.$instanceOf('spiffworkflow:ProcessVariableCorrelation') ||
+        activePropertyIds.has(value.propertyId)
+      );
+    })
   );
-  if (rootElements && index !== -1) {
-    rootElements.splice(index, 1);
-    definitions.rootElements = rootElements;
-  }
-
-  // Delete retrieval expressions related to message
-  const props = findCorrelationPropertiesByMessageId(messageId, definitions);
-  for (let prop of props) {
-    let propIndex = prop.correlationPropertyRetrievalExpression.findIndex(
-      (retrievalExpr) =>
-        retrievalExpr.messageRef && retrievalExpr.messageRef.id === messageId
-    );
-    prop.correlationPropertyRetrievalExpression.splice(propIndex, 1);
-  }
 }
